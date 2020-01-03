@@ -1,0 +1,24 @@
+configuration {
+  lines: 5;
+}
+* {
+    padding: 2px;
+    background-color: #3c3836;
+    color: #777;
+    font: "Noto Sans 14";
+}
+
+#window {
+  width: 250px;
+  height: 200px;
+  border-radius: 5px;
+}
+#element {
+  padding: 0px 10px;
+  border-radius: 5px;
+}
+#element selected {
+  text-color: #eee;
+  background-color: #7c6f64;
+}
+/* vim:ft=css
