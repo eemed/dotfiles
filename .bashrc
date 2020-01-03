@@ -169,25 +169,6 @@ if test -f ~/.bashrc_personal ; then
     source ~/.bashrc_personal
 fi
 
-if [ -d "$HOME/.local/bin" ]; then
-  PATH=$PATH:~/.local/bin
-fi
-
-if [ -d "$HOME/.scripts" ]; then
-  PATH=$PATH:~/.scripts
-fi
-
-if [ -d "$HOME/go/bin" ]; then
-  PATH=$PATH:~/go/bin
-fi
-
-if [ -d "$HOME/.node/bin" ]; then
-  PATH=$PATH:~/.node/bin
-fi
-
-if [ -d "$HOME/.apache/bin" ]; then
-    PATH=$PATH:~/.apache/bin
-fi
 
 export FFF_CD_FILE=~/.fff_d
 
