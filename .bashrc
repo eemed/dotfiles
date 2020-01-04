@@ -191,8 +191,8 @@ if test -f ~/.cache/pal/colors ; then
 fi
 
 neovim_bg_control() {
-  if test -f ~/.scripts/pal_theme ; then
-    local theme=$(~/.scripts/pal_theme)
+  if test -f ~/.scripts/pal_theme.sh ; then
+    local theme=$(~/.scripts/pal_theme.sh)
 
     if [ $theme = "light" ]; then
 	env VIM_THEME="light" nvim "$@"

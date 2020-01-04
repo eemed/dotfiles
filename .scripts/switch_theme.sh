@@ -5,7 +5,7 @@ else
         theme=$1
 fi
 
-current_theme=$(~/.scripts/pal_theme)
+current_theme=$(~/.scripts/pal_theme.sh)
 
 if [ $theme = "dark" ]; then
         if [ $current_theme = "light" ]; then
