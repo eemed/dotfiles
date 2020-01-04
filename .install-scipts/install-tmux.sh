@@ -50,8 +50,6 @@ if [ ! -x "$(command -v tmux)" ] || [ $1 = "-f" ]; then
     rm -rf tmux-2.9 tmux-2.9.tar.gz
 
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-    source ./dotfiles/bash/.bashrc
-    ~/.tmux/plugins/tpm/bin/install_plugins
 else
     echo "tmux is already installed use '-f' to force"
 fi
