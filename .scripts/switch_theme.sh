@@ -11,11 +11,11 @@ if [ $theme = "dark" ]; then
         if [ $current_theme = "light" ]; then
                 killall -s 10 nvim
         fi
-        $HOME/.scripts/pal < $HOME/.colors/pal-dark
+        paleta < $HOME/.colors/pal-dark
 
 elif [ $theme = "light" ]; then
         if [ $current_theme = "dark" ]; then
                 killall -s 10 nvim
         fi
-        $HOME/.scripts/pal < $HOME/.colors/pal-light
+        paleta < $HOME/.colors/pal-light
 fi
