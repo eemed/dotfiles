@@ -53,11 +53,16 @@ Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install --bin' }
 Plug 'junegunn/fzf.vim'
 
-Plug 'sheerun/vim-polyglot'
+" Plug 'sheerun/vim-polyglot'
 Plug 'godlygeek/tabular'
 
 Plug 'ludovicchabant/vim-gutentags'
+Plug 'mbbill/undotree'
+
+Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'vim-python/python-syntax'
 call plug#end()
+let g:python_highlight_all = 1
 " }}}
 
 " Plugin configuration {{{
@@ -73,13 +78,13 @@ let g:UltiSnipsEditSplit="vertical"
 " }}}
 
 " vim-startify {{{
-let g:startify_custom_header = startify#center([
-            \ "                       _           ",
-            \ " _ __   ___  _____   _(_)_ __ ___  ",
-            \ "| '_ \\ / _ \\/ _ \\ \\ / / | '_ ` _ \\ ",
-            \ "| | | |  __/ (_) \\ V /| | | | | | |",
-            \ "|_| |_|\\___|\\___/ \\_/ |_|_| |_| |_|",
-            \ ])
+let g:startify_custom_header = [
+            \ "                           _           ",
+            \ "     _ __   ___  _____   _(_)_ __ ___  ",
+            \ "    | '_ \\ / _ \\/ _ \\ \\ / / | '_ ` _ \\ ",
+            \ "    | | | |  __/ (_) \\ V /| | | | | | |",
+            \ "    |_| |_|\\___|\\___/ \\_/ |_|_| |_| |_|",
+            \ ]
 
 let g:startify_bookmarks = [ {'c': '~/.config/nvim/init.vim'}, {'b': '~/.bashrc'} ]
 " }}}
