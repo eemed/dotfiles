@@ -1,4 +1,3 @@
-"     _       _ __        _
 "    (_)___  (_) /__   __(_)___ ___
 "   / / __ \/ / __/ | / / / __ `__ \
 "  / / / / / / /__| |/ / / / / / / /
@@ -54,10 +53,11 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install --bin' }
 Plug 'junegunn/fzf.vim'
 
 " Plug 'sheerun/vim-polyglot'
-Plug 'godlygeek/tabular'
+" Plug 'godlygeek/tabular'
 
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'mbbill/undotree'
+Plug 'junegunn/vim-easy-align'
 
 Plug 'MaxMEllon/vim-jsx-pretty'
 Plug 'vim-python/python-syntax'
@@ -111,6 +111,7 @@ endfunction
 
 nnoremap <silent><leader>F :Files<CR>
 nnoremap <silent><c-p> :call Browse()<CR>
+nnoremap <silent><leader>b :Buffers<CR>
 
 " Match fzf colorscheme to current colorscheme
 let g:fzf_colors =
@@ -175,9 +176,14 @@ let g:pear_tree_smart_closers = 1
 let g:pear_tree_smart_backspace = 1
 " }}}
 
-" Tabular {{{
-nnoremap <leader>a, :Tabularize /,/l0r1<CR>
-xnoremap <leader>a, :Tabularize /,/l0r1<CR>
+" vim-easy-align {{{
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
+" }}}
+
+" undotree {{{
+nnoremap <silent><leader>u :UndotreeToggle<CR>
+let g:undotree_DiffAutoOpen = 0
 " }}}
 " }}}
 
