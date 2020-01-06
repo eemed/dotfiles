@@ -5,7 +5,7 @@
 "
 "
 " Configurable {{{
-let mapleader="\ "  " Space leader
+let mapleader = "\ "  " Space leader
 let g:dark_theme = 'sitruuna'
 let g:light_theme = 'base16-classic-light'
 let config = "~/.config/nvim/init.vim"
@@ -67,11 +67,11 @@ let g:python_highlight_all = 1
 
 " Plugin configuration {{{
 " ultisnips {{{
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-Tab>"
-let g:UltiSnipsSnippetsDir="~/.config/nvim/ultisnips"
-let g:UltiSnipsSnippetDirectories=["ultisnips"]
+let g:UltiSnipsExpandTrigger       = "<tab>"
+let g:UltiSnipsJumpForwardTrigger  = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-Tab>"
+let g:UltiSnipsSnippetsDir         = "~/.config/nvim/ultisnips"
+let g:UltiSnipsSnippetDirectories  = ["ultisnips"]
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
@@ -95,7 +95,7 @@ nnoremap <silent><leader>g :G<CR> <c-w>L
 
 " emmet.vim {{{
 let g:user_emmet_install_global = 0
-let g:user_emmet_leader_key=','
+let g:user_emmet_leader_key     = ','
 " Enable emmet
 autocmd FileType php,xml,html,css,javascript.jsx,html* EmmetInstall
 " }}}
@@ -110,7 +110,7 @@ function! Browse()
 endfunction
 
 nnoremap <silent><leader>F :Files<CR>
-nnoremap <silent><c-p> :call Browse()<CR>
+nnoremap <silent><c-p>     :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 
 " Match fzf colorscheme to current colorscheme
@@ -135,7 +135,7 @@ nnoremap <silent> m<cr> :Neomake<CR>
 nnoremap <silent> M<cr> :Neomake!<CR>
 nnoremap m? :echom &makeprg<CR>
 
-let g:neomake_go_enabled_makers = ['golint', 'go']
+let g:neomake_go_enabled_makers     = ['golint', 'go']
 let g:neomake_python_enabled_makers = ['flake8', 'python']
 
 let g:neomake_error_sign = {
@@ -157,7 +157,7 @@ let g:neomake_info_sign = {
 " }}}
 
 " vim-gutentags {{{
-let g:gutentags_cache_dir = '~/.tags'
+let g:gutentags_cache_dir    = '~/.tags'
 let g:gutentags_project_root = ['.gitignore']
 let g:gutentags_project_info = [
       \ {'type': 'haskell', 'glob': '*.hs'}
@@ -171,14 +171,14 @@ endif
 
 " pear-tree {{{
 let g:pear_tree_repeatable_expand = 0
-let g:pear_tree_smart_openers = 1
-let g:pear_tree_smart_closers = 1
-let g:pear_tree_smart_backspace = 1
+let g:pear_tree_smart_openers     = 1
+let g:pear_tree_smart_closers     = 1
+let g:pear_tree_smart_backspace   = 1
 " }}}
 
 " vim-easy-align {{{
-xmap ga <Plug>(EasyAlign)
-nmap ga <Plug>(EasyAlign)
+xmap ga <Plug>(LiveEasyAlign)
+nmap ga <Plug>(LiveEasyAlign)
 " }}}
 
 " undotree {{{
@@ -225,12 +225,12 @@ inoremap <silent><c-s> <Esc>:update<CR>a
 vnoremap <silent><c-s> <Esc>:update<CR>
 
 " Too many mistakes
-cabbrev W w
-cabbrev Q q
-cabbrev Qa qa
-cabbrev QA qa
-cabbrev Wq wq
-cabbrev WQ wq
+cabbrev W   w
+cabbrev Q   q
+cabbrev Qa  qa
+cabbrev QA  qa
+cabbrev Wq  wq
+cabbrev WQ  wq
 cabbrev Wqa wqa
 cabbrev WQa wqa
 cabbrev WQA wqa

@@ -11,7 +11,7 @@ xset r rate 200 30 &
 nitrogen --restore &
 
 nm-applet &
-blueman-applet &
+# blueman-applet &
 greenclip daemon &
 redshift -b 0.95:0.9 &
 
