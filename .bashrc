@@ -4,7 +4,7 @@
 
 [[ $- != *i* ]] && return
 
-# set -o vi
+set -o vi
 
 colors() {
 	local fgc bgc vals seq0
