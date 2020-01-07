@@ -10,6 +10,7 @@ let g:dark_theme = 'sitruuna'
 let g:light_theme = 'base16-classic-light'
 let config = "~/.config/nvim/init.vim"
 let g:python3_host_prog = "/usr/bin/python3"
+set guifont=Hack:h13
 " }}}
 
 " Autoinstall vim-plug {{{
