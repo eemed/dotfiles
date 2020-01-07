@@ -49,21 +49,17 @@ Plug 'mattn/emmet-vim'                          " Emmet
 Plug 'SirVer/ultisnips'                         " Snippets
 Plug 'honza/vim-snippets'
 
-" Fuzzy find everything
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install --bin' }
-Plug 'junegunn/fzf.vim'
-
-" Plug 'sheerun/vim-polyglot'
-" Plug 'godlygeek/tabular'
+Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' } " Find stuff
 
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'mbbill/undotree'
 Plug 'junegunn/vim-easy-align'
 
-Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'chemzqm/vim-jsx-improve'
 Plug 'vim-python/python-syntax'
+Plug 'vim-erlang/vim-erlang-runtime'
+Plug 'neovimhaskell/haskell-vim'
 call plug#end()
-let g:python_highlight_all = 1
 " }}}
 
 " Plugin configuration {{{
@@ -185,6 +181,20 @@ nmap ga <Plug>(LiveEasyAlign)
 " undotree {{{
 nnoremap <silent><leader>u :UndotreeToggle<CR>
 let g:undotree_DiffAutoOpen = 0
+" }}}
+
+" python-syntax {{{
+let g:python_highlight_all = 1
+" }}}
+
+" denite {{{
+call denite#custom#alias('source', 'file/rec/git', 'file/rec')
+call denite#custom#var('file/rec/git', 'command',
+\ ['git', 'ls-files', '-co', '--exclude-standard'])
+nnoremap <silent> <C-p> :<C-u>Denite
+\ `finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'`<CR>
+
+nnoremap <silent><leader>b :Denite buffer<CR>
 " }}}
 " }}}
 
