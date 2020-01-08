@@ -162,9 +162,14 @@ let g:python_highlight_all = 1
 call denite#custom#alias('source', 'file/rec/git', 'file/rec')
 call denite#custom#var('file/rec/git', 'command',
             \ ['git', 'ls-files', '-co', '--exclude-standard'])
+
+call denite#custom#var('file/rec', 'command',
+            \ ['rg', '--files', '--glob', '!.git'])
+
 nnoremap <silent> <C-p> :<C-u>Denite
             \ `finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'`<CR>
 nnoremap <silent><leader>b :Denite buffer<CR>
+
 
 function! s:denite_quickfix_grep()
     :Denite grep
@@ -187,10 +192,18 @@ endif
 let s:denite_options = {
       \ 'prompt' : '❯',
       \ 'start_filter': 1,
-      \ 'auto_resize': 1,
+      \ 'auto_resize': 0,
+      \ 'winwidth': &columns,
+      \ 'winrow': (&lines / 3) * 2,
+      \ 'wincol': 0,
+      \ 'winheight': &lines / 3,
+      \ 'floating': 1,
       \ 'source_names': 'short',
       \ 'direction': 'botright',
-      \ 'highlight_filter_background': 'StatusLine',
+      \ 'split': 'floating',
+      \ 'highlight_matched_range': 'Type',
+      \ 'highlight_preview_line': 'StatusLine',
+      \ 'highlight_window_background': 'Type',
       \ 'highlight_matched_char': 'Statement',
       \ 'reversed': 'true',
       \ }
