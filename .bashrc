@@ -89,13 +89,13 @@ VISUAL=nvim; export VISUAL EDITOR=nvim; export EDITOR
 PAGER=less; export PAGER
 
 # Set colors on new terminals
-if test -f ~/.cache/pal/colors ; then
-  { read -r < ~/.cache/pal/colors; printf %b "$REPLY"; } & disown
+if test -f ~/.cache/paleta/colors ; then
+  { read -r < ~/.cache/paleta/colors; printf %b "$REPLY"; } & disown
 fi
 
 neovim_bg_control() {
-  if test -f ~/.scripts/pal_theme.sh ; then
-    local theme=$(~/.scripts/pal_theme.sh)
+  if test -f ~/.scripts/paleta-current-theme.sh ; then
+    local theme=$(~/.scripts/paleta-current-theme.sh)
 
     if [ $theme = "light" ]; then
     env VIM_THEME="light" nvim "$@"
@@ -133,4 +133,10 @@ xset r rate 200 30
 
 if test -f ~/.bashrc_personal ; then
     source ~/.bashrc_personal
+fi
+
+if test -d ~/.fzf ; then
+    PATH=$PATH:~/.fzf/bin
+    source ~/.fzf/shell/completion.bash
+    source ~/.fzf/shell/key-bindings.bash
 fi

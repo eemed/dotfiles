@@ -49,7 +49,8 @@ Plug 'mattn/emmet-vim'                          " Emmet
 Plug 'SirVer/ultisnips'                         " Snippets
 Plug 'honza/vim-snippets'
 
-Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' } " Find stuff
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'mbbill/undotree'
@@ -95,36 +96,6 @@ let g:user_emmet_install_global = 0
 let g:user_emmet_leader_key     = ','
 " Enable emmet
 autocmd FileType php,xml,html,css,javascript.jsx,html* EmmetInstall
-" }}}
-
-" fzf.vim {{{
-function! Browse()
-  if len(fugitive#head()) > 1
-    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-  else
-    exe "Files"
-  endif
-endfunction
-
-nnoremap <silent><leader>F :Files<CR>
-nnoremap <silent><c-p>     :call Browse()<CR>
-nnoremap <silent><leader>b :Buffers<CR>
-
-" Match fzf colorscheme to current colorscheme
-let g:fzf_colors =
-      \ { 'fg':    ['fg', 'NormalFloat'],
-      \ 'bg':      ['bg', 'NormalFloat'],
-      \ 'hl':      ['fg', 'Keyword', 'Keyword'],
-      \ 'fg+':     ['fg', 'Function'],
-      \ 'bg+':     ['bg', 'NormalFloat'],
-      \ 'hl+':     ['fg', 'Keyword'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'border':  ['fg', 'Ignore'],
-      \ 'prompt':  ['fg', 'DiffAdded'],
-      \ 'pointer': ['fg', 'Function'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment'] }
 " }}}
 
 " neomake {{{
@@ -187,14 +158,34 @@ let g:undotree_DiffAutoOpen = 0
 let g:python_highlight_all = 1
 " }}}
 
-" denite {{{
-call denite#custom#alias('source', 'file/rec/git', 'file/rec')
-call denite#custom#var('file/rec/git', 'command',
-\ ['git', 'ls-files', '-co', '--exclude-standard'])
-nnoremap <silent> <C-p> :<C-u>Denite
-\ `finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'`<CR>
+" fzf.vim {{{
+function! Browse()
+  if len(fugitive#head()) > 1
+    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
+  else
+    exe "Files"
+  endif
+endfunction
 
-nnoremap <silent><leader>b :Denite buffer<CR>
+nnoremap <silent><leader>F :Files<CR>
+nnoremap <silent><c-p>     :call Browse()<CR>
+nnoremap <silent><leader>b :Buffers<CR>
+
+" Match fzf colorscheme to current colorscheme
+let g:fzf_colors =
+      \ { 'fg':    ['fg', 'NormalFloat'],
+      \ 'bg':      ['bg', 'NormalFloat'],
+      \ 'hl':      ['fg', 'Keyword', 'Keyword'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Keyword'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'border':  ['fg', 'Ignore'],
+      \ 'prompt':  ['fg', 'DiffAdded'],
+      \ 'pointer': ['fg', 'Function'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
 " }}}
 " }}}
 

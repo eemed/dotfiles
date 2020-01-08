@@ -414,7 +414,7 @@
     </keybind>
     <keybind key="W-t">
       <action name="Execute">
-        <command>~/.scripts/switch_theme</command>
+        <command>~/.scripts/theme</command>
       </action>
     </keybind>
     <keybind key="W-Return">
