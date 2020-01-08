@@ -49,8 +49,7 @@ Plug 'mattn/emmet-vim'                          " Emmet
 Plug 'SirVer/ultisnips'                         " Snippets
 Plug 'honza/vim-snippets'
 
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
+Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
 
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'mbbill/undotree'
@@ -142,6 +141,7 @@ let g:pear_tree_repeatable_expand = 0
 let g:pear_tree_smart_openers     = 1
 let g:pear_tree_smart_closers     = 1
 let g:pear_tree_smart_backspace   = 1
+let g:pear_tree_map_special_keys  = 0
 " }}}
 
 " vim-easy-align {{{
@@ -158,34 +158,43 @@ let g:undotree_DiffAutoOpen = 0
 let g:python_highlight_all = 1
 " }}}
 
-" fzf.vim {{{
-function! Browse()
-  if len(fugitive#head()) > 1
-    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-  else
-    exe "Files"
-  endif
+" denite {{{
+call denite#custom#alias('source', 'file/rec/git', 'file/rec')
+call denite#custom#var('file/rec/git', 'command',
+            \ ['git', 'ls-files', '-co', '--exclude-standard'])
+nnoremap <silent> <C-p> :<C-u>Denite
+            \ `finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'`<CR>
+nnoremap <silent><leader>b :Denite buffer<CR>
+
+function! s:denite_quickfix_grep()
+    :Denite grep
+    call denite#call_map('toggle_select_all')
+    call denite#call_map('do_action', 'quickfix')
 endfunction
+command! -nargs=0 Dgrep call <sid>denite_quickfix_grep()<CR>
 
-nnoremap <silent><leader>F :Files<CR>
-nnoremap <silent><c-p>     :call Browse()<CR>
-nnoremap <silent><leader>b :Buffers<CR>
+if executable('rg')
+	" Ripgrep command on grep source
+	call denite#custom#var('grep', 'command', ['rg'])
+	call denite#custom#var('grep', 'default_opts',
+			\ ['-i', '--vimgrep', '--no-heading'])
+	call denite#custom#var('grep', 'recursive_opts', [])
+	call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+	call denite#custom#var('grep', 'separator', ['--'])
+	call denite#custom#var('grep', 'final_opts', [])
+endif
 
-" Match fzf colorscheme to current colorscheme
-let g:fzf_colors =
-      \ { 'fg':    ['fg', 'NormalFloat'],
-      \ 'bg':      ['bg', 'NormalFloat'],
-      \ 'hl':      ['fg', 'Keyword', 'Keyword'],
-      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Keyword'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'border':  ['fg', 'Ignore'],
-      \ 'prompt':  ['fg', 'DiffAdded'],
-      \ 'pointer': ['fg', 'Function'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment'] }
+let s:denite_options = {
+      \ 'prompt' : '❯',
+      \ 'start_filter': 1,
+      \ 'auto_resize': 1,
+      \ 'source_names': 'short',
+      \ 'direction': 'botright',
+      \ 'highlight_filter_background': 'StatusLine',
+      \ 'highlight_matched_char': 'Statement',
+      \ 'reversed': 'true',
+      \ }
+call denite#custom#option('default', s:denite_options)
 " }}}
 " }}}
 
