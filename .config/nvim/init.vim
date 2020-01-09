@@ -30,7 +30,6 @@ Plug 'eemed/sitruuna.vim'
 Plug 'chriskempson/base16-vim'                  " Colorscheme
 Plug 'mhinz/vim-startify'                       " Nice start screen
 
-Plug 'tmsvg/pear-tree'                          " Complete pairs
 Plug 'norcalli/nvim-colorizer.lua'              " Hex colors
 
 Plug 'wellle/targets.vim'                       " More text objects
@@ -49,7 +48,8 @@ Plug 'mattn/emmet-vim'                          " Emmet
 Plug 'SirVer/ultisnips'                         " Snippets
 Plug 'honza/vim-snippets'
 
-Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'mbbill/undotree'
@@ -97,6 +97,36 @@ let g:user_emmet_leader_key     = ','
 autocmd FileType php,xml,html,css,javascript.jsx,html* EmmetInstall
 " }}}
 
+" fzf.vim {{{
+function! Browse()
+  if len(fugitive#head()) > 1
+    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
+  else
+    exe "Files"
+  endif
+endfunction
+
+nnoremap <silent><leader>F :Files<CR>
+nnoremap <silent><c-p> :call Browse()<CR>
+nnoremap <silent><leader>b :Buffers<CR>
+
+" Match fzf colorscheme to current colorscheme
+let g:fzf_colors =
+      \ { 'fg':    ['fg', 'NormalFloat'],
+      \ 'bg':      ['bg', 'NormalFloat'],
+      \ 'hl':      ['fg', 'Keyword', 'Keyword'],
+      \ 'fg+':     ['fg', 'Function'],
+      \ 'bg+':     ['bg', 'NormalFloat'],
+      \ 'hl+':     ['fg', 'Keyword'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'border':  ['fg', 'Ignore'],
+      \ 'prompt':  ['fg', 'DiffAdded'],
+      \ 'pointer': ['fg', 'Function'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
+" }}}
+
 " neomake {{{
 nnoremap <silent> m<cr> :Neomake<CR>
 nnoremap <silent> M<cr> :Neomake!<CR>
@@ -121,6 +151,7 @@ let g:neomake_info_sign = {
     \ 'text': 'i',
     \ 'texthl': 'NeomakeInfoSign'
     \ }
+let g:neomake_open_list = 1
 " }}}
 
 " vim-gutentags {{{
@@ -136,14 +167,6 @@ if executable('rg')
 endif
 " }}}
 
-" pear-tree {{{
-let g:pear_tree_repeatable_expand = 0
-let g:pear_tree_smart_openers     = 1
-let g:pear_tree_smart_closers     = 1
-let g:pear_tree_smart_backspace   = 1
-let g:pear_tree_map_special_keys  = 0
-" }}}
-
 " vim-easy-align {{{
 xmap ga <Plug>(LiveEasyAlign)
 nmap ga <Plug>(LiveEasyAlign)
@@ -157,63 +180,10 @@ let g:undotree_DiffAutoOpen = 0
 " python-syntax {{{
 let g:python_highlight_all = 1
 " }}}
-
-" denite {{{
-call denite#custom#alias('source', 'file/rec/git', 'file/rec')
-call denite#custom#var('file/rec/git', 'command',
-            \ ['git', 'ls-files', '-co', '--exclude-standard'])
-
-call denite#custom#var('file/rec', 'command',
-            \ ['rg', '--files', '--glob', '!.git'])
-
-nnoremap <silent> <C-p> :<C-u>Denite
-            \ `finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'`<CR>
-nnoremap <silent><leader>b :Denite buffer<CR>
-
-
-function! s:denite_quickfix_grep()
-    :Denite grep
-    call denite#call_map('toggle_select_all')
-    call denite#call_map('do_action', 'quickfix')
-endfunction
-command! -nargs=0 Dgrep call <sid>denite_quickfix_grep()<CR>
-
-if executable('rg')
-	" Ripgrep command on grep source
-	call denite#custom#var('grep', 'command', ['rg'])
-	call denite#custom#var('grep', 'default_opts',
-			\ ['-i', '--vimgrep', '--no-heading'])
-	call denite#custom#var('grep', 'recursive_opts', [])
-	call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
-	call denite#custom#var('grep', 'separator', ['--'])
-	call denite#custom#var('grep', 'final_opts', [])
-endif
-
-let s:denite_options = {
-      \ 'prompt' : '❯',
-      \ 'start_filter': 1,
-      \ 'auto_resize': 0,
-      \ 'winwidth': &columns,
-      \ 'winrow': (&lines / 3) * 2,
-      \ 'wincol': 0,
-      \ 'winheight': &lines / 3,
-      \ 'floating': 1,
-      \ 'source_names': 'short',
-      \ 'direction': 'botright',
-      \ 'split': 'floating',
-      \ 'highlight_matched_range': 'Type',
-      \ 'highlight_preview_line': 'StatusLine',
-      \ 'highlight_window_background': 'Type',
-      \ 'highlight_matched_char': 'Statement',
-      \ 'reversed': 'true',
-      \ }
-call denite#custom#option('default', s:denite_options)
-" }}}
 " }}}
 
 " Keybindings {{{
 nnoremap Y y$
-nnoremap <tab> za
 
 " Move text
 xnoremap J :move '>+1<CR>gv=gv
@@ -225,8 +195,8 @@ nnoremap <silent><leader>q :q<CR>
 
 nnoremap <leader>x :silent exec "! chmod +x %"<CR>
 nnoremap <leader>a ggVG
-nnoremap <leader>f :copen<cr>
-nnoremap <leader>l :lopen<cr>
+" nnoremap <leader>f :copen<cr>
+" nnoremap <leader>l :lopen<cr>
 
 " Toggle layouts
 nnoremap <leader>sf :silent exec "! setxkbmap fi"<CR>
@@ -263,7 +233,7 @@ cabbrev WQA wqa
 tnoremap <Esc> <C-\><C-n>
 
 " Strip whitspace
-nnoremap <leader>S mz:%s/\s\+$//e<CR>`zzz
+nnoremap <leader>S mz:%s/\s\+$//e<CR>`z
 " }}}
 
 " Basic {{{
@@ -314,7 +284,7 @@ set diffopt=vertical
 
 " Faster grepping
 if executable('rg')
-  set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case
+  set grepprg=rg\ --vimgrep\ --smart-case
 endif
 
 set omnifunc=syntaxcomplete#Complete
@@ -328,7 +298,7 @@ nnoremap <leader>c :ConfigVs<CR>
 " Recursively create directories to the new file
 command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <args>
 
-" List highlight groups
+" List highlight groups {{{
 nmap <leader>sp :call <SID>SynStack()<CR>
 function! <SID>SynStack()
   if !exists("*synstack")
@@ -336,8 +306,9 @@ function! <SID>SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
+" }}}
 
-" Navigate to the next fold
+" Navigate to the next fold {{{
 function! NextClosedFold(dir)
     let cmd = 'norm!z' . a:dir
     let view = winsaveview()
@@ -354,7 +325,69 @@ endfunction
 
 nnoremap <silent> <leader>zj :call NextClosedFold('j')<cr>
 nnoremap <silent> <leader>zk :call NextClosedFold('k')<cr>
+" }}}
 
+" Grepping {{{
+" https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
+function! Grep(...)
+    return system(join(extend([&grepprg], a:000), ' '))
+endfunction
+
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
+
+augroup quickfix
+	autocmd!
+	autocmd QuickFixCmdPost cgetexpr botright cwindow
+	autocmd QuickFixCmdPost lgetexpr botright lwindow
+augroup END
+" }}}
+
+" make list-like commands more intuitive {{{
+" https://gist.github.com/Konfekt/d8ce5626a48f4e56ecab31a89449f1f0
+function! <sid>CCR()
+    if getcmdtype() isnot# ':'
+      return "\<CR>"
+    endif
+    let cmdline = getcmdline()
+    if cmdline =~# '\v^\s*(ls|files|buffers)!?\s*(\s[+\-=auhx%#]+)?$'
+        " like :ls but prompts for a buffer command
+        return "\<CR>:b"
+    elseif cmdline =~# '\v/(#|nu%[mber])$'
+        " like :g//# but prompts for a command
+        return "\<CR>:"
+    elseif cmdline =~# '\v^\s*(dli%[st]|il%[ist])!?\s+\S'
+        " like :dlist or :ilist but prompts for a count for :djump or :ijump
+        return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
+    elseif cmdline =~# '\v^\s*(cli|lli)%[st]!?\s*(\s\d+(,\s*\d+)?)?$'
+        " like :clist or :llist but prompts for an error/location number
+        return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
+    elseif cmdline =~# '\v^\s*ol%[dfiles]\s*$'
+        " like :oldfiles but prompts for an old file to edit
+        set nomore
+        return "\<CR>:sil se more|e #<"
+    elseif cmdline =~# '^\s*changes\s*$'
+        " like :changes but prompts for a change to jump to
+        set nomore
+        return "\<CR>:sil se more|norm! g;\<S-Left>"
+    elseif cmdline =~# '\v^\s*ju%[mps]'
+        " like :jumps but prompts for a position to jump to
+        set nomore
+        return "\<CR>:sil se more|norm! \<C-o>\<S-Left>"
+    elseif cmdline =~ '\v^\s*marks\s*(\s\w+)?$'
+        " like :marks but prompts for a mark to jump to
+        return "\<CR>:norm! `"
+    elseif cmdline =~# '\v^\s*undol%[ist]'
+        " like :undolist but prompts for a change to undo
+        return "\<CR>:u "
+    elseif cmdline =~ '\C^reg'
+        return "\<CR>:norm! \"p\<Left>"
+    else
+        return "\<c-]>\<CR>"
+    endif
+endfunction
+cnoremap <expr> <CR> <sid>CCR()
+" }}}
 " }}}
 
 " Appearance {{{
@@ -407,30 +440,30 @@ set statusline+=››\ %*
 " }}}
 
 " Autocommands {{{
-augroup basic
-  autocmd! basic
-  autocmd FocusLost,BufLeave * silent! update
-
-  function! Swap()
+function! Swap()
     if g:colors_name ==? g:dark_theme
-      execute 'colorscheme ' . g:light_theme
+        execute 'colorscheme ' . g:light_theme
     else
-      execute 'colorscheme ' . g:dark_theme
+        execute 'colorscheme ' . g:dark_theme
     endif
     call CustomAppearance()
-  endfunction
+endfunction
 
+augroup basic
+  autocmd!
+  autocmd FocusLost,BufLeave * silent! update
   autocmd Signal * call Swap()
 augroup end
 
-augroup plugin
-  autocmd! plugin
+" augroup plugin
+"   autocmd! plugin
 
-  " Fugitive, qf, help and godoc quitting
-  autocmd FileType gitcommit,qf,help,godoc,goterm nnoremap <buffer> q :q!<CR><CR>
-  autocmd FileType gitcommit,qf,help,fugitive set signcolumn=no
-  autocmd FileType gitcommit nnoremap <buffer> <C-s> :wq<CR><CR>
-augroup end
+" TODO
+"   " Fugitive, qf, help and godoc quitting
+"   autocmd FileType gitcommit,qf,help,godoc,goterm nnoremap <buffer> q :q!<CR><CR>
+"   autocmd FileType gitcommit,qf,help,fugitive set signcolumn=no
+"   autocmd FileType gitcommit nnoremap <buffer> <C-s> :wq<CR><CR>
+" augroup end
 " }}}
 
 " nvim 0.5 and LSP!! {{{
@@ -446,3 +479,14 @@ if has("nvim-0.5")
   " :h lsp-vim-functions
 endif
 " }}}
+
+" find files and populate the quickfix list
+fun! FindFiles(filename)
+  let error_file = tempname()
+  silent exe '!find . -name "'.a:filename.'" | xargs file | sed "s/:/:1:/" > '.error_file
+  set errorformat=%f:%l:%m
+  exe "cfile ". error_file
+  copen
+  call delete(error_file)
+endfun
+command! -nargs=1 FindFile call FindFiles(<q-args>)
