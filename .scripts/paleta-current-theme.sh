@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-if test -f ~/.cache/pal/colors ; then
+
+if test -f ~/.cache/paleta/colors ; then
     bg_hex=$(grep -o "#[a-fA-F0-9]\{6\}" ~/.cache/paleta/colors | head -n1 | tr -d '#')
     r=$(printf "%d" 0x${bg_hex:0:2})
     g=$(printf "%d" 0x${bg_hex:2:2})
