@@ -27,8 +27,6 @@ Plug 'christoomey/vim-tmux-navigator'           " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'
 
 Plug 'eemed/sitruuna.vim'
-Plug 'chriskempson/base16-vim'                  " Colorscheme
-Plug 'mhinz/vim-startify'                       " Nice start screen
 
 Plug 'norcalli/nvim-colorizer.lua'              " Hex colors
 
@@ -72,18 +70,6 @@ let g:UltiSnipsSnippetDirectories  = ["ultisnips"]
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
-" }}}
-
-" vim-startify {{{
-let g:startify_custom_header = [
-            \ "                           _           ",
-            \ "     _ __   ___  _____   _(_)_ __ ___  ",
-            \ "    | '_ \\ / _ \\/ _ \\ \\ / / | '_ ` _ \\ ",
-            \ "    | | | |  __/ (_) \\ V /| | | | | | |",
-            \ "    |_| |_|\\___|\\___/ \\_/ |_|_| |_| |_|",
-            \ ]
-
-let g:startify_bookmarks = [ {'c': '~/.config/nvim/init.vim'}, {'b': '~/.bashrc'} ]
 " }}}
 
 " vim-fugitive {{{
@@ -490,3 +476,5 @@ fun! FindFiles(filename)
   call delete(error_file)
 endfun
 command! -nargs=1 FindFile call FindFiles(<q-args>)
+
+" Snippets is last python dep
