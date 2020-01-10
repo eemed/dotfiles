@@ -15,9 +15,9 @@ set guifont=Hack:h13
 
 " Autoinstall vim-plug {{{
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
-  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
-        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
+    silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+                \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
 endif
 " }}}
 
@@ -37,7 +37,7 @@ Plug 'tpope/vim-fugitive'                       " Git integration
 Plug 'tpope/vim-unimpaired'                     " Bindings
 Plug 'tpope/vim-vinegar'                        " Netrw
 Plug 'tpope/vim-eunuch'                         " Basic unix commands
-Plug 'tpope/vim-sleuth'
+Plug 'tpope/vim-sleuth'                         " Wise indenting
 
 Plug 'neomake/neomake'                          " Linting + async jobs
 
@@ -45,7 +45,7 @@ Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'                         " Fuzzy find
+Plug 'junegunn/fzf.vim'                         " Fyzzy find anything you want
 Plug 'junegunn/vim-easy-align'                  " Align stuff
 
 Plug 'ludovicchabant/vim-gutentags'             " Tags
@@ -60,19 +60,8 @@ call plug#end()
 " }}}
 
 " Plugin configuration {{{
-" " ultisnips {{{
-" let g:UltiSnipsExpandTrigger       = "<tab>"
-" let g:UltiSnipsJumpForwardTrigger  = "<tab>"
-" let g:UltiSnipsJumpBackwardTrigger = "<s-Tab>"
-" let g:UltiSnipsSnippetsDir         = "~/.config/nvim/ultisnips"
-" let g:UltiSnipsSnippetDirectories  = ["ultisnips"]
-
-" " If you want :UltiSnipsEdit to split your window.
-" let g:UltiSnipsEditSplit="vertical"
-" " }}}
-
 " neosnippet {{{
-xmap <tab>     <Plug>(neosnippet_expand_target)
+xmap <tab> <Plug>(neosnippet_expand_target)
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
             \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
@@ -86,16 +75,18 @@ nnoremap <silent><leader>g :G<CR> <c-w>L
 
 " fzf.vim {{{
 function! Browse()
-  if len(fugitive#head()) > 1
-    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-  else
-    exe "Files"
-  endif
+    if len(fugitive#head()) > 1
+        call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
+    else
+        exe "Files"
+    endif
 endfunction
 
 nnoremap <silent><leader>F :Files<CR>
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
+nnoremap <silent><leader>l :BLines<CR>
+nnoremap <silent><leader>h :History<CR>
 " }}}
 
 " neomake {{{
@@ -126,16 +117,16 @@ let g:neomake_info_sign = {
 let g:neomake_open_list = 1
 
 function! MyOnNeomakeJobFinished() abort
-  let context = g:neomake_hook_context
-  if context.jobinfo.exit_code != 0
-    echom printf('The job for maker %s exited non-zero: %s',
-    \ context.jobinfo.maker.name, context.jobinfo.exit_code)
-  else
-    echom printf('Job completed.')
-  endif
+    let context = g:neomake_hook_context
+    if context.jobinfo.exit_code != 0
+        echom printf('The job for maker %s exited non-zero: %s',
+                    \ context.jobinfo.maker.name, context.jobinfo.exit_code)
+    else
+        echom printf('Maker %s finished.', context.jobinfo.maker.name)
+    endif
 endfunction
 augroup my_neomake_hooks
-    au!
+    autocmd!
     autocmd User NeomakeJobFinished call MyOnNeomakeJobFinished()
 augroup END
 " }}}
@@ -318,8 +309,8 @@ command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 augroup quickfix
 	autocmd!
-	autocmd QuickFixCmdPost cgetexpr botright cwindow
-	autocmd QuickFixCmdPost lgetexpr botright lwindow
+	autocmd QuickFixCmdPost cgetexpr cwindow
+	autocmd QuickFixCmdPost lgetexpr lwindow
 augroup END
 " }}}
 " }}}
@@ -335,29 +326,15 @@ set cursorline
 let &colorcolumn=join(range(101,999), ",")     " 100 char columns
 set termguicolors
 set t_Co=256
-
-function! CustomAppearance()
-endfunction
-call CustomAppearance()
 " }}}
 
 " Statusline {{{
 function! GitStatus()
-  let git = fugitive#head()
-  if git != ''
-    return git
-  else
-    return ''
-  endif
+    return fugitive#head() == '' ? '' : fugitive#head()
 endfunction
 
 function! PasteForStatusline()
-    let paste_status = &paste
-    if paste_status == 1
-        return "[PASTE]"
-    else
-        return ""
-    endif
+    return &paste == 1 ? '[PASTE]' : ""
 endfunction
 
 set laststatus=2
@@ -388,7 +365,6 @@ function! Swap()
     else
         execute 'colorscheme ' . g:dark_theme
     endif
-    call CustomAppearance()
 endfunction
 
 augroup basic
@@ -411,24 +387,3 @@ augroup end
 "  " :h lsp-vim-functions
 "endif
 "" }}}
-
-" https://stackoverflow.com/questions/21937545/use-search-in-browse-oldfiles-list
-function! MRU(arg)
-    execute 'edit ' . a:arg
-endfunction
-
-function! MRUComplete(ArgLead, CmdLine, CursorPos)
-    return filter(copy(v:oldfiles), 'v:val =~ a:ArgLead')
-endfunction
-
-command! -nargs=1 -complete=customlist,MRUComplete MRU call MRU(<f-args>)
-
-function! Buf(arg)
-    execute 'buffer ' . a:arg
-endfunction
-
-function! BufComplete(ArgLead, CmdLine, CursorPos)
-    return filter(map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'v:val =~ a:ArgLead')
-endfunction
-
-command! -nargs=1 -complete=customlist,BufComplete Buf call Buf(<f-args>)
