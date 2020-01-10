@@ -1,18 +1,18 @@
 #!/bin/bash
-not_inst=0
-function check_install() {
-    if [ ! $(command -v "$1") ]; then
-        echo "$1 not installed."
-        export not_inst=1
+exists()
+{
+    command -v "$1" >/dev/null 2>&1
+    res=$?
+    if [ $res -ne 0 ]; then
+        echo "Please install $1."
     fi
+    return $res
 }
-check_install git
-check_install gcc
-check_install patch
 
-if [ $not_inst -ne 0 ]; then
-    exit 1
-fi
+exists wget  || exit 1
+exists git  || exit 1
+exists gcc  || exit 1
+exists patch   || exit 1
 
 # St
 wget https://st.suckless.org/patches/scrollback/st-scrollback-0.8.2.diff

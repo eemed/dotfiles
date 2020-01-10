@@ -140,3 +140,5 @@ if test -d ~/.fzf ; then
     source ~/.fzf/shell/completion.bash
     source ~/.fzf/shell/key-bindings.bash
 fi
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

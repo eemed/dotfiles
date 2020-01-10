@@ -282,9 +282,9 @@
       </action>
     </keybind>
     <keybind key="W-o">
-        <action name="MoveResizeTo">
-            <monitor>next</monitor>
-        </action>
+      <action name="MoveResizeTo">
+        <monitor>next</monitor>
+      </action>
     </keybind>
     <!-- Take a screenshot of the current window with scrot when Alt+Print are pressed -->
     <keybind key="A-Print">
@@ -424,7 +424,7 @@
     </keybind>
     <keybind key="W-l">
       <action name="Execute">
-        <command>~/.scripts/switch_layout fi us</command>
+        <command>~/.scripts/layout.sh fi us</command>
       </action>
     </keybind>
     <!-- Launch scrot when Print is pressed -->
@@ -675,12 +675,12 @@
   </menu>
   <applications>
     <!-- <application class="*"> -->
-      <!-- <position force="no"> -->
-      <!--   <monitor>mouse</monitor> -->
-      <!--   <x>center</x> -->
-      <!--   <y>center</y> -->
-      <!-- </position> -->
-      <!-- <focus>yes</focus> -->
+    <!-- <position force="no"> -->
+    <!--   <monitor>mouse</monitor> -->
+    <!--   <x>center</x> -->
+    <!--   <y>center</y> -->
+    <!-- </position> -->
+    <!-- <focus>yes</focus> -->
     <!-- </application> -->
     <application class="Steam">
       <desktop>2</desktop>

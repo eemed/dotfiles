@@ -5,9 +5,9 @@
 "
 "
 " Configurable {{{
-let mapleader = "\ "  " Space leader
+let mapleader = "\ "
 let g:dark_theme = 'sitruuna'
-let g:light_theme = 'base16-classic-light'
+let g:light_theme = 'darkblue'
 let config = "~/.config/nvim/init.vim"
 let g:python3_host_prog = "/usr/bin/python3"
 set guifont=Hack:h13
@@ -26,12 +26,9 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'christoomey/vim-tmux-navigator'           " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'
 
-Plug 'eemed/sitruuna.vim'
-
-Plug 'norcalli/nvim-colorizer.lua'              " Hex colors
+Plug 'eemed/sitruuna.vim'                       " Colorscheme
 
 Plug 'wellle/targets.vim'                       " More text objects
-Plug 'editorconfig/editorconfig-vim'
 
 Plug 'tpope/vim-surround'                       " Surround objects
 Plug 'tpope/vim-repeat'                         " Repeat surround
@@ -40,47 +37,51 @@ Plug 'tpope/vim-fugitive'                       " Git integration
 Plug 'tpope/vim-unimpaired'                     " Bindings
 Plug 'tpope/vim-vinegar'                        " Netrw
 Plug 'tpope/vim-eunuch'                         " Basic unix commands
+Plug 'tpope/vim-sleuth'
 
 Plug 'neomake/neomake'                          " Linting + async jobs
-Plug 'mattn/emmet-vim'                          " Emmet
-Plug 'SirVer/ultisnips'                         " Snippets
-Plug 'honza/vim-snippets'
+
+Plug 'Shougo/neosnippet.vim'
+Plug 'Shougo/neosnippet-snippets'
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf.vim'                         " Fuzzy find
+Plug 'junegunn/vim-easy-align'                  " Align stuff
 
-Plug 'ludovicchabant/vim-gutentags'
-Plug 'mbbill/undotree'
-Plug 'junegunn/vim-easy-align'
+Plug 'ludovicchabant/vim-gutentags'             " Tags
+Plug 'mbbill/undotree'                          " Undotree visualizer
+Plug 'norcalli/nvim-colorizer.lua'              " Colors
 
-Plug 'chemzqm/vim-jsx-improve'
-Plug 'vim-python/python-syntax'
-Plug 'vim-erlang/vim-erlang-runtime'
-Plug 'neovimhaskell/haskell-vim'
+" Plug 'chemzqm/vim-jsx-improve'
+" Plug 'vim-python/python-syntax'
+" Plug 'vim-erlang/vim-erlang-runtime'
+" Plug 'neovimhaskell/haskell-vim'
 call plug#end()
 " }}}
 
 " Plugin configuration {{{
-" ultisnips {{{
-let g:UltiSnipsExpandTrigger       = "<tab>"
-let g:UltiSnipsJumpForwardTrigger  = "<tab>"
-let g:UltiSnipsJumpBackwardTrigger = "<s-Tab>"
-let g:UltiSnipsSnippetsDir         = "~/.config/nvim/ultisnips"
-let g:UltiSnipsSnippetDirectories  = ["ultisnips"]
+" " ultisnips {{{
+" let g:UltiSnipsExpandTrigger       = "<tab>"
+" let g:UltiSnipsJumpForwardTrigger  = "<tab>"
+" let g:UltiSnipsJumpBackwardTrigger = "<s-Tab>"
+" let g:UltiSnipsSnippetsDir         = "~/.config/nvim/ultisnips"
+" let g:UltiSnipsSnippetDirectories  = ["ultisnips"]
 
-" If you want :UltiSnipsEdit to split your window.
-let g:UltiSnipsEditSplit="vertical"
+" " If you want :UltiSnipsEdit to split your window.
+" let g:UltiSnipsEditSplit="vertical"
+" " }}}
+
+" neosnippet {{{
+xmap <tab>     <Plug>(neosnippet_expand_target)
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+            \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+            \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+let g:neosnippet#snippets_directory="~/.config/nvim/snips"
 " }}}
 
 " vim-fugitive {{{
 nnoremap <silent><leader>g :G<CR> <c-w>L
-" }}}
-
-" emmet.vim {{{
-let g:user_emmet_install_global = 0
-let g:user_emmet_leader_key     = ','
-" Enable emmet
-autocmd FileType php,xml,html,css,javascript.jsx,html* EmmetInstall
 " }}}
 
 " fzf.vim {{{
@@ -95,31 +96,16 @@ endfunction
 nnoremap <silent><leader>F :Files<CR>
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
-
-" Match fzf colorscheme to current colorscheme
-let g:fzf_colors =
-      \ { 'fg':    ['fg', 'NormalFloat'],
-      \ 'bg':      ['bg', 'NormalFloat'],
-      \ 'hl':      ['fg', 'Keyword', 'Keyword'],
-      \ 'fg+':     ['fg', 'Function'],
-      \ 'bg+':     ['bg', 'NormalFloat'],
-      \ 'hl+':     ['fg', 'Keyword'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'border':  ['fg', 'Ignore'],
-      \ 'prompt':  ['fg', 'DiffAdded'],
-      \ 'pointer': ['fg', 'Function'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment'] }
 " }}}
 
 " neomake {{{
-nnoremap <silent> m<cr> :Neomake<CR>
-nnoremap <silent> M<cr> :Neomake!<CR>
+nnoremap <silent> <F4> :Neomake<CR>
+nnoremap <silent> m<CR> :Neomake!<CR>
 nnoremap m? :echom &makeprg<CR>
 
 let g:neomake_go_enabled_makers     = ['golint', 'go']
 let g:neomake_python_enabled_makers = ['flake8', 'python']
+let g:neomake_javascript_enabled_makers = ['eslint']
 
 let g:neomake_error_sign = {
    \ 'text': '‼',
@@ -138,6 +124,20 @@ let g:neomake_info_sign = {
     \ 'texthl': 'NeomakeInfoSign'
     \ }
 let g:neomake_open_list = 1
+
+function! MyOnNeomakeJobFinished() abort
+  let context = g:neomake_hook_context
+  if context.jobinfo.exit_code != 0
+    echom printf('The job for maker %s exited non-zero: %s',
+    \ context.jobinfo.maker.name, context.jobinfo.exit_code)
+  else
+    echom printf('Job completed.')
+  endif
+endfunction
+augroup my_neomake_hooks
+    au!
+    autocmd User NeomakeJobFinished call MyOnNeomakeJobFinished()
+augroup END
 " }}}
 
 " vim-gutentags {{{
@@ -162,10 +162,6 @@ nmap ga <Plug>(LiveEasyAlign)
 nnoremap <silent><leader>u :UndotreeToggle<CR>
 let g:undotree_DiffAutoOpen = 0
 " }}}
-
-" python-syntax {{{
-let g:python_highlight_all = 1
-" }}}
 " }}}
 
 " Keybindings {{{
@@ -177,12 +173,9 @@ xnoremap K :move '<-2<CR>gv=gv
 xnoremap < <gv
 xnoremap > >gv
 
-nnoremap <silent><leader>q :q<CR>
-
 nnoremap <leader>x :silent exec "! chmod +x %"<CR>
 nnoremap <leader>a ggVG
-" nnoremap <leader>f :copen<cr>
-" nnoremap <leader>l :lopen<cr>
+nnoremap <leader>q :q<CR>
 
 " Toggle layouts
 nnoremap <leader>sf :silent exec "! setxkbmap fi"<CR>
@@ -202,7 +195,7 @@ nnoremap Q <nop>
 " Saving
 noremap  <silent><c-s> <Esc>:update<CR>
 inoremap <silent><c-s> <Esc>:update<CR>a
-vnoremap <silent><c-s> <Esc>:update<CR>
+xnoremap <silent><c-s> <Esc>:update<CR>gv
 
 " Too many mistakes
 cabbrev W   w
@@ -219,7 +212,9 @@ cabbrev WQA wqa
 tnoremap <Esc> <C-\><C-n>
 
 " Strip whitspace
-nnoremap <leader>S mz:%s/\s\+$//e<CR>`z
+nnoremap <leader>S :%s/\s\+$//e<CR>
+
+set pastetoggle=<F2>
 " }}}
 
 " Basic {{{
@@ -268,11 +263,6 @@ set updatetime=300
 set foldmethod=marker
 set diffopt=vertical
 
-" Faster grepping
-if executable('rg')
-  set grepprg=rg\ --vimgrep\ --smart-case
-endif
-
 set omnifunc=syntaxcomplete#Complete
 " }}}
 
@@ -315,6 +305,10 @@ nnoremap <silent> <leader>zk :call NextClosedFold('k')<cr>
 
 " Grepping {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
+if executable('rg')
+  set grepprg=rg\ --vimgrep\ --smart-case
+endif
+
 function! Grep(...)
     return system(join(extend([&grepprg], a:000), ' '))
 endfunction
@@ -328,71 +322,23 @@ augroup quickfix
 	autocmd QuickFixCmdPost lgetexpr botright lwindow
 augroup END
 " }}}
-
-" make list-like commands more intuitive {{{
-" https://gist.github.com/Konfekt/d8ce5626a48f4e56ecab31a89449f1f0
-function! <sid>CCR()
-    if getcmdtype() isnot# ':'
-      return "\<CR>"
-    endif
-    let cmdline = getcmdline()
-    if cmdline =~# '\v^\s*(ls|files|buffers)!?\s*(\s[+\-=auhx%#]+)?$'
-        " like :ls but prompts for a buffer command
-        return "\<CR>:b"
-    elseif cmdline =~# '\v/(#|nu%[mber])$'
-        " like :g//# but prompts for a command
-        return "\<CR>:"
-    elseif cmdline =~# '\v^\s*(dli%[st]|il%[ist])!?\s+\S'
-        " like :dlist or :ilist but prompts for a count for :djump or :ijump
-        return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
-    elseif cmdline =~# '\v^\s*(cli|lli)%[st]!?\s*(\s\d+(,\s*\d+)?)?$'
-        " like :clist or :llist but prompts for an error/location number
-        return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
-    elseif cmdline =~# '\v^\s*ol%[dfiles]\s*$'
-        " like :oldfiles but prompts for an old file to edit
-        set nomore
-        return "\<CR>:sil se more|e #<"
-    elseif cmdline =~# '^\s*changes\s*$'
-        " like :changes but prompts for a change to jump to
-        set nomore
-        return "\<CR>:sil se more|norm! g;\<S-Left>"
-    elseif cmdline =~# '\v^\s*ju%[mps]'
-        " like :jumps but prompts for a position to jump to
-        set nomore
-        return "\<CR>:sil se more|norm! \<C-o>\<S-Left>"
-    elseif cmdline =~ '\v^\s*marks\s*(\s\w+)?$'
-        " like :marks but prompts for a mark to jump to
-        return "\<CR>:norm! `"
-    elseif cmdline =~# '\v^\s*undol%[ist]'
-        " like :undolist but prompts for a change to undo
-        return "\<CR>:u "
-    elseif cmdline =~ '\C^reg'
-        return "\<CR>:norm! \"p\<Left>"
-    else
-        return "\<c-]>\<CR>"
-    endif
-endfunction
-cnoremap <expr> <CR> <sid>CCR()
-" }}}
 " }}}
 
 " Appearance {{{
-if isdirectory($HOME . "/.config/nvim/plugged")
-  if exists("$VIM_THEME") && $VIM_THEME == "light"
-    execute 'colorscheme ' . g:light_theme
-  else
-    execute 'colorscheme ' . g:dark_theme
-  endif
-
-  set cursorline
-  let &colorcolumn=join(range(101,999), ",")     " 100 char columns
-  set termguicolors
-  set t_Co=256
-
-  function! CustomAppearance()
-  endfunction
-  call CustomAppearance()
+if exists("$VIM_THEME") && $VIM_THEME == "light"
+  execute 'colorscheme ' . g:light_theme
+else
+  execute 'colorscheme ' . g:dark_theme
 endif
+
+set cursorline
+let &colorcolumn=join(range(101,999), ",")     " 100 char columns
+set termguicolors
+set t_Co=256
+
+function! CustomAppearance()
+endfunction
+call CustomAppearance()
 " }}}
 
 " Statusline {{{
@@ -405,6 +351,15 @@ function! GitStatus()
   endif
 endfunction
 
+function! PasteForStatusline()
+    let paste_status = &paste
+    if paste_status == 1
+        return "[PASTE]"
+    else
+        return ""
+    endif
+endfunction
+
 set laststatus=2
 set statusline=
 set statusline+=\ ‹‹
@@ -413,8 +368,9 @@ set statusline+=\ %f
 set statusline+=\ ››
 set statusline+=\ %*
 set statusline+=\ %r
-set statusline+=\ %m
-set statusline+=%{gutentags#statusline()}
+set statusline+=%m
+set statusline+=%{PasteForStatusline()}
+set statusline+=\ %{gutentags#statusline()}
 set statusline+=%=
 set statusline+=\ %{GitStatus()}
 set statusline+=\ ‹‹
@@ -440,41 +396,39 @@ augroup basic
   autocmd FocusLost,BufLeave * silent! update
   autocmd Signal * call Swap()
 augroup end
-
-" augroup plugin
-"   autocmd! plugin
-
-" TODO
-"   " Fugitive, qf, help and godoc quitting
-"   autocmd FileType gitcommit,qf,help,godoc,goterm nnoremap <buffer> q :q!<CR><CR>
-"   autocmd FileType gitcommit,qf,help,fugitive set signcolumn=no
-"   autocmd FileType gitcommit nnoremap <buffer> <C-s> :wq<CR><CR>
-" augroup end
 " }}}
 
-" nvim 0.5 and LSP!! {{{
-if has("nvim-0.5")
-  " Needed plugin
-  " Plug 'neovim/nvim-lsp'
+"" nvim 0.5 and LSP!! {{{
+"if has("nvim-0.5")
+"  " Needed plugin
+"  Plug 'neovim/nvim-lsp'
 
-  " Setup language servers in after/ftplugin/lang.vim like this
-  " call nvim_lsp#setup("pyls", {})
-  " set omnifunc=lsp#omnifunc
-  "
-  " Setup bindings to lsp functions shortcuts
-  " :h lsp-vim-functions
-endif
-" }}}
+"  " Setup language servers in after/ftplugin/lang.vim like this
+"  call nvim_lsp#setup("pyls", {})
+"  set omnifunc=lsp#omnifunc
+"  "
+"  " Setup bindings to lsp functions shortcuts
+"  " :h lsp-vim-functions
+"endif
+"" }}}
 
-" find files and populate the quickfix list
-fun! FindFiles(filename)
-  let error_file = tempname()
-  silent exe '!find . -name "'.a:filename.'" | xargs file | sed "s/:/:1:/" > '.error_file
-  set errorformat=%f:%l:%m
-  exe "cfile ". error_file
-  copen
-  call delete(error_file)
-endfun
-command! -nargs=1 FindFile call FindFiles(<q-args>)
+" https://stackoverflow.com/questions/21937545/use-search-in-browse-oldfiles-list
+function! MRU(arg)
+    execute 'edit ' . a:arg
+endfunction
 
-" Snippets is last python dep
+function! MRUComplete(ArgLead, CmdLine, CursorPos)
+    return filter(copy(v:oldfiles), 'v:val =~ a:ArgLead')
+endfunction
+
+command! -nargs=1 -complete=customlist,MRUComplete MRU call MRU(<f-args>)
+
+function! Buf(arg)
+    execute 'buffer ' . a:arg
+endfunction
+
+function! BufComplete(ArgLead, CmdLine, CursorPos)
+    return filter(map(filter(range(1, bufnr('$')), 'buflisted(v:val)'), 'bufname(v:val)'), 'v:val =~ a:ArgLead')
+endfunction
+
+command! -nargs=1 -complete=customlist,BufComplete Buf call Buf(<f-args>)
