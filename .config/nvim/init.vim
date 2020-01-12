@@ -87,6 +87,7 @@ nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
+nnoremap <leader>f :Grep<space>
 " }}}
 
 " neomake {{{
