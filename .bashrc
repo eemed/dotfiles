@@ -82,7 +82,8 @@ bind '"\C-z":"fg\015"'
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/.local/lib
 
 # Prompt
-export PS1="\[\033[38;5;2m\]\u\[$(tput sgr0)\] \[$(tput sgr0)\]\[\033[38;5;12m\]\w\[$(tput sgr0)\]\[\033[38;5;7m\] \\$ \[$(tput sgr0)\]"
+# export PS1="\[\033[38;5;2m\]\u\[$(tput sgr0)\] \[$(tput sgr0)\]\[\033[38;5;12m\]\w\[$(tput sgr0)\]\[\033[38;5;7m\] \\$ \[$(tput sgr0)\]"
+export PS1="${debian_chroot:+($debian_chroot)}[\[\033[01;32m\]\u@\h\[\033[0 0m\] \[\033[01;34m\]\w\[\033[00m\]]\$ "
 
 # Default editor and pager
 VISUAL=nvim; export VISUAL EDITOR=nvim; export EDITOR
@@ -142,3 +143,10 @@ if test -d ~/.fzf ; then
 fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+unset SSH_AGENT_PID
+if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
+  export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+fi
+export GPG_TTY=$(tty)
+gpg-connect-agent updatestartuptty /bye >/dev/null

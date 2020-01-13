@@ -14,9 +14,9 @@ do
             ;;
         "status")
             if pacmd list-sinks | grep "muted: yes" >/dev/null ; then
-                echo ' muted'
+                echo ' 婢 muted '
             else
-                echo "  $(amixer -D pulse get Master | grep -o -m 1 "\[[0-9]\+\%\]" | tr -d '[]')"
+                echo "  $(amixer -D pulse get Master | grep -o -m 1 "\[[0-9]\+\%\]" | tr -d '[]') "
             fi
             exit
             ;;
