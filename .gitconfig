@@ -1,7 +1,6 @@
 [user]
 	email = eemed@protonmail.com
 	name = eemed
-	signingkey = 6CAEC9EC
 [alias]
 	co = checkout
 	br = branch
