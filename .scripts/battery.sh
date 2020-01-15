@@ -1,7 +1,7 @@
 #!/bin/sh
 batt_path=/sys/class/power_supply/BAT1
 
-if ! test -f $batt_path ; then
+if ! test -d $batt_path ; then
     exit 1
 fi
 
