@@ -123,6 +123,6 @@ if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
 fi
 export GPG_TTY=$(tty)
 
-if pgrep gpg-agent ; then
+if pgrep gpg-agent >/dev/null 2>&1 ; then
     gpg-connect-agent updatestartuptty /bye >/dev/null
 fi
