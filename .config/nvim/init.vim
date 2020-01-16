@@ -87,7 +87,6 @@ nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
-nnoremap <leader>f :Grep<space>
 " }}}
 
 " neomake {{{
@@ -297,6 +296,10 @@ nnoremap <silent> <leader>zk :call NextClosedFold('k')<cr>
 
 " Grepping {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
+if executable('ag')
+  set grepprg=ag\ --vimgrep\ --smart-case
+endif
+
 if executable('rg')
   set grepprg=rg\ --vimgrep\ --smart-case
 endif
@@ -313,6 +316,8 @@ augroup quickfix
 	autocmd QuickFixCmdPost cgetexpr cwindow
 	autocmd QuickFixCmdPost lgetexpr lwindow
 augroup END
+
+nnoremap <leader>f :Grep<space>
 " }}}
 " }}}
 

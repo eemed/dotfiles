@@ -13,10 +13,6 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-if [ -d "$HOME/.scripts" ]; then
-  PATH=$PATH:~/.scripts
-fi
-
 if [ -d "$HOME/go/bin" ]; then
   PATH=$PATH:~/go/bin
 fi
