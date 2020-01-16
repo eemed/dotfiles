@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# Upload scrot images straight to imgur
+# ~/.imgur-key.sh should define client_id and client_secret used
+#
 if test -f ~/.imgur-key.sh; then
   source ~/.imgur-key.sh
 else
@@ -17,8 +21,10 @@ if [ "$success" == "true" ]; then
   link=$(echo $json | jq '.data.link' | tr -d \")
 
   echo $link | xsel --clipboard
+
   # Open in browser
   #gio open $link
+
   # Notify upload
   notify-send "Image uploaded to $link" -i "viewimage"
 fi
