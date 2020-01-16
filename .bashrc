@@ -25,7 +25,7 @@ case ${TERM} in
     xterm*|rxvt*|Eterm*|aterm|kterm|gnome*|interix|konsole*|st*)
         PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\007"'
         ;;
-    screen*)
+    screen*|tmux*)
         PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\033\\"'
         ;;
 esac
@@ -80,7 +80,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/.local/lib
 
 # Prompt
 # export PS1="\[\033[38;5;2m\]\u\[$(tput sgr0)\] \[$(tput sgr0)\]\[\033[38;5;12m\]\w\[$(tput sgr0)\]\[\033[38;5;7m\] \\$ \[$(tput sgr0)\]"
-export PS1="${debian_chroot:+($debian_chroot)}[\[\033[01;32m\]\u@\h\[\033[0 0m\] \[\033[01;34m\]\w\[\033[00m\]]\$ "
+export PS1="${debian_chroot:+($debian_chroot)}[\[\033[01;32m\]\u@\h \[\033[01;34m\]\w\[\033[00m\]]\$ "
 
 # Default editor and pager
 VISUAL=nvim; export VISUAL EDITOR=nvim; export EDITOR
@@ -117,7 +117,7 @@ export LESS_TERMCAP_se=$'\E[0m'                # end standout-mode
 
 # My aliases
 alias ll="ls -l"
-alias la="ls -l"
+alias la="ls -la"
 alias tmux="env TERM=xterm-256color tmux"
 alias stack-ghcid="ghcid --command 'stack ghci'"
 alias vim="neovim_bg_control"
@@ -147,4 +147,7 @@ if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
   export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 fi
 export GPG_TTY=$(tty)
-gpg-connect-agent updatestartuptty /bye >/dev/null
+
+if pgrep gpg-agent ; then
+    gpg-connect-agent updatestartuptty /bye >/dev/null
+fi
