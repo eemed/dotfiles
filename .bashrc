@@ -19,6 +19,8 @@ shopt -s checkwinsize
 shopt -s expand_aliases
 # Enable history appending instead of overwriting.  #139609
 shopt -s histappend
+# Delete history duplicates
+export HISTCONTROL=ignoreboth:erasedups
 
 # Change the window title of X terminals
 case ${TERM} in
@@ -66,21 +68,6 @@ if test -f ~/.cache/paleta/colors ; then
   { read -r < ~/.cache/paleta/colors; printf %b "$REPLY"; } & disown
 fi
 
-neovim_bg_control() {
-  if test -f ~/.scripts/paleta-current-theme.sh ; then
-    local theme=$(~/.scripts/paleta-current-theme.sh)
-
-    if [ $theme = "light" ]; then
-    env VIM_THEME="light" nvim "$@"
-    else
-      nvim "$@"
-    fi
-  else
-    nvim "$@"
-  fi
-  return $?
-}
-
 # Less
 export LESS_TERMCAP_mb=$'\E[6m'                # begin blinking
 export LESS_TERMCAP_md=$'\E[37m'               # begin bold
@@ -95,7 +82,7 @@ alias ll="ls -l"
 alias la="ls -la"
 alias tmux="env TERM=xterm-256color tmux"
 alias stack-ghcid="ghcid --command 'stack ghci'"
-alias vim="neovim_bg_control"
+alias vim="nvim"
 alias g="git"
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
 alias hgrep="history | grep --color=auto"

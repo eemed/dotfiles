@@ -6,8 +6,6 @@
 "
 " Configurable {{{
 let mapleader = "\ "
-let g:dark_theme = 'sitruuna'
-let g:light_theme = 'darkblue'
 let config = "~/.config/nvim/init.vim"
 let g:python3_host_prog = "/usr/bin/python3"
 set guifont=Hack:h13
@@ -38,8 +36,7 @@ Plug 'tpope/vim-unimpaired'                     " Bindings
 Plug 'tpope/vim-vinegar'                        " Netrw
 Plug 'tpope/vim-eunuch'                         " Basic unix commands
 Plug 'tpope/vim-sleuth'                         " Wise indenting
-
-Plug 'neomake/neomake'                          " Linting + async jobs
+Plug 'tpope/vim-dispatch'                       " Async jobs
 
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
@@ -89,48 +86,6 @@ nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 " }}}
 
-" neomake {{{
-nnoremap <silent> <F4> :Neomake<CR>
-nnoremap <silent> m<CR> :Neomake!<CR>
-nnoremap m? :echom &makeprg<CR>
-
-let g:neomake_go_enabled_makers     = ['golint', 'go']
-let g:neomake_python_enabled_makers = ['flake8', 'python']
-let g:neomake_javascript_enabled_makers = ['eslint']
-
-let g:neomake_error_sign = {
-   \ 'text': '‼',
-   \ 'texthl': 'NeomakeErrorSign',
-   \ }
-let g:neomake_warning_sign = {
-   \   'text': '!',
-   \   'texthl': 'NeomakeWarningSign',
-   \ }
-let g:neomake_message_sign = {
-    \   'text': '>',
-    \   'texthl': 'NeomakeMessageSign',
-    \ }
-let g:neomake_info_sign = {
-    \ 'text': 'i',
-    \ 'texthl': 'NeomakeInfoSign'
-    \ }
-let g:neomake_open_list = 1
-
-function! MyOnNeomakeJobFinished() abort
-    let context = g:neomake_hook_context
-    if context.jobinfo.exit_code != 0
-        echom printf('The job for maker %s exited non-zero: %s',
-                    \ context.jobinfo.maker.name, context.jobinfo.exit_code)
-    else
-        echom printf('Maker %s finished.', context.jobinfo.maker.name)
-    endif
-endfunction
-augroup my_neomake_hooks
-    autocmd!
-    autocmd User NeomakeJobFinished call MyOnNeomakeJobFinished()
-augroup END
-" }}}
-
 " vim-gutentags {{{
 let g:gutentags_cache_dir    = '~/.tags'
 let g:gutentags_project_root = ['.gitignore']
@@ -164,9 +119,9 @@ xnoremap K :move '<-2<CR>gv=gv
 xnoremap < <gv
 xnoremap > >gv
 
-nnoremap <leader>x :silent exec "! chmod +x %"<CR>
 nnoremap <leader>a ggVG
 nnoremap <leader>q :q<CR>
+nnoremap <BS> <C-^>
 
 " Toggle layouts
 nnoremap <leader>sf :silent exec "! setxkbmap fi"<CR>
@@ -322,12 +277,7 @@ nnoremap <leader>f :Grep<space>
 " }}}
 
 " Appearance {{{
-if exists("$VIM_THEME") && $VIM_THEME == "light"
-  execute 'colorscheme ' . g:light_theme
-else
-  execute 'colorscheme ' . g:dark_theme
-endif
-
+colorscheme sitruuna
 set cursorline
 let &colorcolumn=join(range(101,999), ",")     " 100 char columns
 set termguicolors
@@ -347,7 +297,6 @@ set laststatus=2
 set statusline=
 set statusline+=\ ‹‹
 set statusline+=\ %f
-
 set statusline+=\ ››
 set statusline+=\ %*
 set statusline+=\ %r
@@ -365,31 +314,8 @@ set statusline+=››\ %*
 " }}}
 
 " Autocommands {{{
-function! Swap()
-    if g:colors_name ==? g:dark_theme
-        execute 'colorscheme ' . g:light_theme
-    else
-        execute 'colorscheme ' . g:dark_theme
-    endif
-endfunction
-
 augroup basic
   autocmd!
   autocmd FocusLost,BufLeave * silent! update
-  autocmd Signal * call Swap()
 augroup end
 " }}}
-
-"" nvim 0.5 and LSP!! {{{
-"if has("nvim-0.5")
-"  " Needed plugin
-"  Plug 'neovim/nvim-lsp'
-
-"  " Setup language servers in after/ftplugin/lang.vim like this
-"  call nvim_lsp#setup("pyls", {})
-"  set omnifunc=lsp#omnifunc
-"  "
-"  " Setup bindings to lsp functions shortcuts
-"  " :h lsp-vim-functions
-"endif
-"" }}}
