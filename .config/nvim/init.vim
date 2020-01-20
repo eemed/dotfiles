@@ -276,9 +276,9 @@ nnoremap <leader>f :Grep<space>
 " }}}
 
 " Terminal {{{
-nnoremap <M-`> :call TermToggle(12)<CR>
-inoremap <M-`> <Esc>:call TermToggle(12)<CR>
-tnoremap <M-`> <C-\><C-n>:call TermToggle(12)<CR>
+nnoremap <silent> <M-`> :call TermToggle(12)<CR>
+inoremap <silent> <M-`> <Esc>:call TermToggle(12)<CR>
+tnoremap <silent> <M-`> <C-\><C-n>:call TermToggle(12)<CR>
 
 " Terminal Function
 let g:term_buf = 0
