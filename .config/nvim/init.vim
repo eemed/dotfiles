@@ -49,6 +49,8 @@ Plug 'ludovicchabant/vim-gutentags'             " Tags
 Plug 'mbbill/undotree'                          " Undotree visualizer
 Plug 'norcalli/nvim-colorizer.lua'              " Colors
 
+" jinja 2 syntax. Used alot in ansible.
+Plug 'Glench/Vim-Jinja2-Syntax'
 " Plug 'chemzqm/vim-jsx-improve'
 " Plug 'vim-python/python-syntax'
 " Plug 'vim-erlang/vim-erlang-runtime'
@@ -67,12 +69,14 @@ let g:neosnippet#snippets_directory="~/.config/nvim/snips"
 " }}}
 
 " vim-fugitive {{{
-nnoremap <silent><leader>g :G<CR> <c-w>L
+nnoremap <silent><leader>g :botright vertical Gstatus<CR>
 " }}}
 
 " fzf.vim {{{
 function! Browse()
-    if len(fugitive#head()) > 1
+    let l:is_git_dir = trim(system('git rev-parse --is-inside-work-tree'))
+    if l:is_git_dir ==# 'true'
+        " Use this because Gfiles
         call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
     else
         exe "Files"
@@ -90,12 +94,12 @@ nnoremap <silent><leader>h :History<CR>
 let g:gutentags_cache_dir    = '~/.tags'
 let g:gutentags_project_root = ['.gitignore']
 let g:gutentags_project_info = [
-      \ {'type': 'haskell', 'glob': '*.hs'}
-      \ ]
+            \ {'type': 'haskell', 'glob': '*.hs'}
+            \ ]
 let g:gutentags_ctags_executable_haskell = 'hasktags-gutentags-shim.sh'
 
 if executable('rg')
-  let g:gutentags_file_list_command = 'rg --files'
+    let g:gutentags_file_list_command = 'rg --files'
 endif
 " }}}
 
@@ -106,6 +110,7 @@ nmap ga <Plug>(LiveEasyAlign)
 
 " undotree {{{
 nnoremap <silent><leader>u :UndotreeToggle<CR>
+let g:undotree_SetFocusWhenToggle = 1
 let g:undotree_DiffAutoOpen = 0
 " }}}
 " }}}
@@ -223,10 +228,10 @@ command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <
 " List highlight groups {{{
 nmap <leader>sp :call <SID>SynStack()<CR>
 function! <SID>SynStack()
-  if !exists("*synstack")
-    return
-  endif
-  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+    if !exists("*synstack")
+        return
+    endif
+    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 " }}}
 
@@ -252,11 +257,11 @@ nnoremap <silent> <leader>zk :call NextClosedFold('k')<cr>
 " Grepping {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
-  set grepprg=ag\ --vimgrep\ --smart-case
+    set grepprg=ag\ --vimgrep\ --smart-case
 endif
 
 if executable('rg')
-  set grepprg=rg\ --vimgrep\ --smart-case
+    set grepprg=rg\ --vimgrep\ --smart-case
 endif
 
 function! Grep(...)
@@ -267,9 +272,9 @@ command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
 command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 augroup quickfix
-	autocmd!
-	autocmd QuickFixCmdPost cgetexpr cwindow
-	autocmd QuickFixCmdPost lgetexpr lwindow
+    autocmd!
+    autocmd QuickFixCmdPost cgetexpr cwindow
+    autocmd QuickFixCmdPost lgetexpr lwindow
 augroup END
 
 nnoremap <leader>f :Grep<space>
@@ -308,7 +313,7 @@ endfunction
 " Appearance {{{
 colorscheme sitruuna
 set cursorline
-let &colorcolumn=join(range(101,999), ",")     " 100 char columns
+let &colorcolumn=join(range(101,999), ",")
 set termguicolors
 set t_Co=256
 " }}}
@@ -344,7 +349,7 @@ set statusline+=››\ %*
 
 " Autocommands {{{
 augroup basic
-  autocmd!
-  autocmd FocusLost,BufLeave * silent! update
+    autocmd!
+    autocmd FocusLost,BufLeave * silent! update
 augroup end
 " }}}
