@@ -175,7 +175,7 @@ set laststatus=2
 set splitright
 set mouse=a
 set nowrap
-set list listchars=tab:\ \ ,nbsp:•,trail:•
+set list listchars=tab:→\ ,nbsp:•,trail:•
 set autoread
 set showmatch
 set ignorecase
@@ -283,6 +283,7 @@ nnoremap <leader>f :Grep<space>
 " Terminal {{{
 nnoremap <silent> <M-`> :call TermToggle(12)<CR>
 inoremap <silent> <M-`> <Esc>:call TermToggle(12)<CR>
+xnoremap <silent> <M-`> <Esc>:call TermToggle(12)<CR>
 tnoremap <silent> <M-`> <C-\><C-n>:call TermToggle(12)<CR>
 
 " Terminal Function
