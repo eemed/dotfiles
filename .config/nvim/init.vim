@@ -69,16 +69,32 @@ nnoremap <silent><leader>g :botright vertical Gstatus<CR>
 " }}}
 
 " fzf.vim {{{
-function! Browse()
+function! InGit()
     let l:is_git_dir = trim(system('git rev-parse --is-inside-work-tree'))
-    if l:is_git_dir ==# 'true'
-        " Use this because Gfiles
+    return l:is_git_dir ==# 'true'
+endfunction
+function! Browse()
+    if InGit()
+        " Use this because Gfiles doesnt work with cached files
         call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
     else
         exe "Files"
     endif
 endfunction
 
+function! SimilarFZF()
+    let l:filename = split(tolower(expand('%:t:r')), '\v\A|(test)')[0]
+    let l:files = globpath('.', '**/' . l:filename .'*')
+    if l:files != ''
+        call fzf#run(fzf#wrap({'source': 
+                    \  split(globpath('.', '**/' . l:filename .'*')),
+                    \ 'down' : '20%'}))
+    else
+        echom 'No similar files'
+    endif
+endfunction
+
+nnoremap <silent><leader>A :call SimilarFZF()<CR>
 nnoremap <silent><leader>F :Files<CR>
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
@@ -175,7 +191,9 @@ set autoread
 set showmatch
 set ignorecase
 set inccommand=split
-set wildignore=*.o,*.obj,node_modules,venv
+set wildignore+=*/node_modules/*,_site,*/__pycache__/,*/venv/*,*/target/*
+set wildignore+=*/.vim$,\~$,*/.log,*/.aux,*/.cls,*/.aux,*/.bbl,*/.blg,*/.fls
+set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk
 
 set path+=**
 set clipboard=unnamedplus
