@@ -26,17 +26,14 @@ Plug 'tmux-plugins/vim-tmux-focus-events'
 
 Plug 'eemed/sitruuna.vim'                       " Colorscheme
 
-Plug 'wellle/targets.vim'                       " More text objects
-
-Plug 'tpope/vim-surround'                       " Surround objects
-Plug 'tpope/vim-repeat'                         " Repeat surround
 Plug 'tpope/vim-commentary'                     " Commenting
 Plug 'tpope/vim-fugitive'                       " Git integration
 Plug 'tpope/vim-unimpaired'                     " Bindings
-Plug 'tpope/vim-vinegar'                        " Netrw
-Plug 'tpope/vim-eunuch'                         " Basic unix commands
-Plug 'tpope/vim-sleuth'                         " Wise indenting
 Plug 'tpope/vim-dispatch'                       " Async jobs
+
+Plug 'wellle/targets.vim'                       " More text objects
+Plug 'machakann/vim-sandwich'                   " Surround objects
+Plug 'justinmk/vim-dirvish'
 
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
@@ -46,7 +43,6 @@ Plug 'junegunn/fzf.vim'                         " Fyzzy find anything you want
 Plug 'junegunn/vim-easy-align'                  " Align stuff
 
 Plug 'ludovicchabant/vim-gutentags'             " Tags
-Plug 'mbbill/undotree'                          " Undotree visualizer
 Plug 'norcalli/nvim-colorizer.lua'              " Colors
 
 " jinja 2 syntax. Used alot in ansible.
@@ -97,10 +93,11 @@ let g:gutentags_project_info = [
             \ {'type': 'haskell', 'glob': '*.hs'}
             \ ]
 let g:gutentags_ctags_executable_haskell = 'hasktags-gutentags-shim.sh'
-
-if executable('rg')
-    let g:gutentags_file_list_command = 'rg --files'
-endif
+let g:gutentags_file_list_command = {
+            \ 'markers': {
+            \ '.git': 'git ls-files',
+            \ },
+            \ }
 " }}}
 
 " vim-easy-align {{{
@@ -108,10 +105,8 @@ xmap ga <Plug>(LiveEasyAlign)
 nmap ga <Plug>(LiveEasyAlign)
 " }}}
 
-" undotree {{{
-nnoremap <silent><leader>u :UndotreeToggle<CR>
-let g:undotree_SetFocusWhenToggle = 1
-let g:undotree_DiffAutoOpen = 0
+" vim-sandwich {{{
+runtime macros/sandwich/keymap/surround.vim
 " }}}
 " }}}
 
@@ -133,7 +128,7 @@ nnoremap <leader>sf :silent exec "! setxkbmap fi"<CR>
 nnoremap <leader>su :silent exec "! setxkbmap us"<CR>
 
 " Copy or move text. Start at where you want to copy the text to
-" find it using ? or / select it and use these bindings
+" find the block you want to copy using ? or / select it and use these bindings
 " t = copy, m = move
 xnoremap $t :t''<CR>
 xnoremap $T :T''<CR>
@@ -180,6 +175,7 @@ set autoread
 set showmatch
 set ignorecase
 set inccommand=split
+set wildignore=*.o,*.obj,node_modules,venv
 
 set path+=**
 set clipboard=unnamedplus
@@ -321,7 +317,7 @@ set t_Co=256
 
 " Statusline {{{
 function! GitStatus()
-    return fugitive#head() == '' ? '' : fugitive#head()
+    return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() : ''
 endfunction
 
 function! PasteForStatusline()
