@@ -1,0 +1,174 @@
+* Decorations
+** Disable decorations and follow symlinks
+   #+BEGIN_SRC emacs-lisp
+     (tool-bar-mode -1)
+     (menu-bar-mode -1)
+     (scroll-bar-mode -1)
+     (setq inhibit-startup-message t)
+     (setq vc-follow-symlinks t) ;; Follow symlinks
+   #+END_SRC
+
+* Terminal
+** Set shell to bash
+   #+BEGIN_SRC emacs-lisp
+    (defvar my-term-shell "/bin/bash")
+    (defadvice ansi-term (before force-bash)
+      (interactive (list my-term-shell)))
+    (ad-activate 'ansi-term)
+   #+END_SRC
+* Packages
+** Org
+*** Basic
+    #+BEGIN_SRC emacs-lisp
+      (setq org-src-window-setup 'current-window)
+    #+END_SRC
+*** Basic org mode
+    #+BEGIN_SRC emacs-lisp
+      (use-package org
+	:ensure t)
+    #+END_SRC
+*** Org bullets
+    #+BEGIN_SRC emacs-lisp
+      (use-package org-bullets
+	:ensure t
+	:config
+	(add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+    #+END_SRC
+** Helpers
+*** Which key
+    #+BEGIN_SRC emacs-lisp
+      (use-package which-key
+	:ensure t
+	:init
+	(which-key-mode))
+    #+END_SRC
+** Languages
+*** JS - JSX
+#+BEGIN_SRC emacs-lisp
+  (use-package rjsx-mode
+    :ensure t
+    :config
+    (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode)))
+#+END_SRC
+** Modeline
+   #+BEGIN_SRC emacs-lisp
+     (use-package doom-modeline
+       :ensure t
+       :hook (after-init . doom-modeline-mode))
+   #+END_SRC
+** Ivy
+   #+BEGIN_SRC emacs-lisp
+          (use-package ivy
+            :ensure t
+            :init
+            (ivy-mode 1)
+            :config
+            (setq ivy-re-builders-alist
+	       '((swiper . ivy--regex-plus)
+	       (t . ivy--regex-fuzzy)))
+            (setq ivy-use-virtual-buffers t)
+            (setq ivy-count-format "%d/%d "))
+   #+END_SRC
+*** Counsel
+    Ivy commands for normal emacs commands
+    #+BEGIN_SRC emacs-lisp
+      (use-package counsel
+        :ensure t
+        :after ivy
+	:config
+	(global-set-key "\C-s" 'swiper)
+	(global-set-key "\C-r" 'swiper-backward))
+    #+END_SRC
+*** Swiper
+    Search for files
+    #+BEGIN_SRC emacs-lisp
+      (use-package swiper
+        :ensure t)
+    #+END_SRC
+    
+** Company
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :init
+    (add-hook 'after-init-hook 'global-company-mode))
+#+END_SRC
+** Yasnippet
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :init
+    (yas-global-mode))
+#+END_SRC
+** Emmet
+#+BEGIN_SRC emacs-lisp
+  (use-package emmet-mode
+    :ensure t
+    :init
+    (add-hook 'sgml-mode-hook 'emmet-mode)
+    (add-hook 'css-mode-hook 'emmet-mode))
+#+END_SRC
+
+# ** LSP
+# #+BEGIN_SRC emacs-lisp
+#   (use-package lsp-mode
+#     :ensure t
+#     :commands lsp)
+
+#   (use-package lsp-ui
+#     :ensure t
+#     :commands lsp-ui-mode)
+
+#   (use-package company-lsp
+#     :ensure t
+#     :commands company-lsp)
+
+#   (add-hook 'rjsx-mode-hook #'lsp)
+# #+END_SRC
+** Windows
+   #+BEGIN_SRC emacs-lisp
+  (use-package ace-window
+    :ensure t
+    :bind ("C-." . ace-window))
+#+END_SRC
+* General
+** Scroll
+   #+BEGIN_SRC emacs-lisp
+     (setq scroll-conservatively 100)
+   #+END_SRC
+
+** Bell off
+   #+BEGIN_SRC emacs-lisp
+     (setq ring-bell-function 'ignore)
+   #+END_SRC
+
+** Highlight current line
+   #+BEGIN_SRC emacs-lisp
+     (when window-system (global-hl-line-mode t))
+   #+END_SRC
+
+** Shorter prompts
+   #+BEGIN_SRC emacs-lisp
+     (defalias 'yes-or-no-p 'y-or-n-p)
+   #+END_SRC
+
+** Config shortcuts
+*** Open config
+    #+BEGIN_SRC emacs-lisp
+      (defun config-open ()
+	(interactive)
+	(find-file "~/.emacs.d/config.org"))
+      (global-set-key (kbd "C-c o") 'config-open)
+    #+END_SRC
+*** Reload config
+    #+BEGIN_SRC emacs-lisp
+      (defun config-reload ()
+	(interactive)
+	(org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+      (global-set-key (kbd "C-c r") 'config-reload)
+    #+END_SRC
+** Backup directory
+   #+BEGIN_SRC emacs-lisp
+     (setq backup-directory-alist '(("" . "~/.emacs.d/backups")))
+     (setq create-lockfiles nil)
+   #+END_SRC

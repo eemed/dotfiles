@@ -4,6 +4,7 @@
 " /_/_/ /_/_/\__(_)___/_/_/ /_/ /_/
 "
 "
+
 " Configurable {{{
 let mapleader = "\ "
 let config = "~/.config/nvim/init.vim"
@@ -33,10 +34,11 @@ Plug 'tpope/vim-repeat'                         " Repeat surround
 Plug 'tpope/vim-commentary'                     " Commenting
 Plug 'tpope/vim-fugitive'                       " Git integration
 Plug 'tpope/vim-unimpaired'                     " Bindings
-Plug 'tpope/vim-vinegar'                        " Netrw
 Plug 'tpope/vim-eunuch'                         " Basic unix commands
 Plug 'tpope/vim-sleuth'                         " Wise indenting
 Plug 'tpope/vim-dispatch'                       " Async jobs
+
+Plug 'justinmk/vim-dirvish'                     " File browser
 
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
@@ -113,6 +115,10 @@ nnoremap <silent><leader>u :UndotreeToggle<CR>
 let g:undotree_SetFocusWhenToggle = 1
 let g:undotree_DiffAutoOpen = 0
 " }}}
+
+" dispatch {{{
+nnoremap <leader>r :Start!<CR>
+" }}}
 " }}}
 
 " Keybindings {{{
@@ -164,6 +170,11 @@ tnoremap <Esc> <C-\><C-n>
 
 " Strip whitspace
 nnoremap <leader>S :%s/\s\+$//e<CR>
+
+nnoremap <leader><right> :vertical resize +10<CR>
+nnoremap <leader><left> :vertical resize -10<CR>
+nnoremap <leader><up> :resize +10<CR>
+nnoremap <leader><down> :resize -10<CR>
 
 set pastetoggle=<F2>
 " }}}

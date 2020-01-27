@@ -414,7 +414,7 @@
     </keybind>
     <keybind key="W-t">
       <action name="Execute">
-        <command>~/.scripts/theme</command>
+        <command>~/.scripts/dropdown.sh</command>
       </action>
     </keybind>
     <keybind key="W-Return">
@@ -682,6 +682,20 @@
     <!-- </position> -->
     <!-- <focus>yes</focus> -->
     <!-- </application> -->
+    <application name="dropdown">
+      <position force="yes">
+        <monitor>mouse</monitor>
+        <x>0</x>
+        <y>0</y>
+      </position>
+      <maximized>Horizontal</maximized>
+      <size>
+        <height>30%</height>
+      </size>
+      <decor>no</decor>
+      <layer>above</layer>
+    </application>
+
     <application class="Steam">
       <desktop>2</desktop>
     </application>
