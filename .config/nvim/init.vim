@@ -27,18 +27,14 @@ Plug 'tmux-plugins/vim-tmux-focus-events'
 
 Plug 'eemed/sitruuna.vim'                       " Colorscheme
 
-Plug 'wellle/targets.vim'                       " More text objects
-
-Plug 'tpope/vim-surround'                       " Surround objects
-Plug 'tpope/vim-repeat'                         " Repeat surround
 Plug 'tpope/vim-commentary'                     " Commenting
 Plug 'tpope/vim-fugitive'                       " Git integration
 Plug 'tpope/vim-unimpaired'                     " Bindings
-Plug 'tpope/vim-eunuch'                         " Basic unix commands
-Plug 'tpope/vim-sleuth'                         " Wise indenting
 Plug 'tpope/vim-dispatch'                       " Async jobs
 
-Plug 'justinmk/vim-dirvish'                     " File browser
+Plug 'wellle/targets.vim'                       " More text objects
+Plug 'machakann/vim-sandwich'                   " Surround objects
+Plug 'justinmk/vim-dirvish'
 
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
@@ -48,7 +44,6 @@ Plug 'junegunn/fzf.vim'                         " Fyzzy find anything you want
 Plug 'junegunn/vim-easy-align'                  " Align stuff
 
 Plug 'ludovicchabant/vim-gutentags'             " Tags
-Plug 'mbbill/undotree'                          " Undotree visualizer
 Plug 'norcalli/nvim-colorizer.lua'              " Colors
 
 " jinja 2 syntax. Used alot in ansible.
@@ -75,16 +70,32 @@ nnoremap <silent><leader>g :botright vertical Gstatus<CR>
 " }}}
 
 " fzf.vim {{{
-function! Browse()
+function! InGit()
     let l:is_git_dir = trim(system('git rev-parse --is-inside-work-tree'))
-    if l:is_git_dir ==# 'true'
-        " Use this because Gfiles
+    return l:is_git_dir ==# 'true'
+endfunction
+function! Browse()
+    if InGit()
+        " Use this because Gfiles doesnt work with cached files
         call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
     else
         exe "Files"
     endif
 endfunction
 
+function! SimilarFZF()
+    let l:filename = split(tolower(expand('%:t:r')), '\v\A|(test)')[0]
+    let l:files = globpath('.', '**/' . l:filename .'*')
+    if l:files != ''
+        call fzf#run(fzf#wrap({'source': 
+                    \  split(globpath('.', '**/' . l:filename .'*')),
+                    \ 'down' : '20%'}))
+    else
+        echom 'No similar files'
+    endif
+endfunction
+
+nnoremap <silent><leader>A :call SimilarFZF()<CR>
 nnoremap <silent><leader>F :Files<CR>
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
@@ -99,10 +110,11 @@ let g:gutentags_project_info = [
             \ {'type': 'haskell', 'glob': '*.hs'}
             \ ]
 let g:gutentags_ctags_executable_haskell = 'hasktags-gutentags-shim.sh'
-
-if executable('rg')
-    let g:gutentags_file_list_command = 'rg --files'
-endif
+let g:gutentags_file_list_command = {
+            \ 'markers': {
+            \ '.git': 'git ls-files',
+            \ },
+            \ }
 " }}}
 
 " vim-easy-align {{{
@@ -110,10 +122,8 @@ xmap ga <Plug>(LiveEasyAlign)
 nmap ga <Plug>(LiveEasyAlign)
 " }}}
 
-" undotree {{{
-nnoremap <silent><leader>u :UndotreeToggle<CR>
-let g:undotree_SetFocusWhenToggle = 1
-let g:undotree_DiffAutoOpen = 0
+" vim-sandwich {{{
+runtime macros/sandwich/keymap/surround.vim
 " }}}
 
 " dispatch {{{
@@ -139,7 +149,7 @@ nnoremap <leader>sf :silent exec "! setxkbmap fi"<CR>
 nnoremap <leader>su :silent exec "! setxkbmap us"<CR>
 
 " Copy or move text. Start at where you want to copy the text to
-" find it using ? or / select it and use these bindings
+" find the block you want to copy using ? or / select it and use these bindings
 " t = copy, m = move
 xnoremap $t :t''<CR>
 xnoremap $T :T''<CR>
@@ -191,6 +201,9 @@ set autoread
 set showmatch
 set ignorecase
 set inccommand=split
+set wildignore+=*/node_modules/*,_site,*/__pycache__/,*/venv/*,*/target/*
+set wildignore+=*/.vim$,\~$,*/.log,*/.aux,*/.cls,*/.aux,*/.bbl,*/.blg,*/.fls
+set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk
 
 set path+=**
 set clipboard=unnamedplus
@@ -332,7 +345,7 @@ set t_Co=256
 
 " Statusline {{{
 function! GitStatus()
-    return fugitive#head() == '' ? '' : fugitive#head()
+    return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() : ''
 endfunction
 
 function! PasteForStatusline()
