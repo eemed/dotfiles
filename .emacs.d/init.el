@@ -45,7 +45,7 @@
  '(jdee-db-spec-breakpoint-face-colors (cons "#0d0d0d" "#5a5b5a"))
  '(package-selected-packages
    (quote
-    (ace-window minimap undo-tree evil-magit evil-org counsel ivy org-bullets nlinum-hl doom-modeline evil-commentary evil-surround evil doom-themes which-key use-package)))
+    (counsel-projectile expand-region yasnippet-snippets erlang ace-window minimap undo-tree evil-magit evil-org counsel ivy org-bullets nlinum-hl doom-modeline evil-commentary evil-surround evil doom-themes which-key use-package)))
  '(vc-annotate-background "#1d1f21")
  '(vc-annotate-color-map
    (list
