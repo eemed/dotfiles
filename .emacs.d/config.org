@@ -258,6 +258,5 @@ Search for files
 ** Whitespace show only tabs
 #+BEGIN_SRC emacs-lisp
   (setq whitespace-style '(tabs face tab-mark))
-  (global-whitespace-mode)
 #+END_SRC
 
