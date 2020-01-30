@@ -9,7 +9,6 @@
 let mapleader = "\ "
 let config = "~/.config/nvim/init.vim"
 let g:python3_host_prog = "/usr/bin/python3"
-set guifont=Hack:h13
 " }}}
 
 " Autoinstall vim-plug {{{
@@ -48,6 +47,7 @@ Plug 'norcalli/nvim-colorizer.lua'              " Colors
 
 " jinja 2 syntax. Used alot in ansible.
 Plug 'Glench/Vim-Jinja2-Syntax'
+Plug 'MaxMEllon/vim-jsx-pretty'
 " Plug 'chemzqm/vim-jsx-improve'
 " Plug 'vim-python/python-syntax'
 " Plug 'vim-erlang/vim-erlang-runtime'
@@ -207,6 +207,7 @@ set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk
 
 set path+=**
 set clipboard=unnamedplus
+set lazyredraw
 
 " Completion
 set pumheight=10

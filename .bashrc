@@ -63,11 +63,6 @@ export PS1="${debian_chroot:+($debian_chroot)}[\[\033[01;32m\]\u@\h \[\033[01;34
 VISUAL=nvim; export VISUAL EDITOR=nvim; export EDITOR
 PAGER=less; export PAGER
 
-# Set colors on new terminals
-if test -f ~/.cache/paleta/colors ; then
-  { read -r < ~/.cache/paleta/colors; printf %b "$REPLY"; } & disown
-fi
-
 # Less
 export LESS_TERMCAP_mb=$'\E[6m'                # begin blinking
 export LESS_TERMCAP_md=$'\E[37m'               # begin bold
@@ -87,9 +82,6 @@ alias g="git"
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
 alias hgrep="history | grep --color=auto"
 function cdl(){ cd $1; ls -l;}
-
-# Keyboard
-xset r rate 200 30
 
 if test -f ~/.bashrc_personal ; then
     source ~/.bashrc_personal
