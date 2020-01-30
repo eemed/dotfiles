@@ -21,6 +21,7 @@ endif
 
 " Plugins {{{
 call plug#begin('~/.config/nvim/plugged')
+Plug 'vim-erlang/vim-erlang-compiler'
 Plug 'christoomey/vim-tmux-navigator'           " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'
 
@@ -127,7 +128,7 @@ runtime macros/sandwich/keymap/surround.vim
 " }}}
 
 " dispatch {{{
-nnoremap <leader>r :Start!<CR>
+nnoremap <leader>r :Start<CR>
 " }}}
 " }}}
 
