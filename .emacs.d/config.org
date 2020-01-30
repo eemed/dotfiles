@@ -1,0 +1,298 @@
+* Decorations
+** Disable decorations and follow symlinks
+#+BEGIN_SRC emacs-lisp
+     (tool-bar-mode -1)
+     (menu-bar-mode -1)
+     (scroll-bar-mode -1)
+     (setq inhibit-startup-message t)
+     (setq vc-follow-symlinks t) ;; Follow symlinks
+#+END_SRC
+
+* Terminal
+** Set shell to bash
+#+BEGIN_SRC emacs-lisp
+  (defvar my-term-shell "/bin/bash")
+  (defadvice ansi-term (before force-bash)
+    (interactive (list my-term-shell)))
+  (ad-activate 'ansi-term)
+  (global-set-key (kbd "C-z") 'eshell)
+#+END_SRC
+* Packages
+** Org
+*** Basic
+#+BEGIN_SRC emacs-lisp
+      (setq org-src-window-setup 'current-window)
+#+END_SRC
+*** Basic org mode
+#+BEGIN_SRC emacs-lisp
+      (use-package org
+      :ensure t
+      :config
+      (add-hook 'org-mode-hook 'org-indent-mode))
+#+END_SRC
+*** Org bullets
+#+BEGIN_SRC emacs-lisp
+      (use-package org-bullets
+      :ensure t
+      :config
+      (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+#+END_SRC
+** Helpers
+*** Which key
+#+BEGIN_SRC emacs-lisp
+      (use-package which-key
+      :ensure t
+      :init
+      (which-key-mode))
+#+END_SRC
+** Languages
+*** JS - JSX
+#+BEGIN_SRC emacs-lisp
+  (use-package rjsx-mode
+    :ensure t
+    :config
+    (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode)))
+#+END_SRC
+** Modeline
+#+BEGIN_SRC emacs-lisp
+     (use-package doom-modeline
+       :ensure t
+       :hook (after-init . doom-modeline-mode))
+#+END_SRC
+** Ivy
+#+BEGIN_SRC emacs-lisp
+          (use-package ivy
+            :ensure t
+            :init
+            (ivy-mode 1)
+            :config
+            (setq ivy-re-builders-alist
+               '((swiper . ivy--regex-plus)
+               (t . ivy--regex-fuzzy)))
+            (setq ivy-use-virtual-buffers t)
+            (setq ivy-count-format "%d/%d "))
+#+END_SRC
+*** Counsel
+Ivy commands for normal emacs commands
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+    :ensure t
+    :after ivy
+    :config
+    (global-set-key "\C-s" 'swiper)
+    (global-set-key "\C-r" 'swiper-backward))
+
+  (use-package counsel-projectile
+    :ensure t
+    :init
+    (counsel-projectile-mode)
+    :config
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+#+END_SRC
+*** Swiper
+Search for files
+#+BEGIN_SRC emacs-lisp
+      (use-package swiper
+        :ensure t)
+#+END_SRC
+
+** Company
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :init
+    (add-hook 'after-init-hook 'global-company-mode))
+#+END_SRC
+** Yasnippet
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :init
+    (yas-global-mode))
+  (use-package yasnippet-snippets
+    :ensure t)
+#+END_SRC
+** Emmet
+#+BEGIN_SRC emacs-lisp
+  (use-package emmet-mode
+    :ensure t
+    :init
+    (add-hook 'sgml-mode-hook 'emmet-mode)
+    (add-hook 'css-mode-hook 'emmet-mode))
+#+END_SRC
+
+# ** LSP
+# #+BEGIN_SRC emacs-lisp
+#   (use-package lsp-mode
+#     :ensure t
+#     :commands lsp)
+
+#   (use-package lsp-ui
+#     :ensure t
+#     :commands lsp-ui-mode)
+
+#   (use-package company-lsp
+#     :ensure t
+#     :commands company-lsp)
+
+#   (add-hook 'rjsx-mode-hook #'lsp)
+# #+END_SRC
+** Windows
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-window
+    :ensure t
+    :bind ("C-." . ace-window))
+#+END_SRC
+** Erlang
+#+BEGIN_SRC emacs-lisp
+   (use-package erlang
+     :ensure t)
+#+END_SRC
+** Expand regions
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :config
+    (global-set-key (kbd "C-=") 'er/expand-region))
+#+END_SRC
+** Magit
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t
+    :config
+    (global-set-key (kbd "C-x g") 'magit-status))
+#+END_SRC
+** Markdown
+#+BEGIN_SRC emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+#+END_SRC
+* General
+** Scroll
+#+BEGIN_SRC emacs-lisp
+  ;; the defaults C-v and M-v scroll a full page, which is too much.
+  ;; rebind to a half page:
+  (defun my/scroll (arg)
+    "Scroll a half page down.
+  With ARG, scroll up instead."
+    (interactive "P")
+    (let ((count (/ (1- (window-height)) 2)))
+      (if arg
+          (scroll-up count)
+        (scroll-down count)))
+    (set-transient-map
+     (let ((map (make-sparse-keymap)))
+       (define-key map (kbd "v") #'my/scroll-up)
+       (define-key map (kbd "M-v") #'my/scroll)
+       map)))
+  (defun my/scroll-up ()
+    "See `my/scroll'."
+    (interactive)
+    (my/scroll 'up))
+  (bind-keys ("C-v" . my/scroll-up)
+             ("M-v" . my/scroll))
+
+  (setq scroll-conservatively 100)
+  (setq mouse-wheel-scroll-amount '(2 ((shift) . 2))) ;; one line at a time
+  (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+  (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+  (setq scroll-step 2) ;; keyboard scroll one line at a time
+#+END_SRC
+
+** Bell off
+#+BEGIN_SRC emacs-lisp
+     (setq ring-bell-function 'ignore)
+#+END_SRC
+
+** Indent whole buffers
+#+BEGIN_SRC emacs-lisp
+  (defun fix-indent ()
+    "indent whole buffer"
+    (interactive)
+    (delete-trailing-whitespace)
+    (indent-region (point-min) (point-max) nil)
+    (untabify (point-min) (point-max)))
+#+END_SRC
+** Highlight current line
+#+BEGIN_SRC emacs-lisp
+     (when window-system (global-hl-line-mode t))
+#+END_SRC
+
+** Shorter prompts
+#+BEGIN_SRC emacs-lisp
+     (defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+** Config shortcuts
+*** Open config
+#+BEGIN_SRC emacs-lisp
+      (defun config-open ()
+        (interactive)
+        (find-file "~/.emacs.d/config.org"))
+      (global-set-key (kbd "C-c o") 'config-open)
+#+END_SRC
+*** Reload config
+#+BEGIN_SRC emacs-lisp
+      (defun config-reload ()
+        (interactive)
+        (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+      (global-set-key (kbd "C-c r") 'config-reload)
+#+END_SRC
+
+** Insert new lines and mark line
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-o") (lambda() (interactive) (end-of-line)(newline-and-indent)))
+  (global-set-key (kbd "C-o") (lambda() (interactive) (beginning-of-line)(open-line 1)))
+
+  (defun xah-select-current-line ()
+    "Select current line.
+  URL `http://ergoemacs.org/emacs/modernization_mark-word.html'
+  Version 2016-07-22"
+    (interactive)
+    (end-of-line)
+    (set-mark (line-beginning-position)))
+
+  (global-set-key (kbd "C-c l") 'xah-select-current-line)
+#+END_SRC
+** Backup directory
+#+BEGIN_SRC emacs-lisp
+     (setq backup-directory-alist '(("" . "~/.emacs.d/backups")))
+     (setq create-lockfiles nil)
+#+END_SRC
+
+** Whitespace show only tabs
+#+BEGIN_SRC emacs-lisp
+  (setq whitespace-style '(tabs face tab-mark))
+#+END_SRC
+
+** Tags
+#+BEGIN_SRC emacs-lisp
+  (defun create-tags (dir-name)
+    "Create tags file."
+    (interactive "DDirectory: ")
+    (eshell-command
+     (format "find %s -type f -name \"*.[ch]\" | etags -" dir-name)))
+
+  (defadvice find-tag (around refresh-etags activate)
+    "Rerun etags and reload tags if tag not found and redo find-tag.
+     If buffer is modified, ask about save before running etags."
+    (let ((extension (file-name-extension (buffer-file-name))))
+      (condition-case err
+          ad-do-it
+        (error (and (buffer-modified-p)
+                    (not (ding))
+                    (y-or-n-p "Buffer is modified, save it? ")
+                    (save-buffer))
+               (er-refresh-etags extension)
+               ad-do-it))))
+  (defun er-refresh-etags (&optional extension)
+    "Run etags on all peer files in current dir and reload them silently."
+    (interactive)
+    (shell-command (format "etags *.%s" (or extension "el")))
+    (let ((tags-revert-without-query t))  ; don't query, revert silently
+      (visit-tags-table default-directory nil)))
+#+END_SRC
