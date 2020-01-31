@@ -26,6 +26,3 @@ if [ -d "$HOME/.apache/bin" ]; then
 fi
 
 export GOPATH=$HOME/go
-
-# Keyboard
-xset r rate 200 30
