@@ -45,8 +45,6 @@ Plug 'junegunn/vim-easy-align'                  " Align stuff
 Plug 'ludovicchabant/vim-gutentags'             " Tags
 Plug 'norcalli/nvim-colorizer.lua'              " Colors
 
-Plug 'itchyny/lightline.vim'                    " Statusline
-
 " Compiler to use with dispatch for erlang
 Plug 'vim-erlang/vim-erlang-compiler'
 
@@ -221,7 +219,6 @@ set pastetoggle=<F2>
 
 " Basic {{{
 filetype plugin indent on
-set noshowmode
 set hidden
 set laststatus=2
 set splitright
@@ -373,6 +370,31 @@ set cursorline
 let &colorcolumn=join(range(101,999), ",")
 set termguicolors
 set t_Co=256
+
+" Statusline {{{
+function! GitStatus()
+    return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
+endfunction
+
+function! PasteForStatusline()
+    return &paste == 1 ? '[PASTE]' : ""
+endfunction
+
+set laststatus=2
+set statusline=
+set statusline+=\ %f
+set statusline+=\ %*
+set statusline+=\ %r
+set statusline+=%m
+set statusline+=%{PasteForStatusline()}
+set statusline+=\ %{gutentags#statusline()}
+set statusline+=%=
+set statusline+=\ %{GitStatus()}
+set statusline+=\ %{&ft}\ \|
+set statusline+=\ %l/%L\ :\ %c
+set statusline+=\ %*
+" }}}
+
 " }}}
 
 " Autocommands {{{
