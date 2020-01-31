@@ -21,7 +21,6 @@ endif
 
 " Plugins {{{
 call plug#begin('~/.config/nvim/plugged')
-Plug 'vim-erlang/vim-erlang-compiler'
 Plug 'christoomey/vim-tmux-navigator'           " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'
 
@@ -46,17 +45,35 @@ Plug 'junegunn/vim-easy-align'                  " Align stuff
 Plug 'ludovicchabant/vim-gutentags'             " Tags
 Plug 'norcalli/nvim-colorizer.lua'              " Colors
 
+Plug 'itchyny/lightline.vim'                    " Statusline
+
+" Compiler to use with dispatch for erlang
+Plug 'vim-erlang/vim-erlang-compiler'
+
 " jinja 2 syntax. Used alot in ansible.
 Plug 'Glench/Vim-Jinja2-Syntax'
 Plug 'MaxMEllon/vim-jsx-pretty'
-" Plug 'chemzqm/vim-jsx-improve'
-" Plug 'vim-python/python-syntax'
-" Plug 'vim-erlang/vim-erlang-runtime'
-" Plug 'neovimhaskell/haskell-vim'
 call plug#end()
 " }}}
 
 " Plugin configuration {{{
+" lightline {{{
+function! GitStatus()
+    return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() : ''
+endfunction
+
+let g:lightline = {
+            \ 'colorscheme': 'sitruuna',
+            \ 'active': {
+            \   'left': [ [ 'mode', 'paste' ],
+            \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
+            \ },
+            \ 'component_function': {
+            \   'gitbranch': 'GitStatus'
+            \ },
+            \ }
+" }}}
+
 " neosnippet {{{
 xmap <tab> <Plug>(neosnippet_expand_target)
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
@@ -85,8 +102,13 @@ function! Browse()
 endfunction
 
 function! SimilarFZF()
-    let l:filename = split(tolower(expand('%:t:r')), '\v\A|(test)')[0]
-    let l:files = globpath('.', '**/' . l:filename .'*')
+    try
+        let l:filename = split(tolower(expand('%:t:r')), '\v\A|(test)')[0]
+        let l:files = globpath('.', '**/' . l:filename .'*')
+    catch /.*/
+        echom 'Failed to get files.'
+        return ''
+    endtry
     if l:files != ''
         call fzf#run(fzf#wrap({'source': 
                     \  split(globpath('.', '**/' . l:filename .'*')),
@@ -192,6 +214,7 @@ set pastetoggle=<F2>
 
 " Basic {{{
 filetype plugin indent on
+set noshowmode
 set hidden
 set laststatus=2
 set splitright
@@ -204,7 +227,7 @@ set ignorecase
 set inccommand=split
 set wildignore+=*/node_modules/*,_site,*/__pycache__/,*/venv/*,*/target/*
 set wildignore+=*/.vim$,\~$,*/.log,*/.aux,*/.cls,*/.aux,*/.bbl,*/.blg,*/.fls
-set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk
+set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*/build/*
 
 set path+=**
 set clipboard=unnamedplus
@@ -343,35 +366,6 @@ set cursorline
 let &colorcolumn=join(range(101,999), ",")
 set termguicolors
 set t_Co=256
-" }}}
-
-" Statusline {{{
-function! GitStatus()
-    return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() : ''
-endfunction
-
-function! PasteForStatusline()
-    return &paste == 1 ? '[PASTE]' : ""
-endfunction
-
-set laststatus=2
-set statusline=
-set statusline+=\ ‹‹
-set statusline+=\ %f
-set statusline+=\ ››
-set statusline+=\ %*
-set statusline+=\ %r
-set statusline+=%m
-set statusline+=%{PasteForStatusline()}
-set statusline+=\ %{gutentags#statusline()}
-set statusline+=%=
-set statusline+=\ %{GitStatus()}
-set statusline+=\ ‹‹
-set statusline+=\ %{&ft}
-set statusline+=\ ::
-set statusline+=\ %l/%L\ :\ %c
-set statusline+=\ %*
-set statusline+=››\ %*
 " }}}
 
 " Autocommands {{{
