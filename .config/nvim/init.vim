@@ -66,10 +66,17 @@ let g:lightline = {
             \ 'colorscheme': 'sitruuna',
             \ 'active': {
             \   'left': [ [ 'mode', 'paste' ],
-            \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
+            \             [ 'readonly', 'filename', 'modified' ] ],
+            \   'right': [  [ 'lineinfo' ],
+            \               [ 'gitbranch', 'filetype' ] ],
+            \ },
+            \ 'inactive': {
+            \   'left': [ [ 'filename' ] ],
+            \   'right': [],
             \ },
             \ 'component_function': {
-            \   'gitbranch': 'GitStatus'
+            \   'gitbranch': 'GitStatus',
+            \   'maxline': '%L',
             \ },
             \ }
 " }}}
