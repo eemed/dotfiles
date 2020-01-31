@@ -10,7 +10,7 @@ else
   exit 1
 fi
 
-scrot -s "shot.png"
+gnome-screenshot -a -f "shot.png"
 json=$(curl -s --request POST --url https://api.imgur.com/3/image \
   --header "authorization: Client-ID $client_id" \
   --header "content-type: multipart/form-data;" -F "image=@shot.png")
