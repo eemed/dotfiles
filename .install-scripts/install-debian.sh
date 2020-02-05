@@ -18,7 +18,6 @@ sudo apt install -y \
       atop \
       iftop \
       mc \
-      stow \
       curl \
       gawk \
       git \
@@ -28,8 +27,6 @@ sudo apt install -y \
       tcpdump \
       traceroute \
       mpv \
-      feh \
-      sxiv \
       pavucontrol \
       weechat \
       neofetch \
@@ -44,42 +41,21 @@ sudo apt install -y \
       youtube-dl \
       transmission-gtk \
       groff \
-      mupdf \
       python-pip \
       python3-pip \
-      openbox \
-      obconf \
-      xfce4-terminal \
-      xserver-xorg \
-      x11-xserver-utils \
       libxft-dev \
       firefox-esr \
-      thunar \
-      rofi \
-      compton \
       libnotify-bin \
-      nitrogen \
       network-manager-gnome \
       network-manager-openvpn-gnome \
-      blueman \
-      lxappearance \
-      gtk2-engines-murrine \
-      pulseaudio \
-      dunst \
-      sddm \
-      tint2 \
-      i3lock \
-      alsa-utils \
-      xsel \
-      xclip \
+      gnome \
       urlview \
       psmisc \
       xdg-utils \
       libglib2.0-dev \
       arc-theme \
       numix-icon-theme-circle \
-      breeze-cursor-theme \
-      redshift
+      breeze-cursor-theme
 
 
 ./mk-defaultdir.sh
@@ -89,5 +65,3 @@ sudo apt install -y \
 ./install-font.sh
 ./install-desktop.sh
 ./install-greenclip.sh
-./install-wallpapers.sh
-./relink.sh

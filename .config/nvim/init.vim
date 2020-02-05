@@ -24,6 +24,7 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'christoomey/vim-tmux-navigator'           " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'
 
+Plug 'morhetz/gruvbox'
 Plug 'eemed/sitruuna.vim'                       " Colorscheme
 
 Plug 'tpope/vim-commentary'                     " Commenting
@@ -34,6 +35,7 @@ Plug 'tpope/vim-dispatch'                       " Async jobs
 Plug 'wellle/targets.vim'                       " More text objects
 Plug 'machakann/vim-sandwich'                   " Surround objects
 Plug 'justinmk/vim-dirvish'
+Plug 'romainl/vim-qf'
 
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
@@ -55,30 +57,6 @@ call plug#end()
 " }}}
 
 " Plugin configuration {{{
-" lightline {{{
-function! GitStatus()
-    return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() : ''
-endfunction
-
-let g:lightline = {
-            \ 'colorscheme': 'sitruuna',
-            \ 'active': {
-            \   'left': [ [ 'mode', 'paste' ],
-            \             [ 'readonly', 'filename', 'modified' ] ],
-            \   'right': [  [ 'lineinfo' ],
-            \               [ 'gitbranch', 'filetype' ] ],
-            \ },
-            \ 'inactive': {
-            \   'left': [ [ 'filename' ] ],
-            \   'right': [],
-            \ },
-            \ 'component_function': {
-            \   'gitbranch': 'GitStatus',
-            \   'maxline': '%L',
-            \ },
-            \ }
-" }}}
-
 " neosnippet {{{
 xmap <tab> <Plug>(neosnippet_expand_target)
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
@@ -129,6 +107,23 @@ nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
+
+
+let g:fzf_colors = {
+            \ 'fg':      ['fg', 'Normal'],
+            \ 'bg':      ['bg', 'Normal'],
+            \ 'hl':      ['fg', 'Comment'],
+            \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+            \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+            \ 'hl+':     ['fg', 'Statement'],
+            \ 'info':    ['fg', 'PreProc'],
+            \ 'border':  ['fg', 'Ignore'],
+            \ 'prompt':  ['fg', 'Conditional'],
+            \ 'pointer': ['fg', 'Exception'],
+            \ 'marker':  ['fg', 'Keyword'],
+            \ 'spinner': ['fg', 'Label'],
+            \ 'header':  ['fg', 'Comment'] }
+
 " }}}
 
 " vim-gutentags {{{
@@ -156,6 +151,17 @@ runtime macros/sandwich/keymap/surround.vim
 
 " dispatch {{{
 nnoremap <leader>r :Start<CR>
+" }}}
+
+" vim-qf {{{
+nmap <leader>t <Plug>(qf_qf_toggle)
+nmap <leader>T <Plug>(qf_loc_toggle)
+
+nmap [q <Plug>(qf_qf_previous)
+nmap ]q  <Plug>(qf_qf_next)
+
+nmap [l <Plug>(qf_loc_previous)
+nmap ]l  <Plug>(qf_loc_next)
 " }}}
 " }}}
 
@@ -334,10 +340,10 @@ nnoremap <leader>f :Grep<space>
 " }}}
 
 " Terminal {{{
-nnoremap <silent> <M-`> :call TermToggle(12)<CR>
-inoremap <silent> <M-`> <Esc>:call TermToggle(12)<CR>
-xnoremap <silent> <M-`> <Esc>:call TermToggle(12)<CR>
-tnoremap <silent> <M-`> <C-\><C-n>:call TermToggle(12)<CR>
+nnoremap <silent> <M-t> :call TermToggle(12)<CR>
+inoremap <silent> <M-t> <Esc>:call TermToggle(12)<CR>
+xnoremap <silent> <M-t> <Esc>:call TermToggle(12)<CR>
+tnoremap <silent> <M-t> <C-\><C-n>:call TermToggle(12)<CR>
 
 " Terminal Function
 let g:term_buf = 0
@@ -365,7 +371,8 @@ endfunction
 " }}}
 
 " Appearance {{{
-colorscheme sitruuna
+let g:gruvbox_invert_selection=0
+colorscheme gruvbox
 set cursorline
 let &colorcolumn=join(range(101,999), ",")
 set termguicolors
@@ -394,7 +401,6 @@ set statusline+=\ %{&ft}\ \|
 set statusline+=\ %l/%L\ :\ %c
 set statusline+=\ %*
 " }}}
-
 " }}}
 
 " Autocommands {{{
@@ -403,3 +409,4 @@ augroup basic
     autocmd FocusLost,BufLeave * silent! update
 augroup end
 " }}}
+

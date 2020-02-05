@@ -3,9 +3,9 @@ if [ ! -d ~/.fonts ]; then
     mkdir ~/.fonts
 fi
 
-wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.0.0/Hack.zip
-unzip Hack.zip -d ~/.fonts
-rm Hack.zip
+# wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.0.0/Hack.zip
+# unzip Hack.zip -d ~/.fonts
+# rm Hack.zip
 
 wget https://download.jetbrains.com/fonts/JetBrainsMono-1.0.0.zip
 unzip JetBrainsMono-1.0.0.zip -d ~/.fonts
