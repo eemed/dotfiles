@@ -71,6 +71,7 @@ alias vim="nvim"
 alias g="git"
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
 alias hgrep="history | grep --color=auto"
+alias headphones="sudo rmmod btusb ; sudo modprobe btusb"
 function cdl(){ cd $1; ls -l;}
 
 if test -f ~/.bashrc_personal ; then

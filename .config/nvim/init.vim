@@ -4,7 +4,6 @@
 " /_/_/ /_/_/\__(_)___/_/_/ /_/ /_/
 "
 "
-
 " Configurable {{{
 let mapleader = "\ "
 let config = "~/.config/nvim/init.vim"
@@ -21,31 +20,30 @@ endif
 
 " Plugins {{{
 call plug#begin('~/.config/nvim/plugged')
-Plug 'christoomey/vim-tmux-navigator'           " Make vim better with tmux
+Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'
 
-Plug 'morhetz/gruvbox'
-Plug 'eemed/sitruuna.vim'                       " Colorscheme
+Plug 'gruvbox-material/vim', {'as': 'gruvbox-material'} " Colorscheme
 
-Plug 'tpope/vim-commentary'                     " Commenting
-Plug 'tpope/vim-fugitive'                       " Git integration
-Plug 'tpope/vim-unimpaired'                     " Bindings
-Plug 'tpope/vim-dispatch'                       " Async jobs
+Plug 'tpope/vim-commentary'                             " Commenting
+Plug 'tpope/vim-fugitive'                               " Git integration
+Plug 'tpope/vim-unimpaired'                             " Bindings
+Plug 'tpope/vim-dispatch'                               " Async jobs
 
-Plug 'wellle/targets.vim'                       " More text objects
-Plug 'machakann/vim-sandwich'                   " Surround objects
+Plug 'wellle/targets.vim'                               " More text objects
+Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'justinmk/vim-dirvish'
 Plug 'romainl/vim-qf'
 
-Plug 'Shougo/neosnippet.vim'
-Plug 'Shougo/neosnippet-snippets'
+Plug 'SirVer/ultisnips'                                 " Snippets
+Plug 'honza/vim-snippets'
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'                         " Fyzzy find anything you want
-Plug 'junegunn/vim-easy-align'                  " Align stuff
+Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
+Plug 'junegunn/vim-easy-align'                          " Align stuff
 
-Plug 'ludovicchabant/vim-gutentags'             " Tags
-Plug 'norcalli/nvim-colorizer.lua'              " Colors
+Plug 'ludovicchabant/vim-gutentags'                     " Tags
+Plug 'norcalli/nvim-colorizer.lua'                      " Colors
 
 " Compiler to use with dispatch for erlang
 Plug 'vim-erlang/vim-erlang-compiler'
@@ -57,13 +55,10 @@ call plug#end()
 " }}}
 
 " Plugin configuration {{{
-" neosnippet {{{
-xmap <tab> <Plug>(neosnippet_expand_target)
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-            \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-            \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-let g:neosnippet#snippets_directory="~/.config/nvim/snips"
+" ultisnips {{{
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 " }}}
 
 " vim-fugitive {{{
@@ -75,6 +70,7 @@ function! InGit()
     let l:is_git_dir = trim(system('git rev-parse --is-inside-work-tree'))
     return l:is_git_dir ==# 'true'
 endfunction
+
 function! Browse()
     if InGit()
         " Use this because Gfiles doesnt work with cached files
@@ -177,10 +173,6 @@ xnoremap > >gv
 nnoremap <leader>a ggVG
 nnoremap <leader>q :q<CR>
 nnoremap <BS> <C-^>
-
-" Toggle layouts
-nnoremap <leader>sf :silent exec "! setxkbmap fi"<CR>
-nnoremap <leader>su :silent exec "! setxkbmap us"<CR>
 
 " Copy or move text. Start at where you want to copy the text to
 " find the block you want to copy using ? or / select it and use these bindings
@@ -371,12 +363,12 @@ endfunction
 " }}}
 
 " Appearance {{{
-let g:gruvbox_invert_selection=0
-colorscheme gruvbox
 set cursorline
 let &colorcolumn=join(range(101,999), ",")
 set termguicolors
 set t_Co=256
+let g:gruvbox_material_disable_italic_comment = 1
+colorscheme gruvbox-material
 
 " Statusline {{{
 function! GitStatus()
