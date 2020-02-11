@@ -109,7 +109,6 @@ nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 
-
 let g:fzf_colors = {
             \ 'fg':      ['fg', 'Normal'],
             \ 'bg':      ['bg', 'Normal'],
@@ -134,9 +133,9 @@ let g:gutentags_project_info = [
             \ ]
 let g:gutentags_ctags_executable_haskell = 'hasktags-gutentags-shim.sh'
 let g:gutentags_file_list_command = {
-            \ 'markers': {
-            \ '.git': 'git ls-files',
-            \ },
+            \   'markers': {
+            \       '.git': 'git ls-files',
+            \   },
             \ }
 " }}}
 " vim-easy-align {{{
