@@ -350,9 +350,7 @@ set cursorline
 let &colorcolumn=join(range(101,999), ",")
 set termguicolors
 set t_Co=256
-let g:gruvbox_invert_selection = 0
 colorscheme PaperColor
-
 " Statusline {{{
 function! GitStatus()
     return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
