@@ -9,7 +9,6 @@ let mapleader = "\ "
 let config = "~/.config/nvim/init.vim"
 let g:python3_host_prog = "/usr/bin/python3"
 " }}}
-
 " Autoinstall vim-plug {{{
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
     silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
@@ -17,13 +16,13 @@ if empty(glob('~/.config/nvim/autoload/plug.vim'))
     autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
 endif
 " }}}
-
 " Plugins {{{
 call plug#begin('~/.config/nvim/plugged')
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'
+Plug 'editorconfig/editorconfig-vim'
 
-Plug 'gruvbox-material/vim', {'as': 'gruvbox-material'} " Colorscheme
+Plug 'NLKNguyen/papercolor-theme'
 
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
@@ -53,25 +52,24 @@ Plug 'Glench/Vim-Jinja2-Syntax'
 Plug 'MaxMEllon/vim-jsx-pretty'
 call plug#end()
 " }}}
-
 " Plugin configuration {{{
+" editorconfig {{{
+let g:EditorConfig_exclude_patterns = ['fugitive://.*']
+" }}}
 " vim-tmux-navigator {{{
 tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
 tnoremap <silent> <c-j> <C-\><C-n>:TmuxNavigateDown<cr>
 tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
 tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " }}}
-
 " ultisnips {{{
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 " }}}
-
 " vim-fugitive {{{
 nnoremap <silent><leader>g :botright vertical Gstatus<CR>
 " }}}
-
 " fzf.vim {{{
 function! InGit()
     let l:is_git_dir = trim(system('git rev-parse --is-inside-work-tree'))
@@ -93,7 +91,7 @@ function! SimilarFZF()
         let l:files = globpath('.', '**/' . l:filename .'*')
     catch /.*/
         echom 'Failed to get files.'
-        return ''
+        return
     endtry
     if l:files != ''
         call fzf#run(fzf#wrap({'source': 
@@ -128,7 +126,6 @@ let g:fzf_colors = {
             \ 'header':  ['fg', 'Comment'] }
 
 " }}}
-
 " vim-gutentags {{{
 let g:gutentags_cache_dir    = '~/.tags'
 let g:gutentags_project_root = ['.gitignore']
@@ -142,24 +139,17 @@ let g:gutentags_file_list_command = {
             \ },
             \ }
 " }}}
-
 " vim-easy-align {{{
 xmap ga <Plug>(LiveEasyAlign)
 nmap ga <Plug>(LiveEasyAlign)
 " }}}
-
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
-
 " dispatch {{{
 nnoremap <leader>r :Start<CR>
 " }}}
-
 " vim-qf {{{
-nmap <leader>t <Plug>(qf_qf_toggle)
-nmap <leader>T <Plug>(qf_loc_toggle)
-
 nmap [q <Plug>(qf_qf_previous)
 nmap ]q  <Plug>(qf_qf_next)
 
@@ -167,7 +157,6 @@ nmap [l <Plug>(qf_loc_previous)
 nmap ]l  <Plug>(qf_loc_next)
 " }}}
 " }}}
-
 " Keybindings {{{
 nnoremap Y y$
 
@@ -221,7 +210,6 @@ nnoremap <leader><down> :resize -10<CR>
 
 set pastetoggle=<F2>
 " }}}
-
 " Basic {{{
 filetype plugin indent on
 set hidden
@@ -274,7 +262,6 @@ set diffopt=vertical
 
 set omnifunc=syntaxcomplete#Complete
 " }}}
-
 " Commands {{{
 command! -nargs=0 ConfigVs execute ':vsplit' . config
 command! -nargs=0 Config execute ':edit' . config
@@ -292,7 +279,6 @@ function! <SID>SynStack()
     echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 " }}}
-
 " Navigate to the next fold {{{
 function! NextClosedFold(dir)
     let cmd = 'norm!z' . a:dir
@@ -311,7 +297,6 @@ endfunction
 nnoremap <silent> <leader>zj :call NextClosedFold('j')<cr>
 nnoremap <silent> <leader>zk :call NextClosedFold('k')<cr>
 " }}}
-
 " Grepping {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
@@ -329,15 +314,8 @@ endfunction
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
 command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
-augroup quickfix
-    autocmd!
-    autocmd QuickFixCmdPost cgetexpr cwindow
-    autocmd QuickFixCmdPost lgetexpr lwindow
-augroup END
-
 nnoremap <leader>f :Grep<space>
 " }}}
-
 " Terminal {{{
 nnoremap <silent> <M-t> :call TermToggle(12)<CR>
 inoremap <silent> <M-t> <Esc>:call TermToggle(12)<CR>
@@ -368,14 +346,13 @@ function! TermToggle(height)
 endfunction
 " }}}
 " }}}
-
 " Appearance {{{
 set cursorline
 let &colorcolumn=join(range(101,999), ",")
 set termguicolors
 set t_Co=256
-let g:gruvbox_material_disable_italic_comment = 1
-colorscheme gruvbox-material
+let g:gruvbox_invert_selection = 0
+colorscheme PaperColor
 
 " Statusline {{{
 function! GitStatus()
@@ -401,11 +378,9 @@ set statusline+=\ %l/%L\ :\ %c
 set statusline+=\ %*
 " }}}
 " }}}
-
 " Autocommands {{{
 augroup basic
     autocmd!
     autocmd FocusLost,BufLeave * silent! update
 augroup end
 " }}}
-

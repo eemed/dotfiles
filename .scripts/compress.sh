@@ -12,7 +12,7 @@ for file in "$@"; do
     filename="${filename%.*}"
     if [ "$extension" = "png" ]; then
         echo "Converting '$filename.$extension'."
-        convert -format dds -define dds:compression=dxt1 $file $out/$filename.dds
+        convert "$file" -format dds -define dd:mipmaps=1 -define dds:compression=dxt5 "DDS:$out/$filename.dds"
     else
         echo "Skipping '$filename.$extension'."
     fi
