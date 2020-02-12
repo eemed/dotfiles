@@ -8,31 +8,37 @@
 let mapleader = "\ "
 let config = "~/.config/nvim/init.vim"
 let g:python3_host_prog = "/usr/bin/python3"
+" au group {{{
+augroup MyAutocmds
+    autocmd!
+augroup end
+" }}}
 " }}}
 " Autoinstall vim-plug {{{
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
     silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
                 \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
+    autocmd MyAutocmds VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
 endif
 " }}}
 " Plugins {{{
 call plug#begin('~/.config/nvim/plugged')
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'
-Plug 'editorconfig/editorconfig-vim'
 
-Plug 'NLKNguyen/papercolor-theme'
+Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
 
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
 Plug 'tpope/vim-dispatch'                               " Async jobs
-
 Plug 'wellle/targets.vim'                               " More text objects
 Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'justinmk/vim-dirvish'
-Plug 'romainl/vim-qf'
+Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
+Plug 'romainl/vim-qf'                                   " Better quickfix window
+Plug 'editorconfig/editorconfig-vim'                    " Respect editorconfig
+Plug 'ludovicchabant/vim-gutentags'                     " Tags
+Plug 'norcalli/nvim-colorizer.lua'                      " Colors
 
 Plug 'SirVer/ultisnips'                                 " Snippets
 Plug 'honza/vim-snippets'
@@ -40,9 +46,6 @@ Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
 Plug 'junegunn/vim-easy-align'                          " Align stuff
-
-Plug 'ludovicchabant/vim-gutentags'                     " Tags
-Plug 'norcalli/nvim-colorizer.lua'                      " Colors
 
 " Compiler to use with dispatch for erlang
 Plug 'vim-erlang/vim-erlang-compiler'
@@ -144,9 +147,6 @@ nmap ga <Plug>(LiveEasyAlign)
 " }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
-" }}}
-" dispatch {{{
-nnoremap <leader>r :Start<CR>
 " }}}
 " vim-qf {{{
 nmap [q <Plug>(qf_qf_previous)
@@ -260,6 +260,7 @@ set foldmethod=marker
 set diffopt=vertical
 
 set omnifunc=syntaxcomplete#Complete
+autocmd MyAutocmds FocusLost,BufLeave * silent! update
 " }}}
 " Commands {{{
 command! -nargs=0 ConfigVs execute ':vsplit' . config
@@ -269,6 +270,31 @@ nnoremap <leader>c :ConfigVs<CR>
 " Recursively create directories to the new file
 command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <args>
 
+" Make on save {{{
+let g:makeonsave = []
+function! ToggleMakeOnSave()
+    if get(g:makeonsave, &ft, '') == &ft
+        call remove(g:makeonsave, &ft)
+        echom 'MakeOnSave disabled'
+    else
+        call add(g:makeonsave, &ft)
+        echom 'MakeOnSave enabled'
+    endif
+endfunction
+
+function! MakeOnSave()
+    if get(g:makeonsave, &ft, '') == &ft
+        if exists('g:loaded_dispatch')
+            :Make
+        else
+            :make
+        endif
+    endif
+endfunction
+
+autocmd MyAutocmds BufWritePost * call MakeOnSave()
+command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
+" }}}
 " List highlight groups {{{
 nmap <leader>sp :call <SID>SynStack()<CR>
 function! <SID>SynStack()
@@ -374,10 +400,4 @@ set statusline+=\ %{&ft}\ \|
 set statusline+=\ %l/%L\ :\ %c
 set statusline+=\ %*
 " }}}
-" }}}
-" Autocommands {{{
-augroup basic
-    autocmd!
-    autocmd FocusLost,BufLeave * silent! update
-augroup end
 " }}}
