@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=manpdf
+GenericName=manual reader
+Comment=A pdf manual reader
+Categories=Utility;
+TryExec=manpdf
+Exec=manpdf
+Icon=evince
+Keywords=x;x11;pdf;

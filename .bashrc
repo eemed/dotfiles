@@ -56,27 +56,11 @@ bind '"\C-z":"fg\015"'
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/.local/lib
 
 # Prompt
-# export PS1="\[\033[38;5;2m\]\u\[$(tput sgr0)\] \[$(tput sgr0)\]\[\033[38;5;12m\]\w\[$(tput sgr0)\]\[\033[38;5;7m\] \\$ \[$(tput sgr0)\]"
-
-export PS1="${debian_chroot:+($debian_chroot)}[\[\033[01;32m\]\u@\h \[\033[01;34m\]\w\[\033[00m\]]()\$ "
+export PS1="${debian_chroot:+($debian_chroot)}[\[\033[01;32m\]\u@\h \[\033[01;34m\]\w\[\033[00m\]]\$ "
 
 # Default editor and pager
 VISUAL=nvim; export VISUAL EDITOR=nvim; export EDITOR
 PAGER=less; export PAGER
-
-# Set colors on new terminals
-if test -f ~/.cache/paleta/colors ; then
-  { read -r < ~/.cache/paleta/colors; printf %b "$REPLY"; } & disown
-fi
-
-# Less
-export LESS_TERMCAP_mb=$'\E[6m'                # begin blinking
-export LESS_TERMCAP_md=$'\E[37m'               # begin bold
-export LESS_TERMCAP_us=$'\E[4;37m'             # begin underline
-export LESS_TERMCAP_so=$'\E[1;1;47m\E[1;1;30m' # begin standout-mode - info box
-export LESS_TERMCAP_me=$'\E[0m'                # end mode
-export LESS_TERMCAP_ue=$'\E[0m'                # end underline
-export LESS_TERMCAP_se=$'\E[0m'                # end standout-mode
 
 # My aliases
 alias ll="ls -l"
@@ -87,10 +71,8 @@ alias vim="nvim"
 alias g="git"
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
 alias hgrep="history | grep --color=auto"
+alias headphones="sudo rmmod btusb ; sudo modprobe btusb"
 function cdl(){ cd $1; ls -l;}
-
-# Keyboard
-xset r rate 200 30
 
 if test -f ~/.bashrc_personal ; then
     source ~/.bashrc_personal

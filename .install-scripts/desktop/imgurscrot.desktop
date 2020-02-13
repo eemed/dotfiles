@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Imgur scrot
+GenericName=Screenshot uploader
+Comment=Upload screenshot to imgur
+Categories=Utility;
+TryExec=imgurscrot
+Exec=imgurscrot
+Icon=camera
+Keywords=x;x11;
