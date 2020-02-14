@@ -285,9 +285,9 @@ endfunction
 function! MakeOnSave()
     if get(g:makeonsave, &ft, '') == &ft
         if exists('g:loaded_dispatch')
-            :Make
+            Make
         else
-            :make
+            make
         endif
     endif
 endfunction
