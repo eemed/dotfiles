@@ -97,7 +97,7 @@ function! SimilarFZF()
         return
     endtry
     if l:files != ''
-        call fzf#run(fzf#wrap({'source': 
+        call fzf#run(fzf#wrap({'source':
                     \  split(globpath('.', '**/' . l:filename .'*')),
                     \ 'down' : '20%'}))
     else
@@ -200,7 +200,7 @@ cabbrev WQA wqa
 tnoremap <Esc> <C-\><C-n>
 
 " Strip whitspace
-nnoremap <leader>S :%s/\s\+$//e<CR>
+nnoremap <leader>s :%s/\s\+$//e<CR>
 
 nnoremap <leader><right> :vertical resize +10<CR>
 nnoremap <leader><left> :vertical resize -10<CR>
@@ -296,7 +296,7 @@ autocmd MyAutocmds BufWritePost * call MakeOnSave()
 command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
 " }}}
 " List highlight groups {{{
-nmap <leader>sp :call <SID>SynStack()<CR>
+nmap <leader>S :call <SID>SynStack()<CR>
 function! <SID>SynStack()
     if !exists("*synstack")
         return
