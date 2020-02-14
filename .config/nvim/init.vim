@@ -199,8 +199,12 @@ cabbrev WQA wqa
 " Terminal mode esc
 tnoremap <Esc> <C-\><C-n>
 
-" Strip whitspace
-nnoremap <leader>s :%s/\s\+$//e<CR>
+function! StripWhitespace()
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
+endfunction
+nnoremap <leader>s :call StripWhitespace()<cr>
 
 nnoremap <leader><right> :vertical resize +10<CR>
 nnoremap <leader><left> :vertical resize -10<CR>
