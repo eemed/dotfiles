@@ -141,6 +141,9 @@ let g:gutentags_file_list_command = {
             \   },
             \ }
 " }}}
+" vim-dispatch {{{
+let g:dispatch_no_tmux_make = 1
+" }}}
 " vim-easy-align {{{
 xmap ga <Plug>(LiveEasyAlign)
 nmap ga <Plug>(LiveEasyAlign)
