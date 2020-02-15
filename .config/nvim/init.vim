@@ -12,27 +12,24 @@ augroup end
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
     silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
                 \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd MyAutocmds VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
+    autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
 endif
 " }}}
 " Plugins {{{
 call plug#begin('~/.config/nvim/plugged')
-" Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
-" Plug 'tmux-plugins/vim-tmux-focus-events'
-
 Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
 
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
-" Plug 'tpope/vim-dispatch'                               " Async jobs
+Plug 'tpope/vim-dispatch'                               " Async jobs
+
 Plug 'wellle/targets.vim'                               " More text objects
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
 Plug 'romainl/vim-qf'                                   " Better quickfix window
 Plug 'editorconfig/editorconfig-vim'                    " Respect editorconfig
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
-Plug 'norcalli/nvim-colorizer.lua'                      " Colors
 
 Plug 'SirVer/ultisnips'                                 " Snippets
 Plug 'honza/vim-snippets'
@@ -53,12 +50,6 @@ call plug#end()
 " editorconfig {{{
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 " }}}
-" " vim-tmux-navigator {{{
-" tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
-" tnoremap <silent> <c-j> <C-\><C-n>:TmuxNavigateDown<cr>
-" tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
-" tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
-" " }}}
 " ultisnips {{{
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
@@ -135,9 +126,6 @@ let g:gutentags_file_list_command = {
             \   },
             \ }
 " }}}
-" " vim-dispatch {{{
-" let g:dispatch_no_tmux_make = 1
-" " }}}
 " vim-easy-align {{{
 xmap ga <Plug>(LiveEasyAlign)
 nmap ga <Plug>(LiveEasyAlign)
@@ -154,6 +142,16 @@ nmap ]l  <Plug>(qf_loc_next)
 " }}}
 " }}}
 " Keybindings {{{
+nnoremap <c-h> <c-w>h
+nnoremap <c-j> <c-w>j
+nnoremap <c-k> <c-w>k
+nnoremap <c-l> <c-w>l
+
+tnoremap <c-h> <C-\><C-n><c-w>h
+tnoremap <c-j> <C-\><C-n><c-w>j
+tnoremap <c-k> <C-\><C-n><c-w>k
+tnoremap <c-l> <C-\><C-n><c-w>l
+
 nnoremap Y y$
 
 " Move text
@@ -162,7 +160,6 @@ xnoremap K :move '<-2<CR>gv=gv
 xnoremap < <gv
 xnoremap > >gv
 
-nnoremap <leader>a ggVG
 nnoremap <leader>q :q<CR>
 nnoremap <BS> <C-^>
 
@@ -195,6 +192,7 @@ cabbrev WQA wqa
 
 " Terminal mode esc
 tnoremap <Esc> <C-\><C-n>
+nnoremap <leader>t :vsplit <Bar> terminal<CR>
 
 function! StripWhitespace()
     let l:save = winsaveview()
@@ -203,10 +201,10 @@ function! StripWhitespace()
 endfunction
 nnoremap <leader>s :call StripWhitespace()<cr>
 
-nnoremap <leader><right> :vertical resize +10<CR>
-nnoremap <leader><left> :vertical resize -10<CR>
-nnoremap <leader><up> :resize +10<CR>
-nnoremap <leader><down> :resize -10<CR>
+nnoremap <c-right>  :vertical resize +10<CR>
+nnoremap <c-left>   :vertical resize -10<CR>
+nnoremap <c-up>     :resize +10<CR>
+nnoremap <c-down>   :resize -10<CR>
 
 set pastetoggle=<F2>
 " }}}
@@ -296,24 +294,6 @@ endfunction
 autocmd MyAutocmds BufWritePost * call MakeOnSave()
 command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
 " }}}
-" Navigate to the next fold {{{
-function! NextClosedFold(dir)
-    let cmd = 'norm!z' . a:dir
-    let view = winsaveview()
-    let [l0, l, open] = [0, view.lnum, 1]
-    while l != l0 && open
-        exe cmd
-        let [l0, l] = [l, line('.')]
-        let open = foldclosed(l) < 0
-    endwhile
-    if open
-        call winrestview(view)
-    endif
-endfunction
-
-nnoremap <silent> <leader>zj :call NextClosedFold('j')<cr>
-nnoremap <silent> <leader>zk :call NextClosedFold('k')<cr>
-" }}}
 " Grepping {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
@@ -334,12 +314,6 @@ command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 nnoremap <leader>f :Grep<space>
 " }}}
 " Terminal {{{
-nnoremap <silent> <M-t> :call TermToggle(12)<CR>
-inoremap <silent> <M-t> <Esc>:call TermToggle(12)<CR>
-xnoremap <silent> <M-t> <Esc>:call TermToggle(12)<CR>
-tnoremap <silent> <M-t> <C-\><C-n>:call TermToggle(12)<CR>
-
-" Terminal Function
 let g:term_buf = 0
 let g:term_win = 0
 function! TermToggle(height)
@@ -361,6 +335,11 @@ function! TermToggle(height)
         let g:term_win = win_getid()
     endif
 endfunction
+
+nnoremap <silent> <c-space> :call TermToggle(12)<CR>
+inoremap <silent> <c-space> <Esc>:call TermToggle(12)<CR>
+xnoremap <silent> <c-space> <Esc>:call TermToggle(12)<CR>
+tnoremap <silent> <c-space> <C-\><C-n>:call TermToggle(12)<CR>
 " }}}
 " }}}
 " Appearance {{{

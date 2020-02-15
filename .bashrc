@@ -51,8 +51,6 @@ export CM_LAUNCHER="rofi"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_USER_CONFIG_DIR="$HOME/.config"
 
-# c-z to fg
-bind '"\C-z":"fg\015"'
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/.local/lib
 
 # Prompt
@@ -98,4 +96,5 @@ fi
 
 if test -f ~/.scripts/f.sh ; then
     source ~/.scripts/f.sh
+    bind -x '"\C-z":"f jobs"'
 fi
