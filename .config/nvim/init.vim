@@ -1,9 +1,3 @@
-"    (_)___  (_) /__   __(_)___ ___
-"   / / __ \/ / __/ | / / / __ `__ \
-"  / / / / / / /__| |/ / / / / / / /
-" /_/_/ /_/_/\__(_)___/_/_/ /_/ /_/
-"
-"
 " Configurable {{{
 let mapleader = "\ "
 let config = "~/.config/nvim/init.vim"
@@ -23,15 +17,15 @@ endif
 " }}}
 " Plugins {{{
 call plug#begin('~/.config/nvim/plugged')
-Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
-Plug 'tmux-plugins/vim-tmux-focus-events'
+" Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
+" Plug 'tmux-plugins/vim-tmux-focus-events'
 
 Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
 
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
-Plug 'tpope/vim-dispatch'                               " Async jobs
+" Plug 'tpope/vim-dispatch'                               " Async jobs
 Plug 'wellle/targets.vim'                               " More text objects
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
@@ -59,12 +53,12 @@ call plug#end()
 " editorconfig {{{
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 " }}}
-" vim-tmux-navigator {{{
-tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
-tnoremap <silent> <c-j> <C-\><C-n>:TmuxNavigateDown<cr>
-tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
-tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
-" }}}
+" " vim-tmux-navigator {{{
+" tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
+" tnoremap <silent> <c-j> <C-\><C-n>:TmuxNavigateDown<cr>
+" tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
+" tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
+" " }}}
 " ultisnips {{{
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
@@ -141,9 +135,9 @@ let g:gutentags_file_list_command = {
             \   },
             \ }
 " }}}
-" vim-dispatch {{{
-let g:dispatch_no_tmux_make = 1
-" }}}
+" " vim-dispatch {{{
+" let g:dispatch_no_tmux_make = 1
+" " }}}
 " vim-easy-align {{{
 xmap ga <Plug>(LiveEasyAlign)
 nmap ga <Plug>(LiveEasyAlign)
@@ -294,22 +288,13 @@ function! MakeOnSave()
         if exists('g:loaded_dispatch')
             Make
         else
-            make
+            silent make
         endif
     endif
 endfunction
 
 autocmd MyAutocmds BufWritePost * call MakeOnSave()
 command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
-" }}}
-" List highlight groups {{{
-nmap <leader>S :call <SID>SynStack()<CR>
-function! <SID>SynStack()
-    if !exists("*synstack")
-        return
-    endif
-    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-endfunc
 " }}}
 " Navigate to the next fold {{{
 function! NextClosedFold(dir)
