@@ -1,7 +1,28 @@
-" au group {{{
-augroup MyAutocmds
-    autocmd!
-augroup end
+" Plugins {{{
+call plug#begin('~/.config/nvim/plugged')
+
+Plug 'kassio/neoterm'
+Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
+Plug 'tpope/vim-commentary'                             " Commenting
+Plug 'tpope/vim-fugitive'                               " Git integration
+Plug 'tpope/vim-unimpaired'                             " Bindings
+Plug 'tpope/vim-dispatch'                               " Async jobs
+Plug 'wellle/targets.vim'                               " More text objects
+Plug 'machakann/vim-sandwich'                           " Surround objects
+Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
+Plug 'romainl/vim-qf'                                   " Better quickfix window
+Plug 'editorconfig/editorconfig-vim'                    " Respect editorconfig
+Plug 'ludovicchabant/vim-gutentags'                     " Tags
+Plug 'SirVer/ultisnips'                                 " Snippets
+Plug 'honza/vim-snippets'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
+Plug 'junegunn/vim-easy-align'                          " Align stuff
+Plug 'vim-erlang/vim-erlang-compiler'
+Plug 'Glench/Vim-Jinja2-Syntax'
+Plug 'MaxMEllon/vim-jsx-pretty'
+
+call plug#end()
 " }}}
 " Autoinstall vim-plug {{{
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
@@ -10,36 +31,85 @@ if empty(glob('~/.config/nvim/autoload/plug.vim'))
     autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
 endif
 " }}}
-" Plugins {{{
-call plug#begin('~/.config/nvim/plugged')
-Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
+" au group {{{
+augroup MyAutocmds
+    autocmd!
+augroup end
+" }}}
+" Keybindings {{{
+let mapleader = "\ "
+nnoremap <c-h> <c-w>h
+nnoremap <c-j> <c-w>j
+nnoremap <c-k> <c-w>k
+nnoremap <c-l> <c-w>l
 
-Plug 'tpope/vim-commentary'                             " Commenting
-Plug 'tpope/vim-fugitive'                               " Git integration
-Plug 'tpope/vim-unimpaired'                             " Bindings
-Plug 'tpope/vim-dispatch'                               " Async jobs
+tnoremap <c-h> <C-\><C-n><c-w>h
+tnoremap <c-j> <C-\><C-n><c-w>j
+tnoremap <c-k> <C-\><C-n><c-w>k
+tnoremap <c-l> <C-\><C-n><c-w>l
 
-Plug 'wellle/targets.vim'                               " More text objects
-Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
-Plug 'romainl/vim-qf'                                   " Better quickfix window
-Plug 'editorconfig/editorconfig-vim'                    " Respect editorconfig
-Plug 'ludovicchabant/vim-gutentags'                     " Tags
+" Sorting
+function! SortLines(type) abort
+    '[,']sort i
+endfunction
+xnoremap <silent> gs :sort i<cr>
+nnoremap <silent> gs :set opfunc=SortLines<cr>g@
 
-Plug 'SirVer/ultisnips'                                 " Snippets
-Plug 'honza/vim-snippets'
+nnoremap Y y$
 
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
-Plug 'junegunn/vim-easy-align'                          " Align stuff
+" Move text
+xnoremap J :move '>+1<CR>gv=gv
+xnoremap K :move '<-2<CR>gv=gv
+xnoremap < <gv
+xnoremap > >gv
 
-" Compiler to use with dispatch for erlang
-Plug 'vim-erlang/vim-erlang-compiler'
+nnoremap <leader>q :q<CR>
+nnoremap <BS> <C-^>
 
-" jinja 2 syntax. Used alot in ansible.
-Plug 'Glench/Vim-Jinja2-Syntax'
-Plug 'MaxMEllon/vim-jsx-pretty'
-call plug#end()
+" Copy or move text. Start at where you want to copy the text to
+" find the block you want to copy using ? or / select it and use these bindings
+" t = copy, m = move
+xnoremap $t :t''<CR>
+xnoremap $T :T''<CR>
+xnoremap $m :m''<CR>
+xnoremap $M :M''<CR>
+
+" Disable exmode
+nnoremap Q <nop>
+
+" Saving
+noremap  <silent><c-s> <Esc>:update<CR>
+inoremap <silent><c-s> <Esc>:update<CR>a
+xnoremap <silent><c-s> <Esc>:update<CR>gv
+
+" Too many mistakes
+cabbrev W   w
+cabbrev Q   q
+cabbrev Qa  qa
+cabbrev QA  qa
+cabbrev Wq  wq
+cabbrev WQ  wq
+cabbrev Wqa wqa
+cabbrev WQa wqa
+cabbrev WQA wqa
+
+" Terminal mode esc
+tnoremap <Esc> <C-\><C-n>
+" nnoremap <leader>t :vsplit <Bar> terminal<CR>
+
+function! StripWhitespace()
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
+endfunction
+nnoremap <leader>s :call StripWhitespace()<cr>
+
+nnoremap <c-right>  :vertical resize +10<CR>
+nnoremap <c-left>   :vertical resize -10<CR>
+nnoremap <c-up>     :resize +10<CR>
+nnoremap <c-down>   :resize -10<CR>
+
+set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
 " editorconfig {{{
@@ -135,81 +205,16 @@ nmap ]q  <Plug>(qf_qf_next)
 nmap [l <Plug>(qf_loc_previous)
 nmap ]l  <Plug>(qf_loc_next)
 " }}}
+" neoterm {{{
+let g:neoterm_keep_term_open = 0
+let g:neoterm_autoscroll = 1
+let g:neoterm_default_mod = 'vertical'
+" Use gx{text-object} in normal mode
+nmap gx <Plug>(neoterm-repl-send)
+
+" Send selected contents in visual mode.
+xmap gx <Plug>(neoterm-repl-send)
 " }}}
-" Keybindings {{{
-let mapleader = "\ "
-nnoremap <c-h> <c-w>h
-nnoremap <c-j> <c-w>j
-nnoremap <c-k> <c-w>k
-nnoremap <c-l> <c-w>l
-
-tnoremap <c-h> <C-\><C-n><c-w>h
-tnoremap <c-j> <C-\><C-n><c-w>j
-tnoremap <c-k> <C-\><C-n><c-w>k
-tnoremap <c-l> <C-\><C-n><c-w>l
-
-" Sorting
-function! SortLines(type) abort
-    '[,']sort i
-endfunction
-xnoremap <silent> gs :sort i<cr>
-nnoremap <silent> gs :set opfunc=SortLines<cr>g@
-
-nnoremap Y y$
-
-" Move text
-xnoremap J :move '>+1<CR>gv=gv
-xnoremap K :move '<-2<CR>gv=gv
-xnoremap < <gv
-xnoremap > >gv
-
-nnoremap <leader>q :q<CR>
-nnoremap <BS> <C-^>
-
-" Copy or move text. Start at where you want to copy the text to
-" find the block you want to copy using ? or / select it and use these bindings
-" t = copy, m = move
-xnoremap $t :t''<CR>
-xnoremap $T :T''<CR>
-xnoremap $m :m''<CR>
-xnoremap $M :M''<CR>
-
-" Disable exmode
-nnoremap Q <nop>
-
-" Saving
-noremap  <silent><c-s> <Esc>:update<CR>
-inoremap <silent><c-s> <Esc>:update<CR>a
-xnoremap <silent><c-s> <Esc>:update<CR>gv
-
-" Too many mistakes
-cabbrev W   w
-cabbrev Q   q
-cabbrev Qa  qa
-cabbrev QA  qa
-cabbrev Wq  wq
-cabbrev WQ  wq
-cabbrev Wqa wqa
-cabbrev WQa wqa
-cabbrev WQA wqa
-
-" Terminal mode esc
-tnoremap <Esc> <C-\><C-n>
-nnoremap <leader>t :vsplit <Bar> terminal<CR>
-
-function! StripWhitespace()
-    let l:save = winsaveview()
-    keeppatterns %s/\s\+$//e
-    call winrestview(l:save)
-endfunction
-nnoremap <leader>s :call StripWhitespace()<cr>
-
-nnoremap <c-right>  :vertical resize +10<CR>
-nnoremap <c-left>   :vertical resize -10<CR>
-nnoremap <c-up>     :resize +10<CR>
-nnoremap <c-down>   :resize -10<CR>
-
-set pastetoggle=<F2>
 " }}}
 " Basic {{{
 let g:python3_host_prog = "/usr/bin/python3"
@@ -275,9 +280,8 @@ nnoremap <leader>c :ConfigVs<CR>
 command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <args>
 
 " Open ftplugin {{{
-" TODO make path for $VIMFILES
 command! -nargs=? -complete=filetype EditFileTypePlugin
-            \ execute 'keepj vsplit $VIMFILES/after/ftplugin/' .
+            \ execute 'keepj vsplit ~/.config/nvim/after/ftplugin/' .
             \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 " }}}
 " Make on save {{{

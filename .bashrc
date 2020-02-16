@@ -96,5 +96,5 @@ fi
 
 if test -f ~/.scripts/f.sh ; then
     source ~/.scripts/f.sh
-    bind -x '"\C-z":"f jobs"'
+    alias j="f jobs"
 fi
