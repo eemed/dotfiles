@@ -1,12 +1,7 @@
-" Configurable {{{
-let mapleader = "\ "
-let config = "~/.config/nvim/init.vim"
-let g:python3_host_prog = "/usr/bin/python3"
 " au group {{{
 augroup MyAutocmds
     autocmd!
 augroup end
-" }}}
 " }}}
 " Autoinstall vim-plug {{{
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
@@ -142,6 +137,7 @@ nmap ]l  <Plug>(qf_loc_next)
 " }}}
 " }}}
 " Keybindings {{{
+let mapleader = "\ "
 nnoremap <c-h> <c-w>h
 nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
@@ -151,6 +147,13 @@ tnoremap <c-h> <C-\><C-n><c-w>h
 tnoremap <c-j> <C-\><C-n><c-w>j
 tnoremap <c-k> <C-\><C-n><c-w>k
 tnoremap <c-l> <C-\><C-n><c-w>l
+
+" Sorting
+function! SortLines(type) abort
+    '[,']sort i
+endfunction
+xnoremap <silent> gs :sort i<cr>
+nnoremap <silent> gs :set opfunc=SortLines<cr>g@
 
 nnoremap Y y$
 
@@ -209,6 +212,8 @@ nnoremap <c-down>   :resize -10<CR>
 set pastetoggle=<F2>
 " }}}
 " Basic {{{
+let g:python3_host_prog = "/usr/bin/python3"
+
 filetype plugin indent on
 set hidden
 set laststatus=2
@@ -262,13 +267,19 @@ set omnifunc=syntaxcomplete#Complete
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
 " }}}
 " Commands {{{
-command! -nargs=0 ConfigVs execute ':vsplit' . config
-command! -nargs=0 Config execute ':edit' . config
+command! -nargs=0 ConfigVs execute ':vsplit' . $MYVIMRC
+command! -nargs=0 Config execute ':edit' . $MYVIMRC
 nnoremap <leader>c :ConfigVs<CR>
 
 " Recursively create directories to the new file
 command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <args>
 
+" Open ftplugin {{{
+" TODO make path for $VIMFILES
+command! -nargs=? -complete=filetype EditFileTypePlugin
+            \ execute 'keepj vsplit $VIMFILES/after/ftplugin/' .
+            \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
+" }}}
 " Make on save {{{
 let g:makeonsave = []
 function! ToggleMakeOnSave()
