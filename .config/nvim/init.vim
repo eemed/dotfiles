@@ -237,8 +237,8 @@ set lazyredraw
 
 " Completion
 set pumheight=10
-set shortmess+=c
-set completeopt+=menuone,noselect,longest
+" set shortmess+=c
+set completeopt+=menuone,longest
 
 " Indent
 set autoindent
