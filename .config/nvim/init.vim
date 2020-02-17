@@ -1,6 +1,7 @@
 " Plugins {{{
 call plug#begin('~/.config/nvim/plugged')
 
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'christoomey/vim-tmux-runner'                      " Run commands in tmux
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
@@ -23,8 +24,7 @@ Plug 'junegunn/vim-easy-align'                          " Align stuff
 Plug 'Glench/Vim-Jinja2-Syntax'
 Plug 'MaxMEllon/vim-jsx-pretty'
 
-call plug#end()
-" }}}
+call plug#end() " }}}
 " Autoinstall vim-plug {{{
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
     silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
@@ -32,11 +32,9 @@ if empty(glob('~/.config/nvim/autoload/plug.vim'))
     autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
 endif
 " }}}
-" au group {{{
-augroup MyAutocmds
+augroup MyAutocmds " {{{
     autocmd!
-augroup end
-" }}}
+augroup end " }}}
 " Keybindings {{{
 let mapleader = "\ "
 
@@ -104,6 +102,16 @@ nnoremap <c-down>   :resize -10<CR>
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
+" deoplete {{{
+imap <expr> <c-n> deoplete#manual_complete()
+let g:deoplete#enable_at_startup = 1
+call deoplete#custom#option({
+            \ 'auto_complete': v:false,
+            \ })
+call deoplete#custom#var('buffer', 'require_same_filetype', v:false)
+call deoplete#custom#source('file', 'rank', 1000)
+call deoplete#custom#source('ultisnips', 'rank', 900)
+" }}}
 " vim-tmux-runner {{{
 let g:VtrPercentage = 35
 let g:VtrOrientation = "h"
