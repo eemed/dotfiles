@@ -20,7 +20,6 @@ Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
 Plug 'junegunn/vim-easy-align'                          " Align stuff
-Plug 'vim-erlang/vim-erlang-compiler'
 Plug 'Glench/Vim-Jinja2-Syntax'
 Plug 'MaxMEllon/vim-jsx-pretty'
 
@@ -56,6 +55,7 @@ xnoremap K :move '<-2<CR>gv=gv
 xnoremap < <gv
 xnoremap > >gv
 
+nnoremap <leader>S :source %<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <BS> <C-^>
 
