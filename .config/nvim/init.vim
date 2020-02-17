@@ -1,7 +1,9 @@
 " Plugins {{{
 call plug#begin('~/.config/nvim/plugged')
 
-Plug 'kassio/neoterm'
+Plug 'christoomey/vim-tmux-runner'                      " Run commands in tmux
+Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
+Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
@@ -38,15 +40,6 @@ augroup end
 " }}}
 " Keybindings {{{
 let mapleader = "\ "
-nnoremap <c-h> <c-w>h
-nnoremap <c-j> <c-w>j
-nnoremap <c-k> <c-w>k
-nnoremap <c-l> <c-w>l
-
-tnoremap <c-h> <C-\><C-n><c-w>h
-tnoremap <c-j> <C-\><C-n><c-w>j
-tnoremap <c-k> <C-\><C-n><c-w>k
-tnoremap <c-l> <C-\><C-n><c-w>l
 
 " Sorting
 function! SortLines(type) abort
@@ -95,7 +88,6 @@ cabbrev WQA wqa
 
 " Terminal mode esc
 tnoremap <Esc> <C-\><C-n>
-" nnoremap <leader>t :vsplit <Bar> terminal<CR>
 
 function! StripWhitespace()
     let l:save = winsaveview()
@@ -112,6 +104,18 @@ nnoremap <c-down>   :resize -10<CR>
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
+" vim-tmux-runner {{{
+let g:VtrPercentage = 35
+let g:VtrOrientation = "h"
+nnoremap gr :VtrSendCommandToRunner!<space>
+xnoremap gr :VtrSendLinesToRunner!<CR>
+" }}}
+" vim-tmux-navigator {{{
+tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
+tnoremap <silent> <c-j> <C-\><C-n>:TmuxNavigateDown<cr>
+tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
+tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
+" }}}
 " editorconfig {{{
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 " }}}
@@ -204,16 +208,6 @@ nmap ]q  <Plug>(qf_qf_next)
 
 nmap [l <Plug>(qf_loc_previous)
 nmap ]l  <Plug>(qf_loc_next)
-" }}}
-" neoterm {{{
-let g:neoterm_keep_term_open = 0
-let g:neoterm_autoscroll = 1
-let g:neoterm_default_mod = 'vertical'
-" Use gx{text-object} in normal mode
-nmap gx <Plug>(neoterm-repl-send)
-
-" Send selected contents in visual mode.
-xmap gx <Plug>(neoterm-repl-send)
 " }}}
 " }}}
 " Basic {{{
@@ -327,34 +321,6 @@ command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
 command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
-" }}}
-" Terminal {{{
-let g:term_buf = 0
-let g:term_win = 0
-function! TermToggle(height)
-    if win_gotoid(g:term_win)
-        hide
-    else
-        botright new
-        exec "resize " . a:height
-        try
-            exec "buffer " . g:term_buf
-        catch
-            call termopen($SHELL, {"detach": 0})
-            let g:term_buf = bufnr("")
-            set nonumber
-            set norelativenumber
-            set signcolumn=no
-        endtry
-        startinsert!
-        let g:term_win = win_getid()
-    endif
-endfunction
-
-nnoremap <silent> <c-space> :call TermToggle(12)<CR>
-inoremap <silent> <c-space> <Esc>:call TermToggle(12)<CR>
-xnoremap <silent> <c-space> <Esc>:call TermToggle(12)<CR>
-tnoremap <silent> <c-space> <C-\><C-n>:call TermToggle(12)<CR>
 " }}}
 " }}}
 " Appearance {{{
