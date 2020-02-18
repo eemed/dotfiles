@@ -10,6 +10,7 @@ Plug 'honza/vim-snippets'                               " Actual snippets
 Plug 'christoomey/vim-tmux-runner'                      " Run commands in tmux
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
+
 Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
