@@ -1,0 +1,8 @@
+snippet #ifn "if not defined"
+	#ifndef `substitute(toupper(expand('%:t')), '\W', '_', 'g')`
+	#define `substitute(toupper(expand('%:t')), '\W', '_', 'g')`
+
+	${0}
+
+	#endif  /* ifndef `substitute(toupper(expand('%:t')), '\W', '_', 'g')` */
+endsnippet

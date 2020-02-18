@@ -1,7 +1,12 @@
 " Plugins {{{
-call plug#begin('~/.config/nvim/plugged')
+let g:vim_dir = fnamemodify($MYVIMRC, ':p:h')
+call plug#begin(g:vim_dir . '/plugged')
 
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dep
+Plug 'tomtom/tlib_vim'                                  " Snippets dep
+Plug 'garbas/vim-snipmate'                              " Snippets
+Plug 'honza/vim-snippets'                               " Actual snippets
+
 Plug 'christoomey/vim-tmux-runner'                      " Run commands in tmux
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
@@ -16,17 +21,15 @@ Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Net
 Plug 'romainl/vim-qf'                                   " Better quickfix window
 Plug 'editorconfig/editorconfig-vim'                    " Respect editorconfig
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
-Plug 'SirVer/ultisnips'                                 " Snippets
-Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
 Plug 'junegunn/vim-easy-align'                          " Align stuff
-Plug 'Glench/Vim-Jinja2-Syntax'
+Plug 'Glench/Vim-Jinja2-Syntax'                         " Syntax files
 Plug 'MaxMEllon/vim-jsx-pretty'
 
 call plug#end() " }}}
 " Autoinstall vim-plug {{{
-if empty(glob('~/.config/nvim/autoload/plug.vim'))
+if empty(glob(g:vim_dir . '/autoload/plug.vim'))
     silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
                 \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
@@ -102,15 +105,10 @@ nnoremap <c-down>   :resize -10<CR>
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
-" deoplete {{{
-imap <expr> <c-n> deoplete#manual_complete()
-let g:deoplete#enable_at_startup = 1
-call deoplete#custom#option({
-            \ 'auto_complete': v:false,
-            \ })
-call deoplete#custom#var('buffer', 'require_same_filetype', v:false)
-call deoplete#custom#source('file', 'rank', 1000)
-call deoplete#custom#source('ultisnips', 'rank', 900)
+" snipmate {{{
+command! -nargs=? -complete=filetype EditSnippets
+            \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
+            \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
 " }}}
 " vim-tmux-runner {{{
 let g:VtrPercentage = 35
@@ -246,7 +244,7 @@ set lazyredraw
 " Completion
 set pumheight=10
 " set shortmess+=c
-set completeopt+=menuone,longest
+set completeopt+=menuone,longest,noselect
 
 " Indent
 set autoindent
@@ -286,7 +284,7 @@ command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <
 
 " Open ftplugin {{{
 command! -nargs=? -complete=filetype EditFileTypePlugin
-            \ execute 'keepj vsplit ~/.config/nvim/after/ftplugin/' .
+            \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
             \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 " }}}
 " Make on save {{{
