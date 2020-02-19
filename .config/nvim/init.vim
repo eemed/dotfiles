@@ -339,6 +339,7 @@ let &colorcolumn=join(range(101,999), ",")
 set termguicolors
 set t_Co=256
 colorscheme PaperColor
+" }}}
 " Statusline {{{
 function! GitStatus()
     return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
@@ -361,5 +362,4 @@ set statusline+=\ %{GitStatus()}
 set statusline+=\ %{&ft}\ \|
 set statusline+=\ %l/%L\ :\ %c
 set statusline+=\ %*
-" }}}
 " }}}
