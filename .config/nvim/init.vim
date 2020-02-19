@@ -5,7 +5,7 @@ call plug#begin(g:vim_dir . '/plugged')
 Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dep
 Plug 'tomtom/tlib_vim'                                  " Snippets dep
 Plug 'garbas/vim-snipmate'                              " Snippets
-Plug 'honza/vim-snippets'                               " Actual snippets
+" Plug 'honza/vim-snippets'                               " Actual snippets
 
 Plug 'christoomey/vim-tmux-runner'                      " Run commands in tmux
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
