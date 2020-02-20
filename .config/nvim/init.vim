@@ -213,8 +213,10 @@ nmap ga <Plug>(LiveEasyAlign)
 runtime macros/sandwich/keymap/surround.vim
 " }}}
 " vim-qf {{{
-
+" https://github.com/romainl/vim-qf/issues/85
 let g:qf_auto_open_quickfix = 0
+autocmd MyAutocmds QuickFixCmdPost make,grep,grepadd,cgetexpr nested cwindow
+autocmd MyAutocmds QuickFixCmdPost make,grep,grepadd,cgetexpr nested lwindow
 nmap [q <Plug>(qf_qf_previous)
 nmap ]q  <Plug>(qf_qf_next)
 
@@ -329,8 +331,8 @@ function! Grep(...)
     return system(join(extend([&grepprg], a:000), ' '))
 endfunction
 
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)|cwindow
-command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)|lwindow
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
 " }}}
