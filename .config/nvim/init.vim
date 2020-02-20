@@ -213,6 +213,8 @@ nmap ga <Plug>(LiveEasyAlign)
 runtime macros/sandwich/keymap/surround.vim
 " }}}
 " vim-qf {{{
+
+let g:qf_auto_open_quickfix = 0
 nmap [q <Plug>(qf_qf_previous)
 nmap ]q  <Plug>(qf_qf_next)
 
@@ -303,7 +305,7 @@ endfunction
 function! MakeOnSave()
     if get(g:makeonsave, &ft, '') == &ft
         if exists('g:loaded_dispatch')
-            Make
+            exe 'Make'|Copen|wincmd p
         else
             silent make
         endif
@@ -327,8 +329,8 @@ function! Grep(...)
     return system(join(extend([&grepprg], a:000), ' '))
 endfunction
 
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
-command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)|cwindow
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)|lwindow
 
 nnoremap <leader>f :Grep<space>
 " }}}
