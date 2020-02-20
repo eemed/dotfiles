@@ -1,33 +1,17 @@
-"    (_)___  (_) /__   __(_)___ ___
-"   / / __ \/ / __/ | / / / __ `__ \
-"  / / / / / / /__| |/ / / / / / / /
-" /_/_/ /_/_/\__(_)___/_/_/ /_/ /_/
-"
-"
-" Configurable {{{
-let mapleader = "\ "
-let config = "~/.config/nvim/init.vim"
-let g:python3_host_prog = "/usr/bin/python3"
-" au group {{{
-augroup MyAutocmds
-    autocmd!
-augroup end
-" }}}
-" }}}
-" Autoinstall vim-plug {{{
-if empty(glob('~/.config/nvim/autoload/plug.vim'))
-    silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
-                \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd MyAutocmds VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
-endif
-" }}}
 " Plugins {{{
-call plug#begin('~/.config/nvim/plugged')
+let g:vim_dir = fnamemodify($MYVIMRC, ':p:h')
+call plug#begin(g:vim_dir . '/plugged')
+
+Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dep
+Plug 'tomtom/tlib_vim'                                  " Snippets dep
+Plug 'garbas/vim-snipmate'                              " Snippets
+" Plug 'honza/vim-snippets'                               " Actual snippets
+
+Plug 'christoomey/vim-tmux-runner'                      " Run commands in tmux
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
-Plug 'tmux-plugins/vim-tmux-focus-events'
+Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 
 Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
-
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
@@ -38,32 +22,109 @@ Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Net
 Plug 'romainl/vim-qf'                                   " Better quickfix window
 Plug 'editorconfig/editorconfig-vim'                    " Respect editorconfig
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
-Plug 'norcalli/nvim-colorizer.lua'                      " Colors
-
-Plug 'SirVer/ultisnips'                                 " Snippets
-Plug 'honza/vim-snippets'
-
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
 Plug 'junegunn/vim-easy-align'                          " Align stuff
-
-" Compiler to use with dispatch for erlang
-Plug 'vim-erlang/vim-erlang-compiler'
-
-" jinja 2 syntax. Used alot in ansible.
-Plug 'Glench/Vim-Jinja2-Syntax'
+Plug 'Glench/Vim-Jinja2-Syntax'                         " Syntax files
 Plug 'MaxMEllon/vim-jsx-pretty'
-call plug#end()
+
+call plug#end() " }}}
+" Autoinstall vim-plug {{{
+if empty(glob(g:vim_dir . '/autoload/plug.vim'))
+    silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+                \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
+endif
+" }}}
+augroup MyAutocmds " {{{
+    autocmd!
+augroup end " }}}
+" Keybindings {{{
+let mapleader = "\ "
+
+" Sorting
+function! SortLines(type) abort
+    '[,']sort i
+endfunction
+xnoremap <silent> gs :sort i<cr>
+nnoremap <silent> gs :set opfunc=SortLines<cr>g@
+
+nnoremap Y y$
+
+" Move text
+xnoremap J :move '>+1<CR>gv=gv
+xnoremap K :move '<-2<CR>gv=gv
+xnoremap < <gv
+xnoremap > >gv
+
+nnoremap <leader>S :source %<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <BS> <C-^>
+
+" Copy or move text. Start at where you want to copy the text to
+" find the block you want to copy using ? or / select it and use these bindings
+" t = copy, m = move
+xnoremap $t :t''<CR>
+xnoremap $T :T''<CR>
+xnoremap $m :m''<CR>
+xnoremap $M :M''<CR>
+
+" Disable exmode
+nnoremap Q <nop>
+
+" Saving
+noremap  <silent><c-s> <Esc>:update<CR>
+inoremap <silent><c-s> <Esc>:update<CR>a
+xnoremap <silent><c-s> <Esc>:update<CR>gv
+
+" Too many mistakes
+cabbrev W   w
+cabbrev Q   q
+cabbrev Qa  qa
+cabbrev QA  qa
+cabbrev Wq  wq
+cabbrev WQ  wq
+cabbrev Wqa wqa
+cabbrev WQa wqa
+cabbrev WQA wqa
+
+" Terminal mode esc
+tnoremap <Esc> <C-\><C-n>
+
+function! StripWhitespace()
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
+endfunction
+nnoremap <leader>s :call StripWhitespace()<cr>
+
+nnoremap <c-right>  :vertical resize +10<CR>
+nnoremap <c-left>   :vertical resize -10<CR>
+nnoremap <c-up>     :resize +10<CR>
+nnoremap <c-down>   :resize -10<CR>
+
+set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
-" editorconfig {{{
-let g:EditorConfig_exclude_patterns = ['fugitive://.*']
+" snipmate {{{
+command! -nargs=? -complete=filetype EditSnippets
+            \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
+            \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
+" }}}
+" vim-tmux-runner {{{
+let g:VtrPercentage = 35
+let g:VtrOrientation = "h"
+nnoremap gr :VtrSendCommandToRunner!<space>
+xnoremap gr :VtrSendLinesToRunner!<CR>
 " }}}
 " vim-tmux-navigator {{{
 tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
 tnoremap <silent> <c-j> <C-\><C-n>:TmuxNavigateDown<cr>
 tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
 tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
+" }}}
+" editorconfig {{{
+let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 " }}}
 " ultisnips {{{
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -97,7 +158,7 @@ function! SimilarFZF()
         return
     endtry
     if l:files != ''
-        call fzf#run(fzf#wrap({'source': 
+        call fzf#run(fzf#wrap({'source':
                     \  split(globpath('.', '**/' . l:filename .'*')),
                     \ 'down' : '20%'}))
     else
@@ -141,6 +202,9 @@ let g:gutentags_file_list_command = {
             \   },
             \ }
 " }}}
+" vim-dispatch {{{
+let g:dispatch_no_tmux_make = 1
+" }}}
 " vim-easy-align {{{
 xmap ga <Plug>(LiveEasyAlign)
 nmap ga <Plug>(LiveEasyAlign)
@@ -156,60 +220,9 @@ nmap [l <Plug>(qf_loc_previous)
 nmap ]l  <Plug>(qf_loc_next)
 " }}}
 " }}}
-" Keybindings {{{
-nnoremap Y y$
-
-" Move text
-xnoremap J :move '>+1<CR>gv=gv
-xnoremap K :move '<-2<CR>gv=gv
-xnoremap < <gv
-xnoremap > >gv
-
-nnoremap <leader>a ggVG
-nnoremap <leader>q :q<CR>
-nnoremap <BS> <C-^>
-
-" Copy or move text. Start at where you want to copy the text to
-" find the block you want to copy using ? or / select it and use these bindings
-" t = copy, m = move
-xnoremap $t :t''<CR>
-xnoremap $T :T''<CR>
-xnoremap $m :m''<CR>
-xnoremap $M :M''<CR>
-
-" Disable exmode
-nnoremap Q <nop>
-
-" Saving
-noremap  <silent><c-s> <Esc>:update<CR>
-inoremap <silent><c-s> <Esc>:update<CR>a
-xnoremap <silent><c-s> <Esc>:update<CR>gv
-
-" Too many mistakes
-cabbrev W   w
-cabbrev Q   q
-cabbrev Qa  qa
-cabbrev QA  qa
-cabbrev Wq  wq
-cabbrev WQ  wq
-cabbrev Wqa wqa
-cabbrev WQa wqa
-cabbrev WQA wqa
-
-" Terminal mode esc
-tnoremap <Esc> <C-\><C-n>
-
-" Strip whitspace
-nnoremap <leader>S :%s/\s\+$//e<CR>
-
-nnoremap <leader><right> :vertical resize +10<CR>
-nnoremap <leader><left> :vertical resize -10<CR>
-nnoremap <leader><up> :resize +10<CR>
-nnoremap <leader><down> :resize -10<CR>
-
-set pastetoggle=<F2>
-" }}}
 " Basic {{{
+let g:python3_host_prog = "/usr/bin/python3"
+
 filetype plugin indent on
 set hidden
 set laststatus=2
@@ -231,8 +244,8 @@ set lazyredraw
 
 " Completion
 set pumheight=10
-set shortmess+=c
-set completeopt+=menuone,noselect,longest
+" set shortmess+=c
+set completeopt+=menuone,longest,noselect
 
 " Indent
 set autoindent
@@ -263,13 +276,18 @@ set omnifunc=syntaxcomplete#Complete
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
 " }}}
 " Commands {{{
-command! -nargs=0 ConfigVs execute ':vsplit' . config
-command! -nargs=0 Config execute ':edit' . config
+command! -nargs=0 ConfigVs execute ':vsplit' . $MYVIMRC
+command! -nargs=0 Config execute ':edit' . $MYVIMRC
 nnoremap <leader>c :ConfigVs<CR>
 
 " Recursively create directories to the new file
 command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <args>
 
+" Open ftplugin {{{
+command! -nargs=? -complete=filetype EditFileTypePlugin
+            \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
+            \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
+" }}}
 " Make on save {{{
 let g:makeonsave = []
 function! ToggleMakeOnSave()
@@ -285,42 +303,15 @@ endfunction
 function! MakeOnSave()
     if get(g:makeonsave, &ft, '') == &ft
         if exists('g:loaded_dispatch')
-            :Make
+            Make
         else
-            :make
+            silent make
         endif
     endif
 endfunction
 
 autocmd MyAutocmds BufWritePost * call MakeOnSave()
 command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
-" }}}
-" List highlight groups {{{
-nmap <leader>sp :call <SID>SynStack()<CR>
-function! <SID>SynStack()
-    if !exists("*synstack")
-        return
-    endif
-    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-endfunc
-" }}}
-" Navigate to the next fold {{{
-function! NextClosedFold(dir)
-    let cmd = 'norm!z' . a:dir
-    let view = winsaveview()
-    let [l0, l, open] = [0, view.lnum, 1]
-    while l != l0 && open
-        exe cmd
-        let [l0, l] = [l, line('.')]
-        let open = foldclosed(l) < 0
-    endwhile
-    if open
-        call winrestview(view)
-    endif
-endfunction
-
-nnoremap <silent> <leader>zj :call NextClosedFold('j')<cr>
-nnoremap <silent> <leader>zk :call NextClosedFold('k')<cr>
 " }}}
 " Grepping {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
@@ -341,35 +332,6 @@ command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
 " }}}
-" Terminal {{{
-nnoremap <silent> <M-t> :call TermToggle(12)<CR>
-inoremap <silent> <M-t> <Esc>:call TermToggle(12)<CR>
-xnoremap <silent> <M-t> <Esc>:call TermToggle(12)<CR>
-tnoremap <silent> <M-t> <C-\><C-n>:call TermToggle(12)<CR>
-
-" Terminal Function
-let g:term_buf = 0
-let g:term_win = 0
-function! TermToggle(height)
-    if win_gotoid(g:term_win)
-        hide
-    else
-        botright new
-        exec "resize " . a:height
-        try
-            exec "buffer " . g:term_buf
-        catch
-            call termopen($SHELL, {"detach": 0})
-            let g:term_buf = bufnr("")
-            set nonumber
-            set norelativenumber
-            set signcolumn=no
-        endtry
-        startinsert!
-        let g:term_win = win_getid()
-    endif
-endfunction
-" }}}
 " }}}
 " Appearance {{{
 set cursorline
@@ -377,6 +339,7 @@ let &colorcolumn=join(range(101,999), ",")
 set termguicolors
 set t_Co=256
 colorscheme PaperColor
+" }}}
 " Statusline {{{
 function! GitStatus()
     return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
@@ -399,5 +362,4 @@ set statusline+=\ %{GitStatus()}
 set statusline+=\ %{&ft}\ \|
 set statusline+=\ %l/%L\ :\ %c
 set statusline+=\ %*
-" }}}
 " }}}

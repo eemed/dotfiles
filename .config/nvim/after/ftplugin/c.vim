@@ -1,5 +1,5 @@
 set makeprg=make\ -C\ build
-let b:start = './build/main'
+let b:start = './build/app'
 setlocal commentstring=//\ %s
 let c_no_curly_error=1
 

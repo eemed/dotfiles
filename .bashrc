@@ -51,8 +51,6 @@ export CM_LAUNCHER="rofi"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_USER_CONFIG_DIR="$HOME/.config"
 
-# c-z to fg
-bind '"\C-z":"fg\015"'
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/.local/lib
 
 # Prompt
@@ -78,13 +76,12 @@ if test -f ~/.bashrc_personal ; then
     source ~/.bashrc_personal
 fi
 
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 if test -d ~/.fzf ; then
     PATH=$PATH:~/.fzf/bin
     source ~/.fzf/shell/completion.bash
     source ~/.fzf/shell/key-bindings.bash
 fi
-
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # Setup gpg-agent
 unset SSH_AGENT_PID
@@ -95,4 +92,9 @@ export GPG_TTY=$(tty)
 
 if pgrep gpg-agent >/dev/null 2>&1 ; then
     gpg-connect-agent updatestartuptty /bye >/dev/null
+fi
+
+if test -f ~/.scripts/f.sh ; then
+    source ~/.scripts/f.sh
+    alias j="f jobs"
 fi
