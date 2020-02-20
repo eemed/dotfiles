@@ -126,11 +126,6 @@ tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " editorconfig {{{
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 " }}}
-" ultisnips {{{
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-" }}}
 " vim-fugitive {{{
 nnoremap <silent><leader>g :botright vertical Gstatus<CR>
 " }}}
@@ -217,6 +212,7 @@ runtime macros/sandwich/keymap/surround.vim
 let g:qf_auto_open_quickfix = 0
 autocmd MyAutocmds QuickFixCmdPost make,grep,grepadd,cgetexpr nested cwindow
 autocmd MyAutocmds QuickFixCmdPost make,grep,grepadd,cgetexpr nested lwindow
+
 nmap [q <Plug>(qf_qf_previous)
 nmap ]q  <Plug>(qf_qf_next)
 
@@ -307,7 +303,7 @@ endfunction
 function! MakeOnSave()
     if get(g:makeonsave, &ft, '') == &ft
         if exists('g:loaded_dispatch')
-            exe 'Make'|Copen|wincmd p
+            Make
         else
             silent make
         endif
