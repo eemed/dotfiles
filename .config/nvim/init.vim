@@ -232,6 +232,7 @@ filetype plugin indent on
 set hidden
 set laststatus=2
 set splitright
+set splitbelow
 set mouse=a
 set nowrap
 set list listchars=tab:→\ ,nbsp:•,trail:•
@@ -285,9 +286,8 @@ autocmd MyAutocmds BufEnter term://* startinsert
 autocmd MyAutocmds BufLeave term://* stopinsert
 " }}}
 " Commands {{{
-command! -nargs=0 ConfigVs execute ':vsplit' . $MYVIMRC
 command! -nargs=0 Config execute ':edit' . $MYVIMRC
-nnoremap <leader>c :ConfigVs<CR>
+nnoremap <leader>c :Config<CR>
 
 " Recursively create directories to the new file
 command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <args>
