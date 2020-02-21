@@ -211,7 +211,7 @@ runtime macros/sandwich/keymap/surround.vim
 " https://github.com/romainl/vim-qf/issues/85
 let g:qf_auto_open_quickfix = 0
 autocmd MyAutocmds QuickFixCmdPost make,grep,grepadd,cgetexpr nested cwindow
-autocmd MyAutocmds QuickFixCmdPost make,grep,grepadd,cgetexpr nested lwindow
+autocmd MyAutocmds QuickFixCmdPost lmake,lgrep,lgrepadd,lgetexpr nested lwindow
 
 nmap [q <Plug>(qf_qf_previous)
 nmap ]q  <Plug>(qf_qf_next)
