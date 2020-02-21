@@ -7,7 +7,6 @@ Plug 'tomtom/tlib_vim'                                  " Snippets dep
 Plug 'garbas/vim-snipmate'                              " Snippets
 " Plug 'honza/vim-snippets'                               " Actual snippets
 
-Plug 'christoomey/vim-tmux-runner'                      " Run commands in tmux
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 
@@ -27,6 +26,7 @@ Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything yo
 Plug 'junegunn/vim-easy-align'                          " Align stuff
 Plug 'Glench/Vim-Jinja2-Syntax'                         " Syntax files
 Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'kassio/neoterm'
 
 call plug#end() " }}}
 " Autoinstall vim-plug {{{
@@ -111,11 +111,16 @@ command! -nargs=? -complete=filetype EditSnippets
             \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
             \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
 " }}}
-" vim-tmux-runner {{{
-let g:VtrPercentage = 35
-let g:VtrOrientation = "h"
-nnoremap gr :VtrSendCommandToRunner!<space>
-xnoremap gr :VtrSendLinesToRunner!<CR>
+" neoterm {{{
+let g:neoterm_default_mod = 'botright'
+let g:neoterm_size = 25
+let g:neoterm_autoscroll = 1
+nmap gx <Plug>(neoterm-repl-send)
+xmap gx <Plug>(neoterm-repl-send)
+nnoremap <leader>tt :Ttoggle<CR>
+
+" This is tlib function but useful to store stuff to run in a terminal
+nnoremap <leader>ts :TScratch<CR>
 " }}}
 " vim-tmux-navigator {{{
 tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
@@ -276,6 +281,8 @@ set diffopt=vertical
 
 set omnifunc=syntaxcomplete#Complete
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
+autocmd MyAutocmds BufEnter term://* startinsert
+autocmd MyAutocmds BufLeave term://* stopinsert
 " }}}
 " Commands {{{
 command! -nargs=0 ConfigVs execute ':vsplit' . $MYVIMRC
@@ -284,7 +291,6 @@ nnoremap <leader>c :ConfigVs<CR>
 
 " Recursively create directories to the new file
 command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <args>
-
 " Open ftplugin {{{
 command! -nargs=? -complete=filetype EditFileTypePlugin
             \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
