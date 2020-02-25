@@ -250,6 +250,7 @@ set path+=**
 set clipboard=unnamedplus
 set lazyredraw
 
+
 " Completion
 set pumheight=10
 " set shortmess+=c
@@ -280,10 +281,24 @@ set updatetime=300
 set foldmethod=marker
 set diffopt=vertical
 
+
 set omnifunc=syntaxcomplete#Complete
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
 autocmd MyAutocmds BufEnter term://* startinsert
 autocmd MyAutocmds BufLeave term://* stopinsert
+
+" Scrolloff {{{
+function! SetScrolloff()
+    if index(['qf'], &filetype) == -1
+        set scrolloff=5
+        set sidescrolloff=10
+    else
+        set scrolloff=0
+        set sidescrolloff=0
+    endif
+endfunction
+autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
+" }}}
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit' . $MYVIMRC
