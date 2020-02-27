@@ -2,4 +2,14 @@ snippet => "Arrow function" i
 	(${1:args}) => {
 		${0}
 	}
-endsnippet
+
+snippet f "Function"
+	function ${1:name}() {
+		${0}
+	}
+
+snippet cl "Console log"
+	console.log(${0});
+
+snippet req "Require"
+	const ${1:name} = require('${0:fs}');

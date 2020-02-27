@@ -51,6 +51,14 @@ nnoremap <silent> gs :set opfunc=SortLines<cr>g@
 
 nnoremap Y y$
 
+" snipmate would switch to normalmode if <bs> was pressed to delete the
+" snippet preset. And losing the rest of the snippet.
+" This mapping fixes that:
+" <c-v> switches to visual block mode,
+" x deletes the text and
+" a switchese back to insert mode.
+snoremap <bs> <c-v>xa
+
 " Move text
 xnoremap J :move '>+1<CR>gv=gv
 xnoremap K :move '<-2<CR>gv=gv
