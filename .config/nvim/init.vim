@@ -258,11 +258,10 @@ set path+=**
 set clipboard=unnamedplus
 set lazyredraw
 
-
 " Completion
 set pumheight=10
 " set shortmess+=c
-set completeopt+=menuone,longest,noselect
+set completeopt+=menuone,longest
 
 " Indent
 set autoindent
@@ -289,7 +288,6 @@ set updatetime=300
 set foldmethod=marker
 set diffopt=vertical
 
-
 set omnifunc=syntaxcomplete#Complete
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
 autocmd MyAutocmds BufEnter term://* startinsert
@@ -311,9 +309,6 @@ autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
 " Commands {{{
 command! -nargs=0 Config execute ':edit' . $MYVIMRC
 nnoremap <leader>c :Config<CR>
-
-" Recursively create directories to the new file
-command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <args>
 " Open ftplugin {{{
 command! -nargs=? -complete=filetype EditFileTypePlugin
             \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
