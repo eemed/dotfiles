@@ -72,10 +72,10 @@ nnoremap <BS> <C-^>
 " Copy or move text. Start at where you want to copy the text to
 " find the block you want to copy using ? or / select it and use these bindings
 " t = copy, m = move
-xnoremap $t :t''<CR>
-xnoremap $T :T''<CR>
-xnoremap $m :m''<CR>
-xnoremap $M :M''<CR>
+xnoremap gt :t''<CR>
+xnoremap gT :T''<CR>
+xnoremap gm :m''<CR>
+xnoremap gM :M''<CR>
 
 " Disable exmode
 nnoremap Q <nop>
