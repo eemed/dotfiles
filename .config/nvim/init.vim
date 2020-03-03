@@ -143,21 +143,19 @@ let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 nnoremap <silent><leader>g :botright vertical Gstatus<CR>
 " }}}
 " fzf.vim {{{
-function! InGit()
+function! InGit() " {{{
     let l:is_git_dir = trim(system('git rev-parse --is-inside-work-tree'))
     return l:is_git_dir ==# 'true'
-endfunction
-
-function! Browse()
+endfunction " }}}
+function! Browse() " {{{
     if InGit()
         " Use this because Gfiles doesnt work with cached files
         call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
     else
         exe "Files"
     endif
-endfunction
-
-function! SimilarFZF()
+endfunction " }}}
+function! SimilarFZF() " {{{
     try
         let l:filename = split(tolower(expand('%:t:r')), '\v\A|(test)')[0]
         let l:files = globpath('.', '**/' . l:filename .'*')
@@ -172,16 +170,9 @@ function! SimilarFZF()
     else
         echom 'No similar files'
     endif
-endfunction
-
-nnoremap <silent><leader>A :call SimilarFZF()<CR>
-nnoremap <silent><leader>F :Files<CR>
-nnoremap <silent><c-p> :call Browse()<CR>
-nnoremap <silent><leader>b :Buffers<CR>
-nnoremap <silent><leader>l :BLines<CR>
-nnoremap <silent><leader>h :History<CR>
-
-let g:fzf_colors = {
+endfunction " }}}
+" Fzf colors {{{
+let g:fzf_colors = { 
             \ 'fg':      ['fg', 'Normal'],
             \ 'bg':      ['bg', 'Normal'],
             \ 'hl':      ['fg', 'Comment'],
@@ -195,7 +186,13 @@ let g:fzf_colors = {
             \ 'marker':  ['fg', 'Keyword'],
             \ 'spinner': ['fg', 'Label'],
             \ 'header':  ['fg', 'Comment'] }
-
+" }}}
+nnoremap <silent><leader>A :call SimilarFZF()<CR>
+nnoremap <silent><leader>F :Files<CR>
+nnoremap <silent><c-p> :call Browse()<CR>
+nnoremap <silent><leader>b :Buffers<CR>
+nnoremap <silent><leader>l :BLines<CR>
+nnoremap <silent><leader>h :History<CR>
 " }}}
 " vim-gutentags {{{
 let g:gutentags_cache_dir    = '~/.tags'
@@ -292,9 +289,7 @@ set omnifunc=syntaxcomplete#Complete
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
 autocmd MyAutocmds BufEnter term://* startinsert
 autocmd MyAutocmds BufLeave term://* stopinsert
-
-" Scrolloff {{{
-function! SetScrolloff()
+function! SetScrolloff() " {{{
     if index(['qf'], &filetype) == -1
         set scrolloff=5
         set sidescrolloff=10
