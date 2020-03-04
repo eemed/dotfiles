@@ -2,6 +2,7 @@
 let g:vim_dir = fnamemodify($MYVIMRC, ':p:h')
 call plug#begin(g:vim_dir . '/plugged')
 
+Plug 'smallwat3r/vim-simplicity'
 Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dep
 Plug 'tomtom/tlib_vim'                                  " Snippets dep
 Plug 'garbas/vim-snipmate'                              " Snippets
@@ -10,7 +11,7 @@ Plug 'garbas/vim-snipmate'                              " Snippets
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 
-Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
+" Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
@@ -359,7 +360,10 @@ set cursorline
 let &colorcolumn=join(range(101,999), ",")
 set termguicolors
 set t_Co=256
-colorscheme PaperColor
+colorscheme darkblue
+hi! link Folded Comment
+hi! CursorLine guibg=darkblue
+hi! ColorColumn guibg=darkblue
 " }}}
 " Statusline {{{
 function! GitStatus()
