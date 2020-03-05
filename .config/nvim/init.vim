@@ -172,7 +172,7 @@ function! SimilarFZF() " {{{
     endif
 endfunction " }}}
 " Fzf colors {{{
-let g:fzf_colors = { 
+let g:fzf_colors = {
             \ 'fg':      ['fg', 'Normal'],
             \ 'bg':      ['bg', 'Normal'],
             \ 'hl':      ['fg', 'Comment'],
@@ -352,6 +352,15 @@ command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
 command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
+" }}}
+" Hex representation {{{
+function! AsHex()
+    let l:name = expand('%:p')
+    new
+    setlocal buftype=nofile bufhidden=hide noswapfile filetype=xxd
+    execute 'read !xxd ' .  shellescape(l:name, 1)
+endfunction
+command! -nargs=0 AsHex call AsHex()
 " }}}
 " }}}
 " Appearance {{{
