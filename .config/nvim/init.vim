@@ -7,7 +7,6 @@ Plug 'tomtom/tlib_vim'                                  " Snippets dep
 Plug 'garbas/vim-snipmate'                              " Snippets
 " Plug 'honza/vim-snippets'                               " Actual snippets
 
-Plug 'christoomey/vim-tmux-runner'                      " Run commands in tmux
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 
@@ -27,6 +26,7 @@ Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything yo
 Plug 'junegunn/vim-easy-align'                          " Align stuff
 Plug 'Glench/Vim-Jinja2-Syntax'                         " Syntax files
 Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'kassio/neoterm'
 
 call plug#end() " }}}
 " Autoinstall vim-plug {{{
@@ -51,6 +51,14 @@ nnoremap <silent> gs :set opfunc=SortLines<cr>g@
 
 nnoremap Y y$
 
+" snipmate would switch to normalmode if <bs> was pressed to delete the
+" snippet preset. And losing the rest of the snippet.
+" This mapping fixes that:
+" <c-v> switches to visual block mode,
+" x deletes the text and
+" a switchese back to insert mode.
+snoremap <bs> <c-v>xa
+
 " Move text
 xnoremap J :move '>+1<CR>gv=gv
 xnoremap K :move '<-2<CR>gv=gv
@@ -64,10 +72,10 @@ nnoremap <BS> <C-^>
 " Copy or move text. Start at where you want to copy the text to
 " find the block you want to copy using ? or / select it and use these bindings
 " t = copy, m = move
-xnoremap $t :t''<CR>
-xnoremap $T :T''<CR>
-xnoremap $m :m''<CR>
-xnoremap $M :M''<CR>
+xnoremap gt :t''<CR>
+xnoremap gT :T''<CR>
+xnoremap gm :m''<CR>
+xnoremap gM :M''<CR>
 
 " Disable exmode
 nnoremap Q <nop>
@@ -111,11 +119,16 @@ command! -nargs=? -complete=filetype EditSnippets
             \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
             \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
 " }}}
-" vim-tmux-runner {{{
-let g:VtrPercentage = 35
-let g:VtrOrientation = "h"
-nnoremap gr :VtrSendCommandToRunner!<space>
-xnoremap gr :VtrSendLinesToRunner!<CR>
+" neoterm {{{
+let g:neoterm_default_mod = 'botright'
+let g:neoterm_size = 25
+let g:neoterm_autoscroll = 1
+nmap gx <Plug>(neoterm-repl-send)
+xmap gx <Plug>(neoterm-repl-send)
+nnoremap <leader>tt :Ttoggle<CR>
+
+" This is tlib function but useful to store stuff to run in a terminal
+nnoremap <leader>ts :TScratch<CR>
 " }}}
 " vim-tmux-navigator {{{
 tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
@@ -126,30 +139,23 @@ tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " editorconfig {{{
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 " }}}
-" ultisnips {{{
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-" }}}
 " vim-fugitive {{{
 nnoremap <silent><leader>g :botright vertical Gstatus<CR>
 " }}}
 " fzf.vim {{{
-function! InGit()
+function! InGit() " {{{
     let l:is_git_dir = trim(system('git rev-parse --is-inside-work-tree'))
     return l:is_git_dir ==# 'true'
-endfunction
-
-function! Browse()
+endfunction " }}}
+function! Browse() " {{{
     if InGit()
         " Use this because Gfiles doesnt work with cached files
         call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
     else
         exe "Files"
     endif
-endfunction
-
-function! SimilarFZF()
+endfunction " }}}
+function! SimilarFZF() " {{{
     try
         let l:filename = split(tolower(expand('%:t:r')), '\v\A|(test)')[0]
         let l:files = globpath('.', '**/' . l:filename .'*')
@@ -164,15 +170,8 @@ function! SimilarFZF()
     else
         echom 'No similar files'
     endif
-endfunction
-
-nnoremap <silent><leader>A :call SimilarFZF()<CR>
-nnoremap <silent><leader>F :Files<CR>
-nnoremap <silent><c-p> :call Browse()<CR>
-nnoremap <silent><leader>b :Buffers<CR>
-nnoremap <silent><leader>l :BLines<CR>
-nnoremap <silent><leader>h :History<CR>
-
+endfunction " }}}
+" Fzf colors {{{
 let g:fzf_colors = {
             \ 'fg':      ['fg', 'Normal'],
             \ 'bg':      ['bg', 'Normal'],
@@ -187,7 +186,13 @@ let g:fzf_colors = {
             \ 'marker':  ['fg', 'Keyword'],
             \ 'spinner': ['fg', 'Label'],
             \ 'header':  ['fg', 'Comment'] }
-
+" }}}
+nnoremap <silent><leader>A :call SimilarFZF()<CR>
+nnoremap <silent><leader>F :Files<CR>
+nnoremap <silent><c-p> :call Browse()<CR>
+nnoremap <silent><leader>b :Buffers<CR>
+nnoremap <silent><leader>l :BLines<CR>
+nnoremap <silent><leader>h :History<CR>
 " }}}
 " vim-gutentags {{{
 let g:gutentags_cache_dir    = '~/.tags'
@@ -213,6 +218,11 @@ nmap ga <Plug>(LiveEasyAlign)
 runtime macros/sandwich/keymap/surround.vim
 " }}}
 " vim-qf {{{
+" https://github.com/romainl/vim-qf/issues/85
+let g:qf_auto_open_quickfix = 0
+autocmd MyAutocmds QuickFixCmdPost make,grep,grepadd,cgetexpr nested cwindow
+autocmd MyAutocmds QuickFixCmdPost lmake,lgrep,lgrepadd,lgetexpr nested lwindow
+
 nmap [q <Plug>(qf_qf_previous)
 nmap ]q  <Plug>(qf_qf_next)
 
@@ -227,6 +237,7 @@ filetype plugin indent on
 set hidden
 set laststatus=2
 set splitright
+set splitbelow
 set mouse=a
 set nowrap
 set list listchars=tab:→\ ,nbsp:•,trail:•
@@ -238,6 +249,8 @@ set wildignore+=*/node_modules/*,_site,*/__pycache__/,*/venv/*,*/target/*
 set wildignore+=*/.vim$,\~$,*/.log,*/.aux,*/.cls,*/.aux,*/.bbl,*/.blg,*/.fls
 set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*/build/*
 
+set breakindent
+set showbreak=>
 set path+=**
 set clipboard=unnamedplus
 set lazyredraw
@@ -245,7 +258,7 @@ set lazyredraw
 " Completion
 set pumheight=10
 " set shortmess+=c
-set completeopt+=menuone,longest,noselect
+set completeopt+=menuone,longest
 
 " Indent
 set autoindent
@@ -274,15 +287,23 @@ set diffopt=vertical
 
 set omnifunc=syntaxcomplete#Complete
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
+autocmd MyAutocmds BufEnter term://* startinsert
+autocmd MyAutocmds BufLeave term://* stopinsert
+function! SetScrolloff() " {{{
+    if index(['qf'], &filetype) == -1
+        set scrolloff=5
+        set sidescrolloff=10
+    else
+        set scrolloff=0
+        set sidescrolloff=0
+    endif
+endfunction
+autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
+" }}}
 " }}}
 " Commands {{{
-command! -nargs=0 ConfigVs execute ':vsplit' . $MYVIMRC
 command! -nargs=0 Config execute ':edit' . $MYVIMRC
-nnoremap <leader>c :ConfigVs<CR>
-
-" Recursively create directories to the new file
-command! -nargs=1 E execute('silent! !mkdir -p "$(dirname "<args>")"') <Bar> e <args>
-
+nnoremap <leader>c :Config<CR>
 " Open ftplugin {{{
 command! -nargs=? -complete=filetype EditFileTypePlugin
             \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
@@ -331,6 +352,15 @@ command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
 command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
+" }}}
+" Hex representation {{{
+function! AsHex()
+    let l:name = expand('%:p')
+    new
+    setlocal buftype=nofile bufhidden=hide noswapfile filetype=xxd
+    execute 'read !xxd ' .  shellescape(l:name, 1)
+endfunction
+command! -nargs=0 AsHex call AsHex()
 " }}}
 " }}}
 " Appearance {{{

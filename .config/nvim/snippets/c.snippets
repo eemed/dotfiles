@@ -9,11 +9,11 @@ snippet #ifn "if not defined"
 
 snippet /**
 	/**
-	  * @brief ${0}
-	  */
+	 * @brief ${0}
+	 */
 
-snippet /**<
-	/** ${0:description} */
+snippet *<
+	/**< ${0:description} */
 
 snippet @b
 	@brief ${0:description}
@@ -34,3 +34,9 @@ snippet tds
 	typedef struct {
 		${0:element}
 	} ${1:name};
+
+snippet for
+	for ($1 = ${2:start}; ${1:i} < ${3:end}; ${4:++}$1) {
+		${0:/* code */}
+	}
+
