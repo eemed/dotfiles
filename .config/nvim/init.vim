@@ -68,6 +68,10 @@ xnoremap > >gv
 nnoremap <leader>S :source %<CR>
 nnoremap <leader>q :q<CR>
 inoremap <C-q> <esc>
+vnoremap <C-q> <esc>
+cnoremap <C-q> <c-c>
+tnoremap <C-q> <C-\><C-n>
+nnoremap <C-q> <nop>
 nnoremap <BS> <C-^>
 
 " Copy or move text. Start at where you want to copy the text to
@@ -98,7 +102,6 @@ cabbrev WQa wqa
 cabbrev WQA wqa
 
 " Terminal mode esc
-tnoremap <Esc> <C-\><C-n>
 
 function! StripWhitespace()
     let l:save = winsaveview()
