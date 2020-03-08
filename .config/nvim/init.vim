@@ -67,6 +67,7 @@ xnoremap > >gv
 
 nnoremap <leader>S :source %<CR>
 nnoremap <leader>q :q<CR>
+inoremap <C-q> <esc>
 nnoremap <BS> <C-^>
 
 " Copy or move text. Start at where you want to copy the text to
