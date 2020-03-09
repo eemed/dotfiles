@@ -27,6 +27,8 @@ if [ "$success" == "true" ]; then
 
   # Notify upload
   notify-send "Image uploaded to $link" -i "viewimage"
+else
+    echo "Failed to upload"
 fi
 
 rm "shot.png"
