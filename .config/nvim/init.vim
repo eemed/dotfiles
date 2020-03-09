@@ -2,6 +2,7 @@
 let g:vim_dir = fnamemodify($MYVIMRC, ':p:h')
 call plug#begin(g:vim_dir . '/plugged')
 
+Plug 'rakr/vim-one'                                     " Colorscheme
 Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dep
 Plug 'tomtom/tlib_vim'                                  " Snippets dep
 Plug 'garbas/vim-snipmate'                              " Snippets
@@ -10,7 +11,6 @@ Plug 'garbas/vim-snipmate'                              " Snippets
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 
-Plug 'NLKNguyen/papercolor-theme'                       " Colorscheme
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
@@ -67,11 +67,6 @@ xnoremap > >gv
 
 nnoremap <leader>S :source %<CR>
 nnoremap <leader>q :q<CR>
-inoremap <C-q> <esc>
-vnoremap <C-q> <esc>
-cnoremap <C-q> <c-c>
-tnoremap <C-q> <C-\><C-n>
-nnoremap <C-q> <nop>
 nnoremap <BS> <C-^>
 
 " Copy or move text. Start at where you want to copy the text to
@@ -125,7 +120,7 @@ command! -nargs=? -complete=filetype EditSnippets
 " }}}
 " neoterm {{{
 let g:neoterm_default_mod = 'botright'
-let g:neoterm_size = 25
+let g:neoterm_size = '10'
 let g:neoterm_autoscroll = 1
 nmap gx <Plug>(neoterm-repl-send)
 xmap gx <Plug>(neoterm-repl-send)
@@ -372,7 +367,8 @@ set cursorline
 let &colorcolumn=join(range(101,999), ",")
 set termguicolors
 set t_Co=256
-colorscheme PaperColor
+colorscheme one
+hi! link Whitespace Comment
 " }}}
 " Statusline {{{
 function! GitStatus()
