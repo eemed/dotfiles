@@ -50,6 +50,7 @@ xnoremap <silent> gs :sort i<cr>
 nnoremap <silent> gs :set opfunc=SortLines<cr>g@
 
 nnoremap Y y$
+tnoremap <esc> <c-\><c-n>
 
 " snipmate would switch to normalmode if <bs> was pressed to delete the
 " snippet preset. And losing the rest of the snippet.
@@ -251,7 +252,7 @@ set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*/bui
 set breakindent
 set showbreak=>
 set path+=**
-set clipboard=unnamedplus
+" set clipboard=unnamedplus
 set lazyredraw
 
 " Completion
