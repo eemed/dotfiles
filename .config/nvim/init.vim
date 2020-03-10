@@ -6,7 +6,6 @@ Plug 'rakr/vim-one'                                     " Colorscheme
 Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dep
 Plug 'tomtom/tlib_vim'                                  " Snippets dep
 Plug 'garbas/vim-snipmate'                              " Snippets
-" Plug 'honza/vim-snippets'                               " Actual snippets
 
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
@@ -24,8 +23,7 @@ Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
 Plug 'junegunn/vim-easy-align'                          " Align stuff
-Plug 'Glench/Vim-Jinja2-Syntax'                         " Syntax files
-Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'sheerun/vim-polyglot'                             " Syntax files
 Plug 'kassio/neoterm'
 
 call plug#end() " }}}
@@ -42,22 +40,20 @@ augroup end " }}}
 " Keybindings {{{
 let mapleader = "\ "
 
-" Sorting
 function! SortLines(type) abort
     '[,']sort i
 endfunction
 xnoremap <silent> gs :sort i<cr>
 nnoremap <silent> gs :set opfunc=SortLines<cr>g@
 
+nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
+nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
+
 nnoremap Y y$
 tnoremap <esc> <c-\><c-n>
 
-" snipmate would switch to normalmode if <bs> was pressed to delete the
-" snippet preset. And losing the rest of the snippet.
-" This mapping fixes that:
-" <c-v> switches to visual block mode,
-" x deletes the text and
-" a switchese back to insert mode.
+" snipmate would switch to normal mode if <bs> was pressed and wouldn't work
+" after re-entering insert mode
 snoremap <bs> <c-v>xa
 
 " Move text
@@ -86,6 +82,12 @@ noremap  <silent><c-s> <Esc>:update<CR>
 inoremap <silent><c-s> <Esc>:update<CR>a
 xnoremap <silent><c-s> <Esc>:update<CR>gv
 
+" Copy paste
+nnoremap <leader>p "+p
+nnoremap <leader>P "+P
+nnoremap <leader>y "+y
+xnoremap <leader>y "+y
+
 " Too many mistakes
 cabbrev W   w
 cabbrev Q   q
@@ -96,8 +98,6 @@ cabbrev WQ  wq
 cabbrev Wqa wqa
 cabbrev WQa wqa
 cabbrev WQA wqa
-
-" Terminal mode esc
 
 function! StripWhitespace()
     let l:save = winsaveview()
@@ -236,29 +236,35 @@ let g:python3_host_prog = "/usr/bin/python3"
 filetype plugin indent on
 set hidden
 set laststatus=2
+
+" Splitting
 set splitright
 set splitbelow
+set diffopt=vertical
+
+set lazyredraw
 set mouse=a
 set nowrap
 set list listchars=tab:→\ ,nbsp:•,trail:•
+set breakindent
+set showbreak=>
+set path+=**
 set autoread
-set showmatch
+" set clipboard+=unnamedplus
+
+" Commands without remembering case. Useful for plugin commands
 set ignorecase
+set smartcase
+
+" Show replacement
 set inccommand=split
 set wildignore+=*/node_modules/*,_site,*/__pycache__/,*/venv/*,*/target/*
 set wildignore+=*/.vim$,\~$,*/.log,*/.aux,*/.cls,*/.aux,*/.bbl,*/.blg,*/.fls
 set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*/build/*
 
-set breakindent
-set showbreak=>
-set path+=**
-" set clipboard=unnamedplus
-set lazyredraw
-
 " Completion
 set pumheight=10
-" set shortmess+=c
-set completeopt+=menuone,longest
+set completeopt+=longest
 
 " Indent
 set autoindent
@@ -269,6 +275,7 @@ set smartindent
 set nohlsearch
 set incsearch
 
+" Tabs
 set tabstop=4
 set shiftwidth=4
 set expandtab
@@ -283,9 +290,9 @@ set dir=~/.vimtmp
 
 set updatetime=300
 set foldmethod=marker
-set diffopt=vertical
 
 set omnifunc=syntaxcomplete#Complete
+
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
 autocmd MyAutocmds BufEnter term://* startinsert
 autocmd MyAutocmds BufLeave term://* stopinsert
@@ -366,6 +373,7 @@ command! -nargs=0 AsHex call AsHex()
 " Appearance {{{
 set cursorline
 let &colorcolumn=join(range(101,999), ",")
+set synmaxcol=120
 set termguicolors
 set t_Co=256
 colorscheme one
