@@ -373,7 +373,7 @@ command! -nargs=0 AsHex call AsHex()
 " Appearance {{{
 set cursorline
 let &colorcolumn=join(range(101,999), ",")
-set synmaxcol=120
+set synmaxcol=200
 set termguicolors
 set t_Co=256
 colorscheme one
