@@ -2,11 +2,9 @@
 let g:vim_dir = fnamemodify($MYVIMRC, ':p:h')
 call plug#begin(g:vim_dir . '/plugged')
 
-Plug 'rakr/vim-one'                                     " Colorscheme
 Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dep
 Plug 'tomtom/tlib_vim'                                  " Snippets dep
 Plug 'garbas/vim-snipmate'                              " Snippets
-Plug 'dense-analysis/ale'                               " Linting and fixing
 
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
@@ -14,7 +12,6 @@ Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
-Plug 'tpope/vim-dispatch'                               " Async jobs
 Plug 'wellle/targets.vim'                               " More text objects
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
@@ -25,6 +22,8 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
 Plug 'junegunn/vim-easy-align'                          " Align stuff
 Plug 'sheerun/vim-polyglot'                             " Syntax files
+Plug 'dense-analysis/ale'                               " Linting and fixing
+Plug 'rakr/vim-one'                                     " Colorscheme
 Plug 'kassio/neoterm'
 
 call plug#end() " }}}
@@ -217,9 +216,6 @@ let g:gutentags_file_list_command = {
             \       '.git': 'git ls-files',
             \   },
             \ }
-" }}}
-" vim-dispatch {{{
-let g:dispatch_no_tmux_make = 1
 " }}}
 " vim-easy-align {{{
 xmap ga <Plug>(LiveEasyAlign)
