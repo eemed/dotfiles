@@ -127,9 +127,8 @@ let g:ale_fixers = {
 let g:ale_linters = {
             \   'javascript': ['eslint'],
             \ }
-let g:ale_sign_column_always = 1
-let g:ale_sign_error = '!'
-let g:ale_sign_warning = '>'
+
+nmap <F3> <Plug>(ale_fix)
 " }}}
 " neoterm {{{
 let g:neoterm_default_mod = 'botright'
@@ -254,6 +253,7 @@ set splitright
 set splitbelow
 set diffopt=vertical
 
+set signcolumn=yes
 set lazyredraw
 set mouse=a
 set nowrap
