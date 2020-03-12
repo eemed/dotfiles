@@ -12,6 +12,7 @@ Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
+Plug 'tpope/vim-dispatch'                               " Async jobs
 Plug 'wellle/targets.vim'                               " More text objects
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
@@ -23,8 +24,7 @@ Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything yo
 Plug 'junegunn/vim-easy-align'                          " Align stuff
 Plug 'sheerun/vim-polyglot'                             " Syntax files
 Plug 'dense-analysis/ale'                               " Linting and fixing
-Plug 'rakr/vim-one'                                     " Colorscheme
-Plug 'kassio/neoterm'
+Plug 'eemed/vim-one'                                    " Colorscheme
 
 call plug#end() " }}}
 " Autoinstall vim-plug {{{
@@ -128,17 +128,6 @@ let g:ale_linters = {
             \ }
 
 nmap <F3> <Plug>(ale_fix)
-" }}}
-" neoterm {{{
-let g:neoterm_default_mod = 'botright'
-let g:neoterm_size = '10'
-let g:neoterm_autoscroll = 1
-nmap gx <Plug>(neoterm-repl-send)
-xmap gx <Plug>(neoterm-repl-send)
-nnoremap <leader>tt :Ttoggle<CR>
-
-" This is tlib function but useful to store stuff to run in a terminal
-nnoremap <leader>ts :TScratch<CR>
 " }}}
 " vim-tmux-navigator {{{
 tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
@@ -360,7 +349,6 @@ set synmaxcol=200
 set termguicolors
 set t_Co=256
 colorscheme one
-hi! link Whitespace Comment
 " }}}
 " Statusline {{{
 function! GitStatus()
