@@ -6,6 +6,7 @@ Plug 'rakr/vim-one'                                     " Colorscheme
 Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dep
 Plug 'tomtom/tlib_vim'                                  " Snippets dep
 Plug 'garbas/vim-snipmate'                              " Snippets
+Plug 'dense-analysis/ale'                               " Linting and fixing
 
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
@@ -118,6 +119,17 @@ set pastetoggle=<F2>
 command! -nargs=? -complete=filetype EditSnippets
             \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
             \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
+" }}}
+" ale {{{
+let g:ale_fixers = {
+            \ 'xml': ['xmllint'],
+            \ }
+let g:ale_linters = {
+            \   'javascript': ['eslint'],
+            \ }
+let g:ale_sign_column_always = 1
+let g:ale_sign_error = '!'
+let g:ale_sign_warning = '>'
 " }}}
 " neoterm {{{
 let g:neoterm_default_mod = 'botright'
@@ -316,31 +328,6 @@ command! -nargs=? -complete=filetype EditFileTypePlugin
             \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
             \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 " }}}
-" Make on save {{{
-let g:makeonsave = []
-function! ToggleMakeOnSave()
-    if get(g:makeonsave, &ft, '') == &ft
-        call remove(g:makeonsave, &ft)
-        echom 'MakeOnSave disabled'
-    else
-        call add(g:makeonsave, &ft)
-        echom 'MakeOnSave enabled'
-    endif
-endfunction
-
-function! MakeOnSave()
-    if get(g:makeonsave, &ft, '') == &ft
-        if exists('g:loaded_dispatch')
-            Make
-        else
-            silent make
-        endif
-    endif
-endfunction
-
-autocmd MyAutocmds BufWritePost * call MakeOnSave()
-command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
-" }}}
 " Grepping {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
@@ -388,6 +375,19 @@ function! PasteForStatusline()
     return &paste == 1 ? '[PASTE]' : ""
 endfunction
 
+function! LinterStatus() abort
+    let l:counts = ale#statusline#Count(bufnr(''))
+
+    let l:all_errors = l:counts.error + l:counts.style_error
+    let l:all_non_errors = l:counts.total - l:all_errors
+
+    return l:counts.total == 0 ? '' : printf(
+    \   '%dW %dE',
+    \   all_non_errors,
+    \   all_errors
+    \)
+endfunction
+
 set laststatus=2
 set statusline=
 set statusline+=\ %f
@@ -395,6 +395,7 @@ set statusline+=\ %*
 set statusline+=\ %r
 set statusline+=%m
 set statusline+=%{PasteForStatusline()}
+set statusline+=\ %{LinterStatus()}
 set statusline+=\ %{gutentags#statusline()}
 set statusline+=%=
 set statusline+=\ %{GitStatus()}
