@@ -12,7 +12,10 @@ Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
-Plug 'tpope/vim-dispatch'                               " Async jobs
+
+Plug 'skywind3000/asyncrun.vim'                         " Async jobs
+Plug 'skywind3000/asynctasks.vim'                       " Project specific tasks
+
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
 Plug 'romainl/vim-qf'                                   " Better quickfix window
@@ -127,6 +130,15 @@ onoremap ar :normal va[<CR>
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
+" async{run/tasks} {{{
+let g:asyncrun_rootmarks = ['.git', '.svn', '.root', '.project', '.hg']
+let g:asynctasks_rtp_config = "nvim/.asynctasks.ini"
+let g:asyncrun_open = 6
+nnoremap <silent><F5> :AsyncTask file-build<cr>
+nnoremap <silent><F6> :AsyncTask file-run<cr>
+nnoremap <silent><F7> :AsyncTask project-build<cr>
+nnoremap <silent><F8> :AsyncTask project-run<cr>
+" }}}
 " snipmate {{{
 command! -nargs=? -complete=filetype EditSnippets
             \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
