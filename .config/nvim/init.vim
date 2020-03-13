@@ -152,13 +152,17 @@ let g:ale_linters = {
             \   'javascript': ['eslint'],
             \ }
 
-nmap <F3> <Plug>(ale_fix)
+nmap <silent><F3> <Plug>(ale_fix)
 " }}}
 " vim-tmux-navigator {{{
-tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
-tnoremap <silent> <c-j> <C-\><C-n>:TmuxNavigateDown<cr>
-tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
-tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
+nnoremap <silent> <m-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <m-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <m-l> :TmuxNavigateRight<cr>
+tnoremap <silent> <m-h> <C-\><C-n>:TmuxNavigateLeft<cr>
+tnoremap <silent> <m-j> <C-\><C-n>:TmuxNavigateDown<cr>
+tnoremap <silent> <m-k> <C-\><C-n>:TmuxNavigateUp<cr>
+tnoremap <silent> <m-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " }}}
 " editorconfig {{{
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
