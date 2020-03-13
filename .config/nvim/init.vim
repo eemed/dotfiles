@@ -13,7 +13,6 @@ Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
 Plug 'tpope/vim-dispatch'                               " Async jobs
-Plug 'wellle/targets.vim'                               " More text objects
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
 Plug 'romainl/vim-qf'                                   " Better quickfix window
@@ -110,6 +109,20 @@ nnoremap <c-right>  :vertical resize +10<CR>
 nnoremap <c-left>   :vertical resize -10<CR>
 nnoremap <c-up>     :resize +10<CR>
 nnoremap <c-down>   :resize -10<CR>
+
+function! LookupDef()
+    try
+        execute 'tag' . expand('<cword>')
+    catch /.*/
+        normal! gd
+    endtry
+endfunction
+nnoremap gd :call LookupDef()<CR>
+
+xnoremap ir i[
+onoremap ir :normal vi[<CR>
+xnoremap ar a[
+onoremap ar :normal va[<CR>
 
 set pastetoggle=<F2>
 " }}}
