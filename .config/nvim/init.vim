@@ -138,6 +138,7 @@ nnoremap <silent><F5> :AsyncTask file-build<cr>
 nnoremap <silent><F6> :AsyncTask file-run<cr>
 nnoremap <silent><F7> :AsyncTask project-build<cr>
 nnoremap <silent><F8> :AsyncTask project-run<cr>
+nnoremap <leader>r :AsyncTask<space>
 " }}}
 " snipmate {{{
 command! -nargs=? -complete=filetype EditSnippets
