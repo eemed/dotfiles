@@ -136,46 +136,6 @@ command! -nargs=? -complete=filetype EditSnippets
             \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
             \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
 " }}}
-" vim-lsp {{{
-if executable('pyls')
-    " pip install python-language-server
-    au User lsp_setup call lsp#register_server({
-                \ 'name': 'pyls',
-                \ 'cmd': {server_info->['pyls']},
-                \ 'whitelist': ['python'],
-                \ })
-endif
-
-function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    " setlocal signcolumn=yes
-    nmap <buffer> gd <plug>(lsp-definition)
-    nmap <buffer> <F4> <plug>(lsp-rename)
-    nmap <buffer> K <plug>(lsp-hover)
-    " nmap <buffer> <leader>n <plug>(lsp-next-diagnostic)
-    " nmap <buffer> <leader>N <plug>(lsp-previous-diagnostic)
-endfunction
-
-augroup lsp_install
-    au!
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
-
-let g:lsp_highlights_enabled = 0
-let g:lsp_diagnostics_echo_cursor = 1
-let g:lsp_virtual_text_enabled = 0
-let g:lsp_diagnostics_enabled = 0
-
-" highlight! link LspWarningText Typedef
-" highlight! link LspInformationText Special
-" highlight! link LspHintText Special
-" highlight! link LspErrorText Error
-
-" let g:lsp_signs_error = {'text': 'e'}
-" let g:lsp_signs_warning = {'text': 'w'}
-" let g:lsp_signs_hint = {'text': 'h'}
-" let g:lsp_signs_information = {'text': 'i'}
-" }}}
 " ale {{{
 let g:ale_fixers = {
             \ 'xml': ['xmllint'],
@@ -191,12 +151,14 @@ nmap <silent><F3> <Plug>(ale_fix)
 set omnifunc=ale#completion#OmniFunc
 
 function ALELSPMappings()
-    let l:lsp_found=0
-    for l:linter in ale#linter#Get(&filetype) | if !empty(l:linter.lsp)
-                \ | let l:lsp_found=1 | endif | endfor
-    if (l:lsp_found)
-        nmap <buffer> gd <Plug>(ale_go_to_definition)
-        nmap <buffer> K <Plug>(ale_hover)
+    if get(g:, 'loaded_ale', 0) == 1
+        let l:lsp_found=0
+        for l:linter in ale#linter#Get(&filetype) | if !empty(l:linter.lsp)
+                    \ | let l:lsp_found=1 | endif | endfor
+        if (l:lsp_found)
+            nmap <buffer> gd <Plug>(ale_go_to_definition)
+            nmap <buffer> K <Plug>(ale_hover)
+        endif
     endif
 endfunction
 autocmd MyAutocmds BufRead,FileType * call ALELSPMappings()
@@ -434,18 +396,22 @@ function! PasteForStatusline()
     return &paste == 1 ? '[PASTE]' : ""
 endfunction
 
-" function! LinterStatus() abort
-"     let l:counts = ale#statusline#Count(bufnr(''))
+function! LinterStatus() abort
+    if get(g:, 'loaded_ale', 0) == 1
+        let l:counts = ale#statusline#Count(bufnr(''))
 
-"     let l:all_errors = l:counts.error + l:counts.style_error
-"     let l:all_non_errors = l:counts.total - l:all_errors
+        let l:all_errors = l:counts.error + l:counts.style_error
+        let l:all_non_errors = l:counts.total - l:all_errors
 
-"     return l:counts.total == 0 ? '' : printf(
-"     \   '%dW %dE',
-"     \   all_non_errors,
-"     \   all_errors
-"     \)
-" endfunction
+        return l:counts.total == 0 ? '' : printf(
+        \   '%dW %dE',
+        \   all_non_errors,
+        \   all_errors
+        \)
+    else
+        return 'Install ALE'
+    endif
+endfunction
 
 set laststatus=2
 set statusline=
@@ -454,7 +420,7 @@ set statusline+=\ %*
 set statusline+=\ %r
 set statusline+=%m
 set statusline+=%{PasteForStatusline()}
-" set statusline+=\ %{LinterStatus()}
+set statusline+=\ %{LinterStatus()}
 set statusline+=\ %{gutentags#statusline()}
 set statusline+=%=
 set statusline+=\ %{GitStatus()}
