@@ -320,7 +320,7 @@ set mouse=a
 set nowrap
 set list listchars=tab:→\ ,nbsp:•,trail:•
 set breakindent
-set showbreak=>
+set showbreak=⤷
 set path+=**
 set autoread
 " set clipboard+=unnamedplus
