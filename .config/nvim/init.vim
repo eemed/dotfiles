@@ -26,11 +26,6 @@ Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything yo
 Plug 'junegunn/vim-easy-align'                          " Align stuff
 Plug 'sheerun/vim-polyglot'                             " Syntax files
 Plug 'dense-analysis/ale'                               " Linting and fixing
-
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'mattn/vim-lsp-settings'
-
 Plug 'eemed/vim-one'                                    " Colorscheme
 
 call plug#end() " }}}
@@ -187,11 +182,24 @@ let g:ale_fixers = {
             \ 'python': ['autopep8'],
             \ }
 let g:ale_linters = {
-            \ 'python': ['flake8'],
+            \ 'python': ['pyls'],
             \ 'javascript': ['eslint'],
             \ }
 
 nmap <silent><F3> <Plug>(ale_fix)
+
+set omnifunc=ale#completion#OmniFunc
+
+function ALELSPMappings()
+    let l:lsp_found=0
+    for l:linter in ale#linter#Get(&filetype) | if !empty(l:linter.lsp)
+                \ | let l:lsp_found=1 | endif | endfor
+    if (l:lsp_found)
+        nmap <buffer> gd <Plug>(ale_go_to_definition)
+        nmap <buffer> K <Plug>(ale_hover)
+    endif
+endfunction
+autocmd MyAutocmds BufRead,FileType * call ALELSPMappings()
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
@@ -356,8 +364,6 @@ set dir=~/.vimtmp
 
 set updatetime=300
 set foldmethod=marker
-
-set omnifunc=syntaxcomplete#Complete
 
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
 autocmd MyAutocmds BufEnter term://* startinsert
