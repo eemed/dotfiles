@@ -148,7 +148,36 @@ let g:ale_linters = {
 
 nmap <silent><F3> <Plug>(ale_fix)
 
-set omnifunc=ale#completion#OmniFunc
+let g:ale_completion_max_suggestions = 10
+let g:ale_echo_msg_format = "[%linter%]%code: %%s"
+let g:ale_completion_symbols = {
+            \ 'text': '',
+            \ 'method': '',
+            \ 'function': '',
+            \ 'constructor': '',
+            \ 'field': '',
+            \ 'variable': '',
+            \ 'class': '',
+            \ 'interface': '',
+            \ 'module': '',
+            \ 'property': '',
+            \ 'unit': 'unit',
+            \ 'value': 'val',
+            \ 'enum': '',
+            \ 'keyword': 'keyword',
+            \ 'snippet': '',
+            \ 'color': 'color',
+            \ 'file': '',
+            \ 'reference': 'ref',
+            \ 'folder': '',
+            \ 'enum member': '',
+            \ 'constant': '',
+            \ 'struct': '',
+            \ 'event': 'event',
+            \ 'operator': '',
+            \ 'type_parameter': 'type param',
+            \ '<default>': 'v'
+            \ }
 
 function ALELSPMappings()
     if get(g:, 'loaded_ale', 0) == 1
@@ -158,6 +187,7 @@ function ALELSPMappings()
         if (l:lsp_found)
             nmap <buffer> gd <Plug>(ale_go_to_definition)
             nmap <buffer> K <Plug>(ale_hover)
+            imap <C-x><C-o> <Plug>(ale_complete)
         endif
     endif
 endfunction
@@ -266,7 +296,7 @@ nmap ]l  <Plug>(qf_loc_next)
 " }}}
 " }}}
 " Basic {{{
-let g:python3_host_prog = "/usr/bin/python3"
+" let g:python3_host_prog = "/usr/bin/python3"
 
 filetype plugin indent on
 set hidden
@@ -300,7 +330,7 @@ set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*/bui
 
 " Completion
 set pumheight=10
-set completeopt+=longest
+set completeopt=menu,longest
 
 " Indent
 set autoindent
@@ -404,10 +434,10 @@ function! LinterStatus() abort
         let l:all_non_errors = l:counts.total - l:all_errors
 
         return l:counts.total == 0 ? '' : printf(
-        \   '%dW %dE',
-        \   all_non_errors,
-        \   all_errors
-        \)
+                    \   '%dW %dE',
+                    \   all_non_errors,
+                    \   all_errors
+                    \)
     else
         return 'Install ALE'
     endif
