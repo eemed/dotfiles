@@ -26,6 +26,11 @@ Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything yo
 Plug 'junegunn/vim-easy-align'                          " Align stuff
 Plug 'sheerun/vim-polyglot'                             " Syntax files
 Plug 'dense-analysis/ale'                               " Linting and fixing
+
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
+
 Plug 'eemed/vim-one'                                    " Colorscheme
 
 call plug#end() " }}}
@@ -113,15 +118,6 @@ nnoremap <c-left>   :vertical resize -10<CR>
 nnoremap <c-up>     :resize +10<CR>
 nnoremap <c-down>   :resize -10<CR>
 
-function! LookupDef()
-    try
-        execute 'tag' . expand('<cword>')
-    catch /.*/
-        normal! gd
-    endtry
-endfunction
-nnoremap gd :call LookupDef()<CR>
-
 xnoremap ir i[
 onoremap ir :normal vi[<CR>
 xnoremap ar a[
@@ -145,17 +141,60 @@ command! -nargs=? -complete=filetype EditSnippets
             \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
             \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
 " }}}
+" vim-lsp {{{
+if executable('pyls')
+    " pip install python-language-server
+    au User lsp_setup call lsp#register_server({
+                \ 'name': 'pyls',
+                \ 'cmd': {server_info->['pyls']},
+                \ 'whitelist': ['python'],
+                \ })
+endif
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    " setlocal signcolumn=yes
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> <F4> <plug>(lsp-rename)
+    nmap <buffer> K <plug>(lsp-hover)
+    " nmap <buffer> <leader>n <plug>(lsp-next-diagnostic)
+    " nmap <buffer> <leader>N <plug>(lsp-previous-diagnostic)
+endfunction
+
+augroup lsp_install
+    au!
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+let g:lsp_highlights_enabled = 0
+let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_virtual_text_enabled = 0
+let g:lsp_diagnostics_enabled = 0
+
+" highlight! link LspWarningText Typedef
+" highlight! link LspInformationText Special
+" highlight! link LspHintText Special
+" highlight! link LspErrorText Error
+
+" let g:lsp_signs_error = {'text': 'e'}
+" let g:lsp_signs_warning = {'text': 'w'}
+" let g:lsp_signs_hint = {'text': 'h'}
+" let g:lsp_signs_information = {'text': 'i'}
+" }}}
 " ale {{{
 let g:ale_fixers = {
             \ 'xml': ['xmllint'],
+            \ 'python': ['autopep8'],
             \ }
 let g:ale_linters = {
-            \   'javascript': ['eslint'],
+            \ 'python': ['flake8'],
+            \ 'javascript': ['eslint'],
             \ }
 
 nmap <silent><F3> <Plug>(ale_fix)
 " }}}
 " vim-tmux-navigator {{{
+let g:tmux_navigator_no_mappings = 1
 nnoremap <silent> <m-h> :TmuxNavigateLeft<cr>
 nnoremap <silent> <m-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
@@ -389,18 +428,18 @@ function! PasteForStatusline()
     return &paste == 1 ? '[PASTE]' : ""
 endfunction
 
-function! LinterStatus() abort
-    let l:counts = ale#statusline#Count(bufnr(''))
+" function! LinterStatus() abort
+"     let l:counts = ale#statusline#Count(bufnr(''))
 
-    let l:all_errors = l:counts.error + l:counts.style_error
-    let l:all_non_errors = l:counts.total - l:all_errors
+"     let l:all_errors = l:counts.error + l:counts.style_error
+"     let l:all_non_errors = l:counts.total - l:all_errors
 
-    return l:counts.total == 0 ? '' : printf(
-    \   '%dW %dE',
-    \   all_non_errors,
-    \   all_errors
-    \)
-endfunction
+"     return l:counts.total == 0 ? '' : printf(
+"     \   '%dW %dE',
+"     \   all_non_errors,
+"     \   all_errors
+"     \)
+" endfunction
 
 set laststatus=2
 set statusline=
@@ -409,7 +448,7 @@ set statusline+=\ %*
 set statusline+=\ %r
 set statusline+=%m
 set statusline+=%{PasteForStatusline()}
-set statusline+=\ %{LinterStatus()}
+" set statusline+=\ %{LinterStatus()}
 set statusline+=\ %{gutentags#statusline()}
 set statusline+=%=
 set statusline+=\ %{GitStatus()}
