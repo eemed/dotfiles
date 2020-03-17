@@ -148,6 +148,13 @@ let g:ale_linters = {
 
 nmap <silent><F3> <Plug>(ale_fix)
 
+highlight! link ALEVirtualTextError Error
+highlight! link ALEVirtualTextWarning Typedef
+highlight! link ALEVirtualTextInfo Special
+highlight! link ALEVirtualTextStyleError Error
+highlight! link ALEVirtualTextStyleWarning Typedef
+
+let g:ale_virtualtext_cursor = 1
 let g:ale_completion_max_suggestions = 10
 let g:ale_echo_msg_format = "[%linter%]%code: %%s"
 let g:ale_completion_symbols = {
