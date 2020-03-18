@@ -27,6 +27,7 @@ Plug 'junegunn/vim-easy-align'                          " Align stuff
 Plug 'sheerun/vim-polyglot'                             " Syntax files
 Plug 'dense-analysis/ale'                               " Linting and fixing
 Plug 'eemed/vim-one'                                    " Colorscheme
+Plug 'rust-lang/rust.vim'
 
 call plug#end() " }}}
 " Autoinstall vim-plug {{{
@@ -125,11 +126,10 @@ set pastetoggle=<F2>
 let g:asyncrun_rootmarks = ['.git', '.svn', '.root', '.project', '.hg']
 let g:asynctasks_rtp_config = "nvim/.asynctasks.ini"
 let g:asyncrun_open = 6
-nnoremap <silent><F5> :AsyncTask file-build<cr>
-nnoremap <silent><F6> :AsyncTask file-run<cr>
-nnoremap <silent><F7> :AsyncTask project-build<cr>
-nnoremap <silent><F8> :AsyncTask project-run<cr>
+nnoremap <silent>m<cr> :AsyncTask project-build<cr>
+nnoremap <silent>'<cr> :AsyncTask project-run<cr>
 nnoremap <leader>r :AsyncTask<space>
+nnoremap `<space> :AsyncRun<space>
 " }}}
 " snipmate {{{
 command! -nargs=? -complete=filetype EditSnippets
@@ -140,13 +140,15 @@ command! -nargs=? -complete=filetype EditSnippets
 let g:ale_fixers = {
             \ 'xml': ['xmllint'],
             \ 'python': ['autopep8'],
+            \ 'rust': ['rustfmt'],
             \ }
 let g:ale_linters = {
             \ 'python': ['pyls'],
             \ 'javascript': ['eslint'],
+            \ 'rust': ['rls'],
             \ }
 
-nmap <silent><F3> <Plug>(ale_fix)
+nmap <silent><leader>F <Plug>(ale_fix)
 
 highlight! link ALEVirtualTextError Error
 highlight! link ALEVirtualTextWarning Typedef
@@ -265,7 +267,6 @@ let g:fzf_colors = {
             \ 'header':  ['fg', 'Comment'] }
 " }}}
 nnoremap <silent><leader>A :call SimilarFZF()<CR>
-nnoremap <silent><leader>F :Files<CR>
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
@@ -340,6 +341,7 @@ set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*/bui
 " Completion
 set pumheight=10
 set completeopt=menu,longest
+set omnifunc=syntaxcomplete#Complete
 
 " Indent
 set autoindent
