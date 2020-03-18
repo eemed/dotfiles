@@ -195,6 +195,7 @@ function ALELSPMappings()
         if (l:lsp_found)
             nmap <buffer> gd <Plug>(ale_go_to_definition)
             nmap <buffer> K <Plug>(ale_hover)
+            nmap <buffer> <F4> <Plug>(ale_rename)
             setlocal omnifunc=ale#completion#OmniFunc
         endif
     endif
