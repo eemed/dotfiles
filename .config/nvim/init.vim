@@ -154,9 +154,10 @@ highlight! link ALEVirtualTextInfo Special
 highlight! link ALEVirtualTextStyleError Error
 highlight! link ALEVirtualTextStyleWarning Typedef
 
+
 let g:ale_virtualtext_cursor = 1
 let g:ale_completion_max_suggestions = 10
-let g:ale_echo_msg_format = "[%linter%]%code: %%s"
+let g:ale_echo_msg_format = "[%linter%] %code: %%s"
 let g:ale_completion_symbols = {
             \ 'text': '',
             \ 'method': '',
@@ -194,7 +195,7 @@ function ALELSPMappings()
         if (l:lsp_found)
             nmap <buffer> gd <Plug>(ale_go_to_definition)
             nmap <buffer> K <Plug>(ale_hover)
-            imap <C-x><C-o> <Plug>(ale_complete)
+            setlocal omnifunc=ale#completion#OmniFunc
         endif
     endif
 endfunction
