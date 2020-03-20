@@ -25,7 +25,6 @@ Plug 'junegunn/vim-easy-align'                          " Align stuff
 Plug 'sheerun/vim-polyglot'                             " Syntax files
 Plug 'dense-analysis/ale'                               " Linting and fixing
 Plug 'eemed/vim-one'                                    " Colorscheme
-Plug 'rust-lang/rust.vim'
 
 call plug#end() " }}}
 " Autoinstall vim-plug {{{
