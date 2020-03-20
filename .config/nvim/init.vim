@@ -8,13 +8,11 @@ Plug 'garbas/vim-snipmate'                              " Snippets
 
 Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
+Plug 'benmills/vimux'                                   " Run commands in tmux
 
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
-
-Plug 'skywind3000/asyncrun.vim'                         " Async jobs
-Plug 'skywind3000/asynctasks.vim'                       " Project specific tasks
 
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
@@ -119,17 +117,17 @@ onoremap ir :normal vi[<CR>
 xnoremap ar a[
 onoremap ar :normal va[<CR>
 
+nnoremap m<cr> :make<CR>
+nnoremap m? :echom &makeprg<CR>
+nnoremap m<space> :set makeprg=
+
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
-" async{run/tasks} {{{
-let g:asyncrun_rootmarks = ['.git', '.svn', '.root', '.project', '.hg']
-let g:asynctasks_rtp_config = "nvim/.asynctasks.ini"
-let g:asyncrun_open = 6
-nnoremap <silent>m<cr> :AsyncTask project-build<cr>
-nnoremap <silent>'<cr> :AsyncTask project-run<cr>
-nnoremap <leader>r :AsyncTask<space>
-nnoremap `<space> :AsyncRun<space>
+" vimux {{{
+let g:VimuxHeight = "30"
+nnoremap `<space> :VimuxPromptCommand<CR>
+nnoremap `<cr> :VimuxRunLastCommand<CR>
 " }}}
 " snipmate {{{
 command! -nargs=? -complete=filetype EditSnippets
