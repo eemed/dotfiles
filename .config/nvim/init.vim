@@ -13,15 +13,14 @@ Plug 'benmills/vimux'                                   " Run commands in tmux
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
+Plug 'tpope/vim-sleuth'                                 " Wise style
 
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
 Plug 'romainl/vim-qf'                                   " Better quickfix window
-Plug 'editorconfig/editorconfig-vim'                    " Respect editorconfig
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
-Plug 'junegunn/vim-easy-align'                          " Align stuff
 Plug 'sheerun/vim-polyglot'                             " Syntax files
 Plug 'dense-analysis/ale'                               " Linting and fixing
 Plug 'eemed/vim-one'                                    " Colorscheme
@@ -153,7 +152,6 @@ highlight! link ALEVirtualTextInfo Special
 highlight! link ALEVirtualTextStyleError Error
 highlight! link ALEVirtualTextStyleWarning Typedef
 
-
 let g:ale_virtualtext_cursor = 1
 let g:ale_completion_max_suggestions = 10
 let g:ale_echo_msg_format = "[%linter%] %code: %%s"
@@ -189,8 +187,11 @@ let g:ale_completion_symbols = {
 function ALELSPMappings()
     if get(g:, 'loaded_ale', 0) == 1
         let l:lsp_found=0
-        for l:linter in ale#linter#Get(&filetype) | if !empty(l:linter.lsp)
-                    \ | let l:lsp_found=1 | endif | endfor
+        for l:linter in ale#linter#Get(&filetype)
+            if !empty(l:linter.lsp)
+                let l:lsp_found=1
+            endif
+        endfor
         if (l:lsp_found)
             nmap <buffer> gd <Plug>(ale_go_to_definition)
             nmap <buffer> K <Plug>(ale_hover)
@@ -211,9 +212,6 @@ tnoremap <silent> <m-h> <C-\><C-n>:TmuxNavigateLeft<cr>
 tnoremap <silent> <m-j> <C-\><C-n>:TmuxNavigateDown<cr>
 tnoremap <silent> <m-k> <C-\><C-n>:TmuxNavigateUp<cr>
 tnoremap <silent> <m-l> <C-\><C-n>:TmuxNavigateRight<cr>
-" }}}
-" editorconfig {{{
-let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 " }}}
 " vim-fugitive {{{
 nnoremap <silent><leader>g :botright vertical Gstatus<CR>
@@ -282,10 +280,6 @@ let g:gutentags_file_list_command = {
             \   },
             \ }
 " }}}
-" vim-easy-align {{{
-xmap ga <Plug>(LiveEasyAlign)
-nmap ga <Plug>(LiveEasyAlign)
-" }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
@@ -307,7 +301,6 @@ nmap ]l  <Plug>(qf_loc_next)
 
 filetype plugin indent on
 set hidden
-set laststatus=2
 
 " Splitting
 set splitright
@@ -322,7 +315,6 @@ set list listchars=tab:→\ ,nbsp:•,trail:•
 set breakindent
 set showbreak=⤷
 set path+=**
-set autoread
 " set clipboard+=unnamedplus
 
 " Commands without remembering case. Useful for plugin commands
@@ -341,15 +333,12 @@ set completeopt=menu,longest
 set omnifunc=syntaxcomplete#Complete
 
 " Indent
-set autoindent
-set cindent
 set smartindent
 
 " Search
 set nohlsearch
-set incsearch
 
-" Tabs
+" Tabs to spaces
 set tabstop=4
 set shiftwidth=4
 set expandtab
