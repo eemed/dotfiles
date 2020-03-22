@@ -145,6 +145,7 @@ let g:ale_linters = {
             \ }
 
 nmap <silent><leader>F <Plug>(ale_fix)
+nmap <silent><F3> <Plug>(ale_fix)
 
 highlight! link ALEVirtualTextError Error
 highlight! link ALEVirtualTextWarning Typedef
