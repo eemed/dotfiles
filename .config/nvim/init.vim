@@ -16,7 +16,8 @@ Plug 'tpope/vim-unimpaired'                             " Bindings
 Plug 'tpope/vim-sleuth'                                 " Wise style
 
 Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
+" Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
+Plug 'preservim/nerdtree'
 Plug 'romainl/vim-qf'                                   " Better quickfix window
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -122,6 +123,10 @@ nnoremap m<space> :set makeprg=
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
+" nerdtree {{{
+map <C-n> :NERDTreeToggle<CR>
+autocmd MyAutocmds bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" }}}
 " vimux {{{
 let g:VimuxHeight = "30"
 nnoremap `<space> :VimuxPromptCommand<CR>
@@ -137,6 +142,7 @@ let g:ale_fixers = {
             \ 'xml': ['xmllint'],
             \ 'python': ['autopep8'],
             \ 'rust': ['rustfmt'],
+            \ 'javascript': ['eslint'],
             \ }
 let g:ale_linters = {
             \ 'python': ['pyls'],
