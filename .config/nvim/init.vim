@@ -2,32 +2,31 @@
 let g:vim_dir = fnamemodify($MYVIMRC, ':p:h')
 call plug#begin(g:vim_dir . '/plugged')
 
-Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dep
-Plug 'tomtom/tlib_vim'                                  " Snippets dep
+Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
+Plug 'tomtom/tlib_vim'                                  " Snippets dependency
 Plug 'garbas/vim-snipmate'                              " Snippets
 
-Plug 'christoomey/vim-tmux-navigator'                   " Make vim better with tmux
+Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 Plug 'benmills/vimux'                                   " Run commands in tmux
 
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
-Plug 'tpope/vim-sleuth'                                 " Wise style
+Plug 'tpope/vim-sleuth'                                 " Wise indent style
 
 Plug 'machakann/vim-sandwich'                           " Surround objects
-" Plug 'justinmk/vim-dirvish'                             " Direcotry browser. Netrw is buggy
-Plug 'preservim/nerdtree'
-Plug 'romainl/vim-qf'                                   " Better quickfix window
+Plug 'preservim/nerdtree'                               " Project directory viewer
+Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'                                 " Fyzzy find anything you want
+Plug 'junegunn/fzf.vim'                                 " Fuzzy find
 Plug 'sheerun/vim-polyglot'                             " Syntax files
 Plug 'dense-analysis/ale'                               " Linting and fixing
-Plug 'eemed/vim-one'                                    " Colorscheme
+Plug 'eemed/vim-one'                                    " Color scheme
 
 call plug#end() " }}}
-" Autoinstall vim-plug {{{
+" Automatically install vim-plug {{{
 if empty(glob(g:vim_dir . '/autoload/plug.vim'))
     silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
                 \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -37,7 +36,7 @@ endif
 augroup MyAutocmds " {{{
     autocmd!
 augroup end " }}}
-" Keybindings {{{
+" Key-mappings {{{
 let mapleader = "\ "
 
 function! SortLines(type) abort
@@ -125,7 +124,8 @@ set pastetoggle=<F2>
 " Plugin configuration {{{
 " nerdtree {{{
 map <C-n> :NERDTreeToggle<CR>
-autocmd MyAutocmds bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+autocmd MyAutocmds bufenter * if (winnr("$") == 1 &&
+            \ exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " }}}
 " vimux {{{
 let g:VimuxHeight = "30"
@@ -230,7 +230,7 @@ function! InGit() " {{{
 endfunction " }}}
 function! Browse() " {{{
     if InGit()
-        " Use this because Gfiles doesnt work with cached files
+        " Use this because Gfiles doesn't work with cached files
         call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
     else
         exe "Files"
@@ -384,7 +384,7 @@ command! -nargs=? -complete=filetype EditFileTypePlugin
             \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
             \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 " }}}
-" Grepping {{{
+" Grep {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
     set grepprg=ag\ --vimgrep\ --smart-case
@@ -421,7 +421,7 @@ set termguicolors
 set t_Co=256
 colorscheme one
 " }}}
-" Statusline {{{
+" Status line {{{
 function! GitStatus()
     return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
 endfunction
