@@ -5,24 +5,23 @@ call plug#begin(g:vim_dir . '/plugged')
 Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
 Plug 'tomtom/tlib_vim'                                  " Snippets dependency
 Plug 'garbas/vim-snipmate'                              " Snippets
+Plug 'tpope/vim-dispatch'                               " Asynchronous commands
 
 Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
-Plug 'benmills/vimux'                                   " Run commands in tmux
 
+Plug 'justinmk/vim-dirvish'
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
 Plug 'tpope/vim-sleuth'                                 " Wise indent style
 
 Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'preservim/nerdtree'                               " Project directory viewer
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fuzzy find
 Plug 'sheerun/vim-polyglot'                             " Syntax files
-Plug 'dense-analysis/ale'                               " Linting and fixing
 Plug 'eemed/vim-one'                                    " Color scheme
 
 call plug#end() " }}}
@@ -115,99 +114,68 @@ onoremap ir :normal vi[<CR>
 xnoremap ar a[
 onoremap ar :normal va[<CR>
 
-nnoremap m<cr> :make<CR>
-nnoremap m? :echom &makeprg<CR>
-nnoremap m<space> :set makeprg=
-
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
-" nerdtree {{{
-map <C-n> :NERDTreeToggle<CR>
-autocmd MyAutocmds bufenter * if (winnr("$") == 1 &&
-            \ exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" vim-dispatch {{{
+let g:dispatch_no_tmux_make = 1
+" Make on save {{{
+let g:makeonsave = []
+function! ToggleMakeOnSave()
+    if get(g:makeonsave, &ft, '') == &ft
+        call remove(g:makeonsave, &ft)
+        echom 'MakeOnSave disabled'
+    else
+        call add(g:makeonsave, &ft)
+        echom 'MakeOnSave enabled'
+    endif
+endfunction
+
+function! MakeOnSave()
+    if get(g:makeonsave, &ft, '') == &ft
+        if exists('g:loaded_dispatch')
+            silent Make
+        else
+            silent make
+        endif
+    endif
+endfunction
+
+autocmd MyAutocmds BufWritePost * call MakeOnSave()
+command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
+nnoremap yoL :<c-u>call ToggleMakeOnSave()<cr>
 " }}}
-" vimux {{{
-let g:VimuxHeight = "30"
-nnoremap `<space> :VimuxPromptCommand<CR>
-nnoremap `<cr> :VimuxRunLastCommand<CR>
+" }}}
+" dirvish {{{
+let g:loaded_netrwPlugin = 1
+command! -nargs=? -complete=dir Explore Dirvish <args>
+command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
+command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
+
+nnoremap <silent><c-n> :<C-u>call <sid>dirvish_toggle()<cr>
+function! s:dirvish_toggle() abort
+  let l:last_buffer = bufnr('$')
+  let l:i = 1
+  let l:dirvish_already_open = 0
+
+  while l:i <= l:last_buffer
+    if bufexists(l:i) && bufloaded(l:i) && getbufvar(l:i, '&filetype') ==? 'dirvish'
+      let l:dirvish_already_open = 1
+      execute ':'.l:i.'bd!'
+    endif
+    let l:i += 1
+  endwhile
+
+  if !l:dirvish_already_open
+    leftabove 30vsp +Dirvish
+  endif
+endfunction
+autocmd MyAutocmds bufenter * if (winnr("$") == 1 && exists("b:dirvish")) | q | endif
 " }}}
 " snipmate {{{
 command! -nargs=? -complete=filetype EditSnippets
             \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
             \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
-" }}}
-" ale {{{
-let g:ale_fixers = {
-            \ 'xml': ['xmllint'],
-            \ 'python': ['autopep8'],
-            \ 'rust': ['rustfmt'],
-            \ 'javascript': ['eslint'],
-            \ }
-let g:ale_linters = {
-            \ 'python': ['pyls'],
-            \ 'javascript': ['eslint'],
-            \ 'rust': ['rls'],
-            \ }
-
-nmap <silent><leader>F <Plug>(ale_fix)
-nmap <silent><F3> <Plug>(ale_fix)
-
-highlight! link ALEVirtualTextError Error
-highlight! link ALEVirtualTextWarning Typedef
-highlight! link ALEVirtualTextInfo Special
-highlight! link ALEVirtualTextStyleError Error
-highlight! link ALEVirtualTextStyleWarning Typedef
-
-let g:ale_virtualtext_cursor = 1
-let g:ale_completion_max_suggestions = 10
-let g:ale_echo_msg_format = "[%linter%] %code: %%s"
-let g:ale_completion_symbols = {
-            \ 'text': '',
-            \ 'method': '',
-            \ 'function': '',
-            \ 'constructor': '',
-            \ 'field': '',
-            \ 'variable': '',
-            \ 'class': '',
-            \ 'interface': '',
-            \ 'module': '',
-            \ 'property': '',
-            \ 'unit': 'unit',
-            \ 'value': 'val',
-            \ 'enum': '',
-            \ 'keyword': 'keyword',
-            \ 'snippet': '',
-            \ 'color': 'color',
-            \ 'file': '',
-            \ 'reference': 'ref',
-            \ 'folder': '',
-            \ 'enum member': '',
-            \ 'constant': '',
-            \ 'struct': '',
-            \ 'event': 'event',
-            \ 'operator': '',
-            \ 'type_parameter': 'type param',
-            \ '<default>': 'v'
-            \ }
-
-function ALELSPMappings()
-    if get(g:, 'loaded_ale', 0) == 1
-        let l:lsp_found=0
-        for l:linter in ale#linter#Get(&filetype)
-            if !empty(l:linter.lsp)
-                let l:lsp_found=1
-            endif
-        endfor
-        if (l:lsp_found)
-            nmap <buffer> gd <Plug>(ale_go_to_definition)
-            nmap <buffer> K <Plug>(ale_hover)
-            nmap <buffer> <F4> <Plug>(ale_rename)
-            setlocal omnifunc=ale#completion#OmniFunc
-        endif
-    endif
-endfunction
-autocmd MyAutocmds BufRead,FileType * call ALELSPMappings()
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
@@ -314,7 +282,6 @@ set splitright
 set splitbelow
 set diffopt=vertical
 
-set signcolumn=yes
 set lazyredraw
 set mouse=a
 set nowrap
@@ -430,23 +397,6 @@ function! PasteForStatusline()
     return &paste == 1 ? '[PASTE]' : ""
 endfunction
 
-function! LinterStatus() abort
-    if get(g:, 'loaded_ale', 0) == 1
-        let l:counts = ale#statusline#Count(bufnr(''))
-
-        let l:all_errors = l:counts.error + l:counts.style_error
-        let l:all_non_errors = l:counts.total - l:all_errors
-
-        return l:counts.total == 0 ? '' : printf(
-                    \   '%dW %dE',
-                    \   all_non_errors,
-                    \   all_errors
-                    \)
-    else
-        return 'Install ALE'
-    endif
-endfunction
-
 set laststatus=2
 set statusline=
 set statusline+=\ %f
@@ -454,7 +404,6 @@ set statusline+=\ %*
 set statusline+=\ %r
 set statusline+=%m
 set statusline+=%{PasteForStatusline()}
-set statusline+=\ %{LinterStatus()}
 set statusline+=\ %{gutentags#statusline()}
 set statusline+=%=
 set statusline+=\ %{GitStatus()}
