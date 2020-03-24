@@ -72,29 +72,19 @@ alias hgrep="history | grep --color=auto"
 alias headphones="sudo rmmod btusb ; sudo modprobe btusb"
 function cdl(){ cd $1; ls -l;}
 
-if test -f ~/.bashrc_personal ; then
-    source ~/.bashrc_personal
-fi
-
+[ -f ~/.bashrc_personal ] && source ~/.bashrc_personal
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-if test -d ~/.fzf ; then
-    PATH=$PATH:~/.fzf/bin
-    source ~/.fzf/shell/completion.bash
-    source ~/.fzf/shell/key-bindings.bash
-fi
+[ -d ~/.fzf ] && \
+  PATH=$PATH:~/.fzf/bin ;\
+  source ~/.fzf/shell/completion.bash ;\
+  source ~/.fzf/shell/key-bindings.bash
 
 # Setup gpg-agent
 unset SSH_AGENT_PID
-if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
+[ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ] && \
   export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
-fi
+
 export GPG_TTY=$(tty)
 
-if pgrep gpg-agent >/dev/null 2>&1 ; then
-    gpg-connect-agent updatestartuptty /bye >/dev/null
-fi
-
-if test -f ~/.scripts/f.sh ; then
-    source ~/.scripts/f.sh
-    alias j="f jobs"
-fi
+[ pgrep gpg-agent >/dev/null 2>&1 ] && gpg-connect-agent updatestartuptty /bye >/dev/null
+[ -f ~/.scripts/f.sh ] && source ~/.scripts/f.sh; alias j="f jobs"
