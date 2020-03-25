@@ -5,7 +5,7 @@ call plug#begin(g:vim_dir . '/plugged')
 Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
 Plug 'tomtom/tlib_vim'                                  " Snippets dependency
 Plug 'garbas/vim-snipmate'                              " Snippets
-Plug 'tpope/vim-dispatch'                               " Asynchronous commands
+Plug 'tpope/vim-dispatch'
 
 Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
@@ -17,7 +17,6 @@ Plug 'tpope/vim-unimpaired'                             " Bindings
 Plug 'tpope/vim-sleuth'                                 " Wise indent style
 
 Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fuzzy find
@@ -118,7 +117,6 @@ set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
 " vim-dispatch {{{
-let g:dispatch_no_tmux_make = 1
 " Make on save {{{
 let g:makeonsave = []
 function! ToggleMakeOnSave()
@@ -133,11 +131,8 @@ endfunction
 
 function! MakeOnSave()
     if get(g:makeonsave, &ft, '') == &ft
-        if exists('g:loaded_dispatch')
-            silent Make
-        else
-            silent make
-        endif
+        Make
+        cclose
     endif
 endfunction
 
@@ -145,6 +140,7 @@ autocmd MyAutocmds BufWritePost * call MakeOnSave()
 command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
 nnoremap yoL :<c-u>call ToggleMakeOnSave()<cr>
 " }}}
+let g:dispatch_no_tmux_make = 1
 " }}}
 " dirvish {{{
 let g:loaded_netrwPlugin = 1
@@ -257,18 +253,6 @@ let g:gutentags_file_list_command = {
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
-" vim-qf {{{
-" https://github.com/romainl/vim-qf/issues/85
-let g:qf_auto_open_quickfix = 0
-autocmd MyAutocmds QuickFixCmdPost make,grep,grepadd,cgetexpr nested cwindow
-autocmd MyAutocmds QuickFixCmdPost lmake,lgrep,lgrepadd,lgetexpr nested lwindow
-
-nmap [q <Plug>(qf_qf_previous)
-nmap ]q  <Plug>(qf_qf_next)
-
-nmap [l <Plug>(qf_loc_previous)
-nmap ]l  <Plug>(qf_loc_next)
-" }}}
 " }}}
 " Basic {{{
 " let g:python3_host_prog = "/usr/bin/python3"
@@ -326,6 +310,9 @@ set dir=~/.vimtmp
 
 set updatetime=300
 set foldmethod=marker
+
+autocmd MyAutocmds QuickFixCmdPost cgetexpr,grep nested cwindow
+autocmd MyAutocmds QuickFixCmdPost lgetexpr,lgrep nested lwindow
 
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
 autocmd MyAutocmds BufEnter term://* startinsert
