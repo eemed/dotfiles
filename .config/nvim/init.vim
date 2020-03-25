@@ -188,7 +188,7 @@ tnoremap <silent> <m-k> <C-\><C-n>:TmuxNavigateUp<cr>
 tnoremap <silent> <m-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " }}}
 " vim-fugitive {{{
-nnoremap <silent><leader>g :botright vertical Gstatus<CR>
+nnoremap <silent><leader>g :vertical Gstatus<CR>
 " }}}
 " fzf.vim {{{
 function! InGit() " {{{
