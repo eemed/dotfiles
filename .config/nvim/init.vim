@@ -16,6 +16,7 @@ Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
 Plug 'tpope/vim-sleuth'                                 " Wise indent style
 
+Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -116,6 +117,17 @@ onoremap ar :normal va[<CR>
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
+" vim-qf {{{
+let g:qf_auto_open_quickfix = 0
+autocmd MyAutocmds QuickFixCmdPost cgetexpr,grep nested cwindow
+autocmd MyAutocmds QuickFixCmdPost lgetexpr,lgrep nested lwindow
+
+nmap [q <Plug>(qf_qf_previous)
+nmap ]q  <Plug>(qf_qf_next)
+
+nmap [l <Plug>(qf_loc_previous)
+nmap ]l  <Plug>(qf_loc_next)
+" }}}
 " vim-dispatch {{{
 " Make on save {{{
 let g:makeonsave = []
@@ -310,9 +322,6 @@ set dir=~/.vimtmp
 
 set updatetime=300
 set foldmethod=marker
-
-autocmd MyAutocmds QuickFixCmdPost cgetexpr,grep nested cwindow
-autocmd MyAutocmds QuickFixCmdPost lgetexpr,lgrep nested lwindow
 
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
 autocmd MyAutocmds BufEnter term://* startinsert
