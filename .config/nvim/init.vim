@@ -117,6 +117,35 @@ onoremap ar :normal va[<CR>
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
+" vim-dispatch {{{
+let g:dispatch_no_tmux_make = 1
+" Make on save {{{
+let g:makeonsave = []
+function! ToggleMakeOnSave()
+    if get(g:makeonsave, &ft, '') == &ft
+        call remove(g:makeonsave, &ft)
+        echom 'MakeOnSave disabled'
+    else
+        call add(g:makeonsave, &ft)
+        echom 'MakeOnSave enabled'
+    endif
+endfunction
+
+function! MakeOnSave()
+    if get(g:makeonsave, &ft, '') == &ft
+        if exists('g:loaded_dispatch')
+            silent Make
+        else
+            silent make
+        endif
+    endif
+endfunction
+
+autocmd MyAutocmds BufWritePost * call MakeOnSave()
+command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
+nnoremap yoL :<c-u>call ToggleMakeOnSave()<cr>
+" }}}
+" }}}
 " dirvish {{{
 let g:loaded_netrwPlugin = 1
 command! -nargs=? -complete=dir Explore Dirvish <args>
@@ -316,28 +345,6 @@ autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
 " Commands {{{
 command! -nargs=0 Config execute ':edit' . $MYVIMRC
 nnoremap <leader>c :Config<CR>
-" Make on save {{{
-let g:makeonsave = []
-function! ToggleMakeOnSave()
-    if get(g:makeonsave, &ft, '') == &ft
-        call remove(g:makeonsave, &ft)
-        echom 'MakeOnSave disabled'
-    else
-        call add(g:makeonsave, &ft)
-        echom 'MakeOnSave enabled'
-    endif
-endfunction
-
-function! MakeOnSave()
-    if get(g:makeonsave, &ft, '') == &ft
-        silent make
-    endif
-endfunction
-
-autocmd MyAutocmds BufWritePost * call MakeOnSave()
-command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
-nnoremap yoL :<c-u> call ToggleMakeOnSave()<cr>
-" }}}
 " Open ftplugin {{{
 command! -nargs=? -complete=filetype EditFileTypePlugin
             \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
