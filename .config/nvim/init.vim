@@ -141,7 +141,6 @@ function! s:dirvish_toggle() abort
     leftabove 30vsp +Dirvish
   endif
 endfunction
-autocmd MyAutocmds bufenter * if (winnr("$") == 1 && exists("b:dirvish")) | q | endif
 " }}}
 " snipmate {{{
 command! -nargs=? -complete=filetype EditSnippets
