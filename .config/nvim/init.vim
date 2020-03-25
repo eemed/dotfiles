@@ -167,7 +167,7 @@ function! s:dirvish_toggle() abort
   endwhile
 
   if !l:dirvish_already_open
-    leftabove 30vsp +Dirvish
+    leftabove vsplit | vertical resize 30 | Dirvish
   endif
 endfunction
 " }}}
