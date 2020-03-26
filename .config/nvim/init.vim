@@ -60,7 +60,7 @@ xnoremap K :move '<-2<CR>gv=gv
 xnoremap < <gv
 xnoremap > >gv
 
-nnoremap <leader>S :source %<CR>
+nnoremap <leader>S :source <c-r>%<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <BS> <C-^>
 
@@ -267,8 +267,6 @@ runtime macros/sandwich/keymap/surround.vim
 " }}}
 " }}}
 " Basic {{{
-" let g:python3_host_prog = "/usr/bin/python3"
-
 filetype plugin indent on
 set hidden
 
