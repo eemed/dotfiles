@@ -5,17 +5,17 @@ call plug#begin(g:vim_dir . '/plugged')
 Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
 Plug 'tomtom/tlib_vim'                                  " Snippets dependency
 Plug 'garbas/vim-snipmate'                              " Snippets
-Plug 'tpope/vim-dispatch'
 
 Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 
-Plug 'justinmk/vim-dirvish'
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
 Plug 'tpope/vim-sleuth'                                 " Wise indent style
+Plug 'tpope/vim-dispatch'                               " Asynchronous make and commands
 
+Plug 'justinmk/vim-dirvish'                             " Managing files
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
