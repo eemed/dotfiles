@@ -54,7 +54,8 @@ export XDG_USER_CONFIG_DIR="$HOME/.config"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/.local/lib
 
 # Prompt
-export PS1="${debian_chroot:+($debian_chroot)}[\[\033[01;32m\]\u@\h \[\033[01;34m\]\w\[\033[00m\]]\$ "
+export PROMPT_DIRTRIM=3
+export PS1="\[\033[01;32m\]\u\[\033[00m\]: \[\033[01;34m\]\w\[\033[00m\]\n$ "
 
 # Default editor and pager
 VISUAL=nvim; export VISUAL EDITOR=nvim; export EDITOR
