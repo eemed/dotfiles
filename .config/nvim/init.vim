@@ -6,6 +6,12 @@ Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
 Plug 'tomtom/tlib_vim'                                  " Snippets dependency
 Plug 'garbas/vim-snipmate'                              " Snippets
 
+" Language client protocol
+Plug 'autozimu/LanguageClient-neovim', {
+            \ 'branch': 'next',
+            \ 'do': 'bash install.sh',
+            \ }
+
 Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 
@@ -117,6 +123,24 @@ onoremap ar :normal va[<CR>
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
+" LanguageClient {{{
+let g:LanguageClient_serverCommands = {
+      \ 'rust': ['rustup', 'run', 'stable', 'rls'],
+      \ }
+
+function LC_maps()
+  if has_key(g:LanguageClient_serverCommands, &filetype)
+    nnoremap <buffer> <silent> K :call LanguageClient#textDocument_hover()<cr>
+    nnoremap <buffer> <silent> gd :call LanguageClient#textDocument_definition()<CR>
+    nnoremap <buffer> <silent> <F3> :call LanguageClient#textDocument_formatting()<CR>
+  endif
+endfunction
+
+autocmd MyAutocmds FileType * call LC_maps()
+nnoremap <silent> <leader>L :<c-u> call LanguageClient_contextMenu()<cr>
+
+let g:LanguageClient_diagnosticsEnable = 0
+" }}}
 " vim-qf {{{
 let g:qf_auto_open_quickfix = 0
 autocmd MyAutocmds QuickFixCmdPost cgetexpr,grep nested cwindow
