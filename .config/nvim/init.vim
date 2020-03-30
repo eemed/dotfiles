@@ -8,9 +8,9 @@ Plug 'garbas/vim-snipmate'                              " Snippets
 
 " Language server protocol
 Plug 'autozimu/LanguageClient-neovim', {
-            \ 'branch': 'next',
-            \ 'do': 'bash install.sh',
-            \ }
+      \ 'branch': 'next',
+      \ 'do': 'bash install.sh',
+      \ }
 
 Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
@@ -33,19 +33,21 @@ Plug 'eemed/vim-one'                                    " Color scheme
 call plug#end() " }}}
 " Automatically install vim-plug {{{
 if empty(glob(g:vim_dir . '/autoload/plug.vim'))
-    silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
-                \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
+  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
 endif
 " }}}
 augroup MyAutocmds " {{{
-    autocmd!
+  autocmd!
 augroup end " }}}
 " Key-mappings {{{
 let mapleader = "\ "
 
+let loaded_matchit = 1
+
 function! SortLines(type) abort
-    '[,']sort i
+  '[,']sort i
 endfunction
 xnoremap <silent> gs :sort i<cr>
 nnoremap <silent> gs :set opfunc=SortLines<cr>g@
@@ -104,9 +106,9 @@ cabbrev WQa wqa
 cabbrev WQA wqa
 
 function! StripWhitespace()
-    let l:save = winsaveview()
-    keeppatterns %s/\s\+$//e
-    call winrestview(l:save)
+  let l:save = winsaveview()
+  keeppatterns %s/\s\+$//e
+  call winrestview(l:save)
 endfunction
 nnoremap <leader>s :call StripWhitespace()<cr>
 
@@ -115,9 +117,38 @@ nnoremap <c-left>   :vertical resize -10<CR>
 nnoremap <c-up>     :resize +10<CR>
 nnoremap <c-down>   :resize -10<CR>
 
+for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
+  execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+  execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+  execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+  execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+endfor
+
+" line text objects
+xnoremap il g_o^
+onoremap il :<C-u>normal vil<CR>
+xnoremap al $o0
+onoremap al :<C-u>normal val<CR>
+
+" number text object (integer and float)
+function! VisualNumber()
+  call search('\d\([^0-9\.]\|$\)', 'cW')
+  normal v
+  call search('\(^\|[^0-9\.]\d\)', 'becW')
+endfunction
+xnoremap in :<C-u>call VisualNumber()<CR>
+onoremap in :<C-u>normal vin<CR>
+
+" buffer text objects
+xnoremap i% :<C-u>let z = @/\|1;/^./kz<CR>G??<CR>:let @/ = z<CR>V'z
+onoremap i% :<C-u>normal vi%<CR>
+xnoremap a% GoggV
+onoremap a% :<C-u>normal va%<CR>
+
+" square brackets text objects
 xnoremap ir i[
-onoremap ir :normal vi[<CR>
 xnoremap ar a[
+onoremap ir :normal vi[<CR>
 onoremap ar :normal va[<CR>
 
 set pastetoggle=<F2>
@@ -128,7 +159,7 @@ let g:LanguageClient_serverCommands = {
       \ 'rust': ['rustup', 'run', 'stable', 'rls'],
       \ }
 
-function LC_maps()
+function! LC_maps()
   if has_key(g:LanguageClient_serverCommands, &filetype)
     nnoremap <buffer> <silent> K :call LanguageClient#textDocument_hover()<cr>
     nnoremap <buffer> <silent> gd :call LanguageClient#textDocument_definition()<CR>
@@ -156,20 +187,20 @@ nmap ]l  <Plug>(qf_loc_next)
 " Make on save {{{
 let g:makeonsave = []
 function! ToggleMakeOnSave()
-    if get(g:makeonsave, &ft, '') == &ft
-        call remove(g:makeonsave, &ft)
-        echom 'MakeOnSave disabled'
-    else
-        call add(g:makeonsave, &ft)
-        echom 'MakeOnSave enabled'
-    endif
+  if get(g:makeonsave, &ft, '') == &ft
+    call remove(g:makeonsave, &ft)
+    echom 'MakeOnSave disabled'
+  else
+    call add(g:makeonsave, &ft)
+    echom 'MakeOnSave enabled'
+  endif
 endfunction
 
 function! MakeOnSave()
-    if get(g:makeonsave, &ft, '') == &ft
-        Make
-        cclose
-    endif
+  if get(g:makeonsave, &ft, '') == &ft && &ft != ''
+    Make
+    cclose
+  endif
 endfunction
 
 autocmd MyAutocmds BufWritePost * call MakeOnSave()
@@ -205,8 +236,8 @@ endfunction
 " }}}
 " snipmate {{{
 command! -nargs=? -complete=filetype EditSnippets
-            \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
-            \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
+      \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
+      \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
@@ -224,48 +255,48 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 " }}}
 " fzf.vim {{{
 function! InGit() " {{{
-    let l:is_git_dir = trim(system('git rev-parse --is-inside-work-tree'))
-    return l:is_git_dir ==# 'true'
+  let l:is_git_dir = trim(system('git rev-parse --is-inside-work-tree'))
+  return l:is_git_dir ==# 'true'
 endfunction " }}}
 function! Browse() " {{{
-    if InGit()
-        " Use this because Gfiles doesn't work with cached files
-        call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-    else
-        exe "Files"
-    endif
+  if InGit()
+    " Use this because Gfiles doesn't work with cached files
+    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
+  else
+    exe "Files"
+  endif
 endfunction " }}}
 function! SimilarFZF() " {{{
-    try
-        let l:filename = split(tolower(expand('%:t:r')), '\v\A|(test)')[0]
-        let l:files = globpath('.', '**/' . l:filename .'*')
-    catch /.*/
-        echom 'Failed to get files.'
-        return
-    endtry
-    if l:files != ''
-        call fzf#run(fzf#wrap({'source':
-                    \  split(globpath('.', '**/' . l:filename .'*')),
-                    \ 'down' : '20%'}))
-    else
-        echom 'No similar files'
-    endif
+  try
+    let l:filename = split(tolower(expand('%:t:r')), '\v\A|(test)')[0]
+    let l:files = globpath('.', '**/' . l:filename .'*')
+  catch /.*/
+    echom 'Failed to get files.'
+    return
+  endtry
+  if l:files != ''
+    call fzf#run(fzf#wrap({'source':
+          \  split(globpath('.', '**/' . l:filename .'*')),
+          \ 'down' : '20%'}))
+  else
+    echom 'No similar files'
+  endif
 endfunction " }}}
 " Fzf colors {{{
 let g:fzf_colors = {
-            \ 'fg':      ['fg', 'Normal'],
-            \ 'bg':      ['bg', 'Normal'],
-            \ 'hl':      ['fg', 'Comment'],
-            \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-            \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-            \ 'hl+':     ['fg', 'Statement'],
-            \ 'info':    ['fg', 'PreProc'],
-            \ 'border':  ['fg', 'Ignore'],
-            \ 'prompt':  ['fg', 'Conditional'],
-            \ 'pointer': ['fg', 'Exception'],
-            \ 'marker':  ['fg', 'Keyword'],
-            \ 'spinner': ['fg', 'Label'],
-            \ 'header':  ['fg', 'Comment'] }
+      \ 'fg':      ['fg', 'Normal'],
+      \ 'bg':      ['bg', 'Normal'],
+      \ 'hl':      ['fg', 'Comment'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Statement'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'border':  ['fg', 'Ignore'],
+      \ 'prompt':  ['fg', 'Conditional'],
+      \ 'pointer': ['fg', 'Exception'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
 " }}}
 nnoremap <silent><leader>A :call SimilarFZF()<CR>
 nnoremap <silent><c-p> :call Browse()<CR>
@@ -277,14 +308,14 @@ nnoremap <silent><leader>h :History<CR>
 let g:gutentags_cache_dir    = '~/.tags'
 let g:gutentags_project_root = ['.gitignore']
 let g:gutentags_project_info = [
-            \ {'type': 'haskell', 'glob': '*.hs'}
-            \ ]
+      \ {'type': 'haskell', 'glob': '*.hs'}
+      \ ]
 let g:gutentags_ctags_executable_haskell = 'hasktags-gutentags-shim.sh'
 let g:gutentags_file_list_command = {
-            \   'markers': {
-            \       '.git': 'git ls-files',
-            \   },
-            \ }
+      \   'markers': {
+      \       '.git': 'git ls-files',
+      \   },
+      \ }
 " }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
@@ -349,13 +380,13 @@ autocmd MyAutocmds FocusLost,BufLeave * silent! update
 autocmd MyAutocmds BufEnter term://* startinsert
 autocmd MyAutocmds BufLeave term://* stopinsert
 function! SetScrolloff() " {{{
-    if index(['qf'], &filetype) == -1
-        set scrolloff=5
-        set sidescrolloff=10
-    else
-        set scrolloff=0
-        set sidescrolloff=0
-    endif
+  if index(['qf'], &filetype) == -1
+    set scrolloff=5
+    set sidescrolloff=10
+  else
+    set scrolloff=0
+    set sidescrolloff=0
+  endif
 endfunction
 autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
 " }}}
@@ -365,21 +396,21 @@ command! -nargs=0 Config execute ':edit' . $MYVIMRC
 nnoremap <leader>c :Config<CR>
 " Open ftplugin {{{
 command! -nargs=? -complete=filetype EditFileTypePlugin
-            \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
-            \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
+      \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
+      \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 " }}}
 " Grep {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
-    set grepprg=ag\ --vimgrep\ --smart-case
+  set grepprg=ag\ --vimgrep\ --smart-case
 endif
 
 if executable('rg')
-    set grepprg=rg\ --vimgrep\ --smart-case
+  set grepprg=rg\ --vimgrep\ --smart-case
 endif
 
 function! Grep(...)
-    return system(join(extend([&grepprg], a:000), ' '))
+  return system(join(extend([&grepprg], a:000), ' '))
 endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
@@ -389,10 +420,10 @@ nnoremap <leader>f :Grep<space>
 " }}}
 " Hex representation {{{
 function! AsHex()
-    let l:name = expand('%:p')
-    new
-    setlocal buftype=nofile bufhidden=hide noswapfile filetype=xxd
-    execute 'read !xxd ' .  shellescape(l:name, 1)
+  let l:name = expand('%:p')
+  new
+  setlocal buftype=nofile bufhidden=hide noswapfile filetype=xxd
+  execute 'read !xxd ' .  shellescape(l:name, 1)
 endfunction
 command! -nargs=0 AsHex call AsHex()
 " }}}
@@ -407,11 +438,11 @@ colorscheme one
 " }}}
 " Status line {{{
 function! GitStatus()
-    return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
+  return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
 endfunction
 
 function! PasteForStatusline()
-    return &paste == 1 ? '[PASTE]' : ""
+  return &paste == 1 ? '[PASTE]' : ""
 endfunction
 
 set laststatus=2
