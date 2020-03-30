@@ -157,6 +157,7 @@ set pastetoggle=<F2>
 " LanguageClient {{{
 let g:LanguageClient_serverCommands = {
       \ 'rust': ['rustup', 'run', 'stable', 'rls'],
+      \ 'javascript': ['npx', 'javascript-typescript-stdio'],
       \ }
 
 function! LC_maps()
