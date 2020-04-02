@@ -361,11 +361,6 @@ set smartindent
 " Search
 set nohlsearch
 
-" Tabs to spaces
-set tabstop=4
-set shiftwidth=4
-set expandtab
-
 " Use undo files
 set undofile
 set undodir=~/.vimtmp
