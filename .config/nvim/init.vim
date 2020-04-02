@@ -267,22 +267,6 @@ function! Browse() " {{{
     exe "Files"
   endif
 endfunction " }}}
-function! SimilarFZF() " {{{
-  try
-    let l:filename = split(tolower(expand('%:t:r')), '\v\A|(test)')[0]
-    let l:files = globpath('.', '**/' . l:filename .'*')
-  catch /.*/
-    echom 'Failed to get files.'
-    return
-  endtry
-  if l:files != ''
-    call fzf#run(fzf#wrap({'source':
-          \  split(globpath('.', '**/' . l:filename .'*')),
-          \ 'down' : '20%'}))
-  else
-    echom 'No similar files'
-  endif
-endfunction " }}}
 " Fzf colors {{{
 let g:fzf_colors = {
       \ 'fg':      ['fg', 'Normal'],
@@ -299,7 +283,6 @@ let g:fzf_colors = {
       \ 'spinner': ['fg', 'Label'],
       \ 'header':  ['fg', 'Comment'] }
 " }}}
-nnoremap <silent><leader>A :call SimilarFZF()<CR>
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
