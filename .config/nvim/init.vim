@@ -329,9 +329,7 @@ set smartcase
 
 " Show replacement
 set inccommand=split
-set wildignore+=*/node_modules/*,_site,*/__pycache__/,*/venv/*,*/target/*
-set wildignore+=*/.vim$,\~$,*/.log,*/.aux,*/.cls,*/.aux,*/.bbl,*/.blg,*/.fls
-set wildignore+=*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*/build/*
+set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*
 
 " Completion
 set pumheight=10
