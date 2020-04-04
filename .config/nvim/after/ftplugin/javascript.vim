@@ -1,2 +1,2 @@
 compiler eslint
-command! -nargs=0 Prettier %! npx prettier %
+command! -buffer -nargs=0 Prettier %! npx prettier %
