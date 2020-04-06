@@ -398,7 +398,7 @@ nnoremap <leader>f :Grep<space>
 " Format {{{
 function! FormatFile()
     let l:view = winsaveview()
-    let l:cmd = '%! ' . b:formatcmd . ' ' . shellescape(expand('%'))
+    let l:cmd = '%! ' . b:formatcmd
     silent execute l:cmd
     if v:shell_error > 0
         silent undo
