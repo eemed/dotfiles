@@ -397,15 +397,19 @@ nnoremap <leader>f :Grep<space>
 " }}}
 " Format {{{
 function! FormatFile()
+  if get(b:, 'formatcmd', '') == ''
+    echom 'Cannot find b:formatcmd.'
+  else
     let l:view = winsaveview()
     let l:cmd = '%! ' . b:formatcmd
     silent execute l:cmd
     if v:shell_error > 0
-        silent undo
-        redraw
-        echom 'Format command "' . b:formatcmd . '" failed.'
+      silent undo
+      redraw
+      echom 'Format command "' . b:formatcmd . '" failed.'
     endif
     call winrestview(l:view)
+  endif
 endfunction
 command! -nargs=0 Format call FormatFile()
 " }}}
