@@ -165,11 +165,11 @@ function! LC_maps()
     nnoremap <buffer> <silent> K :call LanguageClient#textDocument_hover()<cr>
     nnoremap <buffer> <silent> gd :call LanguageClient#textDocument_definition()<CR>
     nnoremap <buffer> <silent> <F3> :call LanguageClient#textDocument_formatting()<CR>
+    nnoremap <buffer> <leader>L :<c-u> call LanguageClient_contextMenu()<cr>
   endif
 endfunction
 
 autocmd MyAutocmds FileType * call LC_maps()
-nnoremap <silent> <leader>L :<c-u> call LanguageClient_contextMenu()<cr>
 
 let g:LanguageClient_diagnosticsEnable = 0
 " }}}
@@ -394,6 +394,20 @@ command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
 command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
+" }}}
+" Format {{{
+function! FormatFile()
+    let l:view = winsaveview()
+    let l:cmd = '%! ' . b:formatcmd . ' ' . shellescape(expand('%'))
+    silent execute l:cmd
+    if v:shell_error > 0
+        silent undo
+        redraw
+        echom 'Format command "' . b:formatcmd . '" failed.'
+    endif
+    call winrestview(l:view)
+endfunction
+command! -nargs=0 Format call FormatFile()
 " }}}
 " Hex representation {{{
 function! AsHex()
