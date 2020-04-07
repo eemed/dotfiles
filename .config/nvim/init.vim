@@ -6,12 +6,6 @@ Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
 Plug 'tomtom/tlib_vim'                                  " Snippets dependency
 Plug 'garbas/vim-snipmate'                              " Snippets
 
-" Language server protocol
-Plug 'autozimu/LanguageClient-neovim', {
-      \ 'branch': 'next',
-      \ 'do': 'bash install.sh',
-      \ }
-
 Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 
@@ -24,7 +18,6 @@ Plug 'tpope/vim-dispatch'                               " Asynchronous make and 
 Plug 'justinmk/vim-dirvish'                             " Managing files
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fuzzy find
 Plug 'sheerun/vim-polyglot'                             " Syntax files
@@ -154,25 +147,6 @@ onoremap ar :normal va[<CR>
 set pastetoggle=<F2>
 " }}}
 " Plugin configuration {{{
-" LanguageClient {{{
-let g:LanguageClient_serverCommands = {
-      \ 'rust': ['rustup', 'run', 'stable', 'rls'],
-      \ 'javascript': ['npx', 'javascript-typescript-stdio'],
-      \ }
-
-function! LC_maps()
-  if has_key(g:LanguageClient_serverCommands, &filetype)
-    nnoremap <buffer> <silent> K :call LanguageClient#textDocument_hover()<cr>
-    nnoremap <buffer> <silent> gd :call LanguageClient#textDocument_definition()<CR>
-    nnoremap <buffer> <silent> <F3> :call LanguageClient#textDocument_formatting()<CR>
-    nnoremap <buffer> <leader>L :<c-u> call LanguageClient_contextMenu()<cr>
-  endif
-endfunction
-
-autocmd MyAutocmds FileType * call LC_maps()
-
-let g:LanguageClient_diagnosticsEnable = 0
-" }}}
 " vim-qf {{{
 let g:qf_auto_open_quickfix = 0
 autocmd MyAutocmds QuickFixCmdPost cgetexpr,grep nested cwindow
@@ -288,19 +262,6 @@ nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 " }}}
-" vim-gutentags {{{
-let g:gutentags_cache_dir    = '~/.tags'
-let g:gutentags_project_root = ['.gitignore']
-let g:gutentags_project_info = [
-      \ {'type': 'haskell', 'glob': '*.hs'}
-      \ ]
-let g:gutentags_ctags_executable_haskell = 'hasktags-gutentags-shim.sh'
-let g:gutentags_file_list_command = {
-      \   'markers': {
-      \       '.git': 'git ls-files',
-      \   },
-      \ }
-" }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
@@ -321,6 +282,7 @@ set list listchars=tab:→\ ,nbsp:•,trail:•
 set breakindent
 let &showbreak='↳ '
 set path+=**
+set tags=./tags;,tags;
 " set clipboard+=unnamedplus
 
 " Commands without remembering case. Useful for plugin commands
@@ -412,6 +374,7 @@ function! FormatFile()
   endif
 endfunction
 command! -nargs=0 Format call FormatFile()
+nnoremap <F3> :Format<cr>
 " }}}
 " Hex representation {{{
 function! AsHex()
@@ -447,7 +410,6 @@ set statusline+=\ %*
 set statusline+=\ %r
 set statusline+=%m
 set statusline+=%{PasteForStatusline()}
-set statusline+=\ %{gutentags#statusline()}
 set statusline+=%=
 set statusline+=\ %{GitStatus()}
 set statusline+=\ %{&ft}\ \|

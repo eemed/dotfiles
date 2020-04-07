@@ -54,6 +54,7 @@ sudo apt install -y \
       xdg-utils \
       libglib2.0-dev \
       arc-theme \
+      entr \
       numix-icon-theme-circle \
       breeze-cursor-theme
 
