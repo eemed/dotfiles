@@ -22,8 +22,10 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fuzzy find
 Plug 'eemed/vim-one'                                    " Color scheme
 
-let g:polyglot_disabled = ['tex']
-Plug 'sheerun/vim-polyglot'                             " Syntax files
+" Syntax
+Plug 'Glench/Vim-Jinja2-Syntax'
+Plug 'maxmellon/vim-jsx-pretty'
+Plug 'rust-lang/rust.vim'
 
 call plug#end() " }}}
 " Automatically install vim-plug {{{
@@ -49,6 +51,9 @@ nnoremap <silent> gs :set opfunc=SortLines<cr>g@
 
 nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
 nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
+
+imap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
+nmap <c-f> [s1z=<c-o>
 
 nnoremap Y y$
 tnoremap <esc> <c-\><c-n>
