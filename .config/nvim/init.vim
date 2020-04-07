@@ -20,8 +20,10 @@ Plug 'romainl/vim-qf'                                   " Quickfix window filter
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'                                 " Fuzzy find
-Plug 'sheerun/vim-polyglot'                             " Syntax files
 Plug 'eemed/vim-one'                                    " Color scheme
+
+let g:polyglot_disabled = ['tex']
+Plug 'sheerun/vim-polyglot'                             " Syntax files
 
 call plug#end() " }}}
 " Automatically install vim-plug {{{
