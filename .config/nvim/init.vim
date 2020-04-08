@@ -1,50 +1,19 @@
-" Plugins {{{
-let g:vim_dir = fnamemodify($MYVIMRC, ':p:h')
-call plug#begin(g:vim_dir . '/plugged')
+" Setup {{{
+let g:vimdir = fnamemodify($MYVIMRC, ':p:h')
 
-Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
-Plug 'tomtom/tlib_vim'                                  " Snippets dependency
-Plug 'garbas/vim-snipmate'                              " Snippets
-
-" Language server protocol
-Plug 'autozimu/LanguageClient-neovim', {
-      \ 'branch': 'next',
-      \ 'do': 'bash install.sh',
-      \ }
-
-Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
-Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
-
-Plug 'tpope/vim-commentary'                             " Commenting
-Plug 'tpope/vim-fugitive'                               " Git integration
-Plug 'tpope/vim-unimpaired'                             " Bindings
-Plug 'tpope/vim-sleuth'                                 " Wise indent style
-Plug 'tpope/vim-dispatch'                               " Asynchronous make and commands
-
-Plug 'justinmk/vim-dirvish'                             " Managing files
-Plug 'romainl/vim-qf'                                   " Quickfix window filtering
-Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'ludovicchabant/vim-gutentags'                     " Tags
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'                                 " Fuzzy find
-Plug 'sheerun/vim-polyglot'                             " Syntax files
-Plug 'eemed/vim-one'                                    " Color scheme
-
-call plug#end() " }}}
-" Automatically install vim-plug {{{
-if empty(glob(g:vim_dir . '/autoload/plug.vim'))
+" Install vim-plug
+if empty(glob(g:vimdir . '/autoload/plug.vim'))
   silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
         \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
 endif
-" }}}
-augroup MyAutocmds " {{{
-  autocmd!
-augroup end " }}}
-" Key-mappings {{{
-let mapleader = "\ "
 
-let loaded_matchit = 1
+augroup MyAutocmds
+  autocmd!
+augroup end
+" }}}
+" Key mappings {{{
+let mapleader = " "
 
 function! SortLines(type) abort
   '[,']sort i
@@ -140,6 +109,7 @@ xnoremap in :<C-u>call VisualNumber()<CR>
 onoremap in :<C-u>normal vin<CR>
 
 " buffer text objects
+let loaded_matchit = 1
 xnoremap i% :<C-u>let z = @/\|1;/^./kz<CR>G??<CR>:let @/ = z<CR>V'z
 onoremap i% :<C-u>normal vi%<CR>
 xnoremap a% GoggV
@@ -151,8 +121,204 @@ xnoremap ar a[
 onoremap ir :normal vi[<CR>
 onoremap ar :normal va[<CR>
 
+inoremap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
+nnoremap <c-f> [s1z=<c-o>
+
 set pastetoggle=<F2>
 " }}}
+" Settings {{{
+filetype plugin indent on
+set hidden
+
+" Splitting
+set splitright splitbelow diffopt=vertical
+
+set lazyredraw
+set mouse=a
+set nowrap
+set list listchars=tab:→\ ,nbsp:•,trail:•
+set breakindent
+let &showbreak='↳ '
+set path+=src/**
+
+" Commands without remembering case. Useful for plugin commands
+set ignorecase smartcase
+
+" Show replacement
+set inccommand=split
+set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*
+
+" Completion
+set pumheight=10
+set completeopt=menu,longest
+set omnifunc=syntaxcomplete#Complete
+
+set smartindent
+set nohlsearch
+
+" Use undo files
+set undofile
+set nobackup
+set nowritebackup
+set noswapfile
+let &undodir = g:vimdir . '/undo'
+let &dir = g:vimdir . '/swap'
+
+set updatetime=300
+set foldmethod=marker
+
+autocmd MyAutocmds FocusLost,BufLeave * silent! update
+function! SetScrolloff()
+  if index(['qf'], &filetype) == -1
+    set scrolloff=5
+    set sidescrolloff=10
+  else
+    set scrolloff=0
+    set sidescrolloff=0
+  endif
+endfunction
+autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
+" }}}
+" Commands {{{
+command! -nargs=0 Config execute ':edit' . $MYVIMRC
+nnoremap <leader>c :Config<CR>
+
+command! -nargs=? -complete=filetype EditFileTypePlugin
+      \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
+      \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
+
+" Grep
+" https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
+if executable('ag')
+  set grepprg=ag\ --vimgrep\ --smart-case
+endif
+
+if executable('rg')
+  set grepprg=rg\ --vimgrep\ --smart-case
+endif
+
+function! Grep(...)
+  return system(join(extend([&grepprg], a:000), ' '))
+endfunction
+
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
+
+nnoremap <leader>f :Grep<space>
+
+" Format
+function! FormatFile()
+  if get(b:, 'formatcmd', '') == ''
+    echom 'Cannot find b:formatcmd.'
+  else
+    let l:view = winsaveview()
+    let l:cmd = '%! ' . b:formatcmd
+    silent execute l:cmd
+    if v:shell_error > 0
+      silent undo
+      redraw
+      echom 'Format command "' . b:formatcmd . '" failed.'
+    endif
+    call winrestview(l:view)
+  endif
+endfunction
+command! -nargs=0 Format call FormatFile()
+
+" Hex representation
+function! AsHex()
+  let l:name = expand('%:p')
+  new
+  setlocal buftype=nofile bufhidden=hide noswapfile filetype=xxd
+  execute 'read !xxd ' .  shellescape(l:name, 1)
+endfunction
+command! -nargs=0 AsHex call AsHex()
+
+" Make on save
+let g:makeonsave = []
+function! ToggleMakeOnSave()
+  if get(g:makeonsave, &ft, '') == &ft
+    call remove(g:makeonsave, &ft)
+    echom 'MakeOnSave disabled'
+  else
+    call add(g:makeonsave, &ft)
+    echom 'MakeOnSave enabled'
+  endif
+endfunction
+
+function! MakeOnSave()
+  if get(g:makeonsave, &ft, '') == &ft && &ft != ''
+    silent make
+    cclose
+  endif
+endfunction
+
+autocmd MyAutocmds BufWritePost * call MakeOnSave()
+command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
+nnoremap yoL :<c-u>call ToggleMakeOnSave()<cr>
+
+" }}}
+" Appearance {{{
+set cursorline
+let &colorcolumn=join(range(101,999), ",")
+set synmaxcol=200
+set termguicolors
+set t_Co=256
+
+function! GitStatus()
+  return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
+endfunction
+
+function! PasteForStatusline()
+  return &paste == 1 ? '[PASTE]' : ""
+endfunction
+
+set laststatus=2
+set statusline=
+set statusline+=\ %f
+set statusline+=\ %*
+set statusline+=\ %r
+set statusline+=%m
+set statusline+=%{PasteForStatusline()}
+set statusline+=\ %{gutentags#statusline()}
+set statusline+=%=
+set statusline+=\ %{GitStatus()}
+set statusline+=\ %{&ft}\ \|
+set statusline+=\ %l/%L\ :\ %c
+set statusline+=\ %*
+" }}}
+" Plugins {{{
+call plug#begin(g:vimdir . '/plugged')
+Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
+Plug 'tomtom/tlib_vim'                                  " Snippets dependency
+Plug 'garbas/vim-snipmate'                              " Snippets
+
+" Language server protocol until neovim implements its own
+Plug 'autozimu/LanguageClient-neovim', {
+      \ 'branch': 'next',
+      \ 'do': 'bash install.sh',
+      \ }
+
+Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
+Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
+
+Plug 'tpope/vim-commentary'                             " Commenting
+Plug 'tpope/vim-fugitive'                               " Git integration
+Plug 'tpope/vim-unimpaired'                             " Bindings
+Plug 'tpope/vim-sleuth'                                 " Wise indent style
+
+Plug 'justinmk/vim-dirvish'                             " Managing files
+Plug 'romainl/vim-qf'                                   " Quickfix window filtering
+Plug 'machakann/vim-sandwich'                           " Surround objects
+Plug 'ludovicchabant/vim-gutentags'                     " Tags
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'                                 " Fuzzy find
+Plug 'eemed/vim-one'                                    " Color scheme
+
+" Syntax
+Plug 'Glench/Vim-Jinja2-Syntax'
+Plug 'maxmellon/vim-jsx-pretty'
+Plug 'rust-lang/rust.vim'
+call plug#end() " }}}
 " Plugin configuration {{{
 " LanguageClient {{{
 let g:LanguageClient_serverCommands = {
@@ -170,45 +336,17 @@ function! LC_maps()
 endfunction
 
 autocmd MyAutocmds FileType * call LC_maps()
-
-let g:LanguageClient_diagnosticsEnable = 0
+let g:LanguageClient_diagnosticsSignsMax = 0
+let g:LanguageClient_diagnosticsList = "Location"
+set signcolumn=no
+" let g:LanguageClient_diagnosticsEnable = 0
 " }}}
 " vim-qf {{{
-let g:qf_auto_open_quickfix = 0
-autocmd MyAutocmds QuickFixCmdPost cgetexpr,grep nested cwindow
-autocmd MyAutocmds QuickFixCmdPost lgetexpr,lgrep nested lwindow
-
 nmap [q <Plug>(qf_qf_previous)
 nmap ]q  <Plug>(qf_qf_next)
 
 nmap [l <Plug>(qf_loc_previous)
 nmap ]l  <Plug>(qf_loc_next)
-" }}}
-" vim-dispatch {{{
-" Make on save {{{
-let g:makeonsave = []
-function! ToggleMakeOnSave()
-  if get(g:makeonsave, &ft, '') == &ft
-    call remove(g:makeonsave, &ft)
-    echom 'MakeOnSave disabled'
-  else
-    call add(g:makeonsave, &ft)
-    echom 'MakeOnSave enabled'
-  endif
-endfunction
-
-function! MakeOnSave()
-  if get(g:makeonsave, &ft, '') == &ft && &ft != ''
-    Make
-    cclose
-  endif
-endfunction
-
-autocmd MyAutocmds BufWritePost * call MakeOnSave()
-command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
-nnoremap yoL :<c-u>call ToggleMakeOnSave()<cr>
-" }}}
-let g:dispatch_no_tmux_make = 1
 " }}}
 " dirvish {{{
 let g:loaded_netrwPlugin = 1
@@ -237,7 +375,7 @@ endfunction
 " }}}
 " snipmate {{{
 command! -nargs=? -complete=filetype EditSnippets
-      \ execute 'keepj vsplit ' . g:vim_dir . '/snippets/' .
+      \ execute 'keepj vsplit ' . g:vimdir . '/snippets/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
 " }}}
 " vim-tmux-navigator {{{
@@ -255,34 +393,30 @@ tnoremap <silent> <m-l> <C-\><C-n>:TmuxNavigateRight<cr>
 nnoremap <silent><leader>g :vertical Gstatus<CR>
 " }}}
 " fzf.vim {{{
-function! InGit() " {{{
-  let l:is_git_dir = trim(system('git rev-parse --is-inside-work-tree'))
-  return l:is_git_dir ==# 'true'
-endfunction " }}}
 function! Browse() " {{{
-  if InGit()
+  if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
     " Use this because Gfiles doesn't work with cached files
     call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
   else
     exe "Files"
   endif
 endfunction " }}}
-" Fzf colors {{{
-let g:fzf_colors = {
-      \ 'fg':      ['fg', 'Normal'],
-      \ 'bg':      ['bg', 'Normal'],
-      \ 'hl':      ['fg', 'Comment'],
-      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Statement'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'border':  ['fg', 'Ignore'],
-      \ 'prompt':  ['fg', 'Conditional'],
-      \ 'pointer': ['fg', 'Exception'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment'] }
-" }}}
+" " Fzf colors {{{
+" let g:fzf_colors = {
+"       \ 'fg':      ['fg', 'Normal'],
+"       \ 'bg':      ['bg', 'Normal'],
+"       \ 'hl':      ['fg', 'Comment'],
+"       \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+"       \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+"       \ 'hl+':     ['fg', 'Statement'],
+"       \ 'info':    ['fg', 'PreProc'],
+"       \ 'border':  ['fg', 'Ignore'],
+"       \ 'prompt':  ['fg', 'Conditional'],
+"       \ 'pointer': ['fg', 'Exception'],
+"       \ 'marker':  ['fg', 'Keyword'],
+"       \ 'spinner': ['fg', 'Label'],
+"       \ 'header':  ['fg', 'Comment'] }
+" " }}}
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
@@ -304,153 +438,7 @@ let g:gutentags_file_list_command = {
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
-" }}}
-" Basic {{{
-filetype plugin indent on
-set hidden
-
-" Splitting
-set splitright
-set splitbelow
-set diffopt=vertical
-
-set lazyredraw
-set mouse=a
-set nowrap
-set list listchars=tab:→\ ,nbsp:•,trail:•
-set breakindent
-let &showbreak='↳ '
-set path+=**
-" set clipboard+=unnamedplus
-
-" Commands without remembering case. Useful for plugin commands
-set ignorecase
-set smartcase
-
-" Show replacement
-set inccommand=split
-set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*
-
-" Completion
-set pumheight=10
-set completeopt=menu,longest
-set omnifunc=syntaxcomplete#Complete
-
-" Indent
-set smartindent
-
-" Search
-set nohlsearch
-
-" Use undo files
-set undofile
-set undodir=~/.vimtmp
-set nobackup
-set nowritebackup
-set noswapfile
-set dir=~/.vimtmp
-
-set updatetime=300
-set foldmethod=marker
-
-autocmd MyAutocmds FocusLost,BufLeave * silent! update
-autocmd MyAutocmds BufEnter term://* startinsert
-autocmd MyAutocmds BufLeave term://* stopinsert
-function! SetScrolloff() " {{{
-  if index(['qf'], &filetype) == -1
-    set scrolloff=5
-    set sidescrolloff=10
-  else
-    set scrolloff=0
-    set sidescrolloff=0
-  endif
-endfunction
-autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
-" }}}
-" }}}
-" Commands {{{
-command! -nargs=0 Config execute ':edit' . $MYVIMRC
-nnoremap <leader>c :Config<CR>
-" Open ftplugin {{{
-command! -nargs=? -complete=filetype EditFileTypePlugin
-      \ execute 'keepj vsplit ' . g:vim_dir . '/after/ftplugin/' .
-      \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
-" }}}
-" Grep {{{
-" https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
-if executable('ag')
-  set grepprg=ag\ --vimgrep\ --smart-case
-endif
-
-if executable('rg')
-  set grepprg=rg\ --vimgrep\ --smart-case
-endif
-
-function! Grep(...)
-  return system(join(extend([&grepprg], a:000), ' '))
-endfunction
-
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
-command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
-
-nnoremap <leader>f :Grep<space>
-" }}}
-" Format {{{
-function! FormatFile()
-  if get(b:, 'formatcmd', '') == ''
-    echom 'Cannot find b:formatcmd.'
-  else
-    let l:view = winsaveview()
-    let l:cmd = '%! ' . b:formatcmd
-    silent execute l:cmd
-    if v:shell_error > 0
-      silent undo
-      redraw
-      echom 'Format command "' . b:formatcmd . '" failed.'
-    endif
-    call winrestview(l:view)
-  endif
-endfunction
-command! -nargs=0 Format call FormatFile()
-" }}}
-" Hex representation {{{
-function! AsHex()
-  let l:name = expand('%:p')
-  new
-  setlocal buftype=nofile bufhidden=hide noswapfile filetype=xxd
-  execute 'read !xxd ' .  shellescape(l:name, 1)
-endfunction
-command! -nargs=0 AsHex call AsHex()
-" }}}
-" }}}
-" Appearance {{{
-set cursorline
-let &colorcolumn=join(range(101,999), ",")
-set synmaxcol=200
-set termguicolors
-set t_Co=256
+" vim-one {{{
 colorscheme one
 " }}}
-" Status line {{{
-function! GitStatus()
-  return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
-endfunction
-
-function! PasteForStatusline()
-  return &paste == 1 ? '[PASTE]' : ""
-endfunction
-
-set laststatus=2
-set statusline=
-set statusline+=\ %f
-set statusline+=\ %*
-set statusline+=\ %r
-set statusline+=%m
-set statusline+=%{PasteForStatusline()}
-set statusline+=\ %{gutentags#statusline()}
-set statusline+=%=
-set statusline+=\ %{GitStatus()}
-set statusline+=\ %{&ft}\ \|
-set statusline+=\ %l/%L\ :\ %c
-set statusline+=\ %*
 " }}}
