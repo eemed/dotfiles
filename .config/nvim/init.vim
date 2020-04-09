@@ -3,9 +3,9 @@ let g:vimdir = fnamemodify($MYVIMRC, ':p:h')
 
 " Install vim-plug
 if empty(glob(g:vimdir . '/autoload/plug.vim'))
-  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
-        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source '~/config/nvim/init.vim'
+  execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs 
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 augroup MyAutocmds
@@ -77,7 +77,7 @@ cabbrev Wqa wqa
 cabbrev WQa wqa
 cabbrev WQA wqa
 
-function! StripWhitespace()
+function! StripWhitespace() abort
   let l:save = winsaveview()
   keeppatterns %s/\s\+$//e
   call winrestview(l:save)
@@ -103,7 +103,7 @@ xnoremap al $o0
 onoremap al :<C-u>normal val<CR>
 
 " number text object (integer and float)
-function! VisualNumber()
+function! VisualNumber() abort
   call search('\d\([^0-9\.]\|$\)', 'cW')
   normal v
   call search('\(^\|[^0-9\.]\d\)', 'becW')
@@ -142,7 +142,8 @@ set nowrap
 set list listchars=tab:→\ ,nbsp:•,trail:•
 set breakindent
 let &showbreak='↳ '
-set path+=src/**
+set path=.,src/
+set include=
 
 " Commands without remembering case. Useful for plugin commands
 set ignorecase smartcase
@@ -171,7 +172,7 @@ set updatetime=300
 set foldmethod=marker
 
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
-function! SetScrolloff()
+function! SetScrolloff() abort
   if index(['qf'], &filetype) == -1
     set scrolloff=5
     set sidescrolloff=10
@@ -183,7 +184,7 @@ endfunction
 autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
 " }}}
 " Commands {{{
-command! -nargs=0 Config execute ':edit' . $MYVIMRC
+command! -nargs=0 Config execute ':edit ' . $MYVIMRC
 nnoremap <leader>c :Config<CR>
 
 command! -nargs=? -complete=filetype EditFileTypePlugin
@@ -200,7 +201,7 @@ if executable('rg')
   set grepprg=rg\ --vimgrep\ --smart-case
 endif
 
-function! Grep(...)
+function! Grep(...) abort
   return system(join(extend([&grepprg], a:000), ' '))
 endfunction
 
@@ -210,7 +211,7 @@ command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 nnoremap <leader>f :Grep<space>
 
 " Format
-function! FormatFile()
+function! FormatFile() abort
   if get(b:, 'formatcmd', '') == ''
     echom 'Cannot find b:formatcmd.'
   else
@@ -228,7 +229,7 @@ endfunction
 command! -nargs=0 Format call FormatFile()
 
 " Hex representation
-function! AsHex()
+function! AsHex() abort
   let l:name = expand('%:p')
   new
   setlocal buftype=nofile bufhidden=hide noswapfile filetype=xxd
@@ -238,7 +239,7 @@ command! -nargs=0 AsHex call AsHex()
 
 " Make on save
 let g:makeonsave = []
-function! ToggleMakeOnSave()
+function! ToggleMakeOnSaveFT() abort
   if get(g:makeonsave, &ft, '') == &ft
     call remove(g:makeonsave, &ft)
     echom 'MakeOnSave disabled'
@@ -248,16 +249,15 @@ function! ToggleMakeOnSave()
   endif
 endfunction
 
-function! MakeOnSave()
+function! MakeOnSaveFT() abort
   if get(g:makeonsave, &ft, '') == &ft && &ft != ''
     silent make
-    cclose
   endif
 endfunction
 
-autocmd MyAutocmds BufWritePost * call MakeOnSave()
-command! -nargs=0 ToggleMakeOnSave call ToggleMakeOnSave()
-nnoremap yoL :<c-u>call ToggleMakeOnSave()<cr>
+autocmd MyAutocmds BufWritePost * call MakeOnSaveFT()
+command! -nargs=0 ToggleMakeOnSaveFT call ToggleMakeOnSaveFT()
+nnoremap yoL :<c-u>call ToggleMakeOnSaveFT()<cr>
 
 " }}}
 " Appearance {{{
@@ -267,11 +267,11 @@ set synmaxcol=200
 set termguicolors
 set t_Co=256
 
-function! GitStatus()
-  return exists('#fugitive') ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
+function! GitStatus() abort
+  return get(g:, 'loaded_fugitive', 0) ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
 endfunction
 
-function! PasteForStatusline()
+function! PasteForStatusline() abort
   return &paste == 1 ? '[PASTE]' : ""
 endfunction
 
@@ -282,6 +282,7 @@ set statusline+=\ %*
 set statusline+=\ %r
 set statusline+=%m
 set statusline+=%{PasteForStatusline()}
+set statusline+=%{gutentags#statusline()}
 set statusline+=%=
 set statusline+=\ %{GitStatus()}
 set statusline+=\ %{&ft}\ \|
@@ -290,18 +291,16 @@ set statusline+=\ %*
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
-Plug 'tomtom/tlib_vim'                                  " Snippets dependency
-Plug 'garbas/vim-snipmate'                              " Snippets
-
-" Language server protocol until neovim implements its own
-Plug 'autozimu/LanguageClient-neovim', {
-      \ 'branch': 'next',
-      \ 'do': 'bash install.sh',
-      \ }
-
+Plug 'eemed/vim-one'                                    " Color scheme
 Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
+
+" Fuzzy find
+Plug 'junegunn/fzf', {
+      \ 'dir': '~/.fzf',
+      \ 'do': { -> fzf#install() }
+      \ }
+Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
@@ -312,9 +311,16 @@ Plug 'justinmk/vim-dirvish'                             " Managing files
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'                                 " Fuzzy find
-Plug 'eemed/vim-one'                                    " Color scheme
+
+Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
+Plug 'tomtom/tlib_vim'                                  " Snippets dependency
+Plug 'garbas/vim-snipmate'                              " Snippets
+
+" Language server protocol until neovim implements its own
+Plug 'autozimu/LanguageClient-neovim', {
+      \ 'branch': 'next',
+      \ 'do': 'bash install.sh',
+      \ }
 
 " Syntax
 Plug 'Glench/Vim-Jinja2-Syntax'
@@ -328,7 +334,7 @@ let g:LanguageClient_serverCommands = {
       \ 'javascript': ['npx', 'javascript-typescript-stdio'],
       \ }
 
-function! LC_maps()
+function! LC_maps() abort
   if has_key(g:LanguageClient_serverCommands, &filetype)
     nnoremap <buffer> <silent> K :call LanguageClient#textDocument_hover()<cr>
     nnoremap <buffer> <silent> gd :call LanguageClient#textDocument_definition()<CR>
@@ -340,6 +346,7 @@ endfunction
 autocmd MyAutocmds FileType * call LC_maps()
 let g:LanguageClient_diagnosticsSignsMax = 0
 let g:LanguageClient_diagnosticsList = "Location"
+let g:LanguageClient_virtualTextPrefix = '❯ '
 set signcolumn=no
 " let g:LanguageClient_diagnosticsEnable = 0
 " }}}
@@ -395,30 +402,14 @@ tnoremap <silent> <m-l> <C-\><C-n>:TmuxNavigateRight<cr>
 nnoremap <silent><leader>g :vertical Gstatus<CR>
 " }}}
 " fzf.vim {{{
-function! Browse() " {{{
+function! Browse() abort
   if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
     " Use this because Gfiles doesn't work with cached files
     call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
   else
     exe "Files"
   endif
-endfunction " }}}
-" " Fzf colors {{{
-" let g:fzf_colors = {
-"       \ 'fg':      ['fg', 'Normal'],
-"       \ 'bg':      ['bg', 'Normal'],
-"       \ 'hl':      ['fg', 'Comment'],
-"       \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-"       \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-"       \ 'hl+':     ['fg', 'Statement'],
-"       \ 'info':    ['fg', 'PreProc'],
-"       \ 'border':  ['fg', 'Ignore'],
-"       \ 'prompt':  ['fg', 'Conditional'],
-"       \ 'pointer': ['fg', 'Exception'],
-"       \ 'marker':  ['fg', 'Keyword'],
-"       \ 'spinner': ['fg', 'Label'],
-"       \ 'header':  ['fg', 'Comment'] }
-" " }}}
+endfunction
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
