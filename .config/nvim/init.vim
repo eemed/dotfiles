@@ -3,7 +3,7 @@ let g:vimdir = fnamemodify($MYVIMRC, ':p:h')
 
 " Install vim-plug
 if empty(glob(g:vimdir . '/autoload/plug.vim'))
-  execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs 
+  execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs
         \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
