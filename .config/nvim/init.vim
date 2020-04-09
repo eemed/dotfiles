@@ -147,7 +147,6 @@ set breakindent
 let &showbreak='↳ '
 set path=.,src/
 set include=
-set tags=./tags;,tags;
 
 " Commands without remembering case. Useful for plugin commands
 set ignorecase smartcase
@@ -263,22 +262,6 @@ endfunction
 autocmd MyAutocmds BufWritePost * call MakeOnSaveFT()
 command! -nargs=0 ToggleMakeOnSaveFT call ToggleMakeOnSaveFT()
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
-
-" EntrAutoMake
-if executable('entr')
-  function! s:EntrMake() abort
-    call system('watcher ' . shellescape(expand('%')) . ' ''' . &makeprg . ''' &')
-  endfunction
-  command! -nargs=0 EntrMake call <sid>EntrMake()
-
-  " Tags
-  if executable('ctags')
-    function! s:Tagsd() abort
-      call system('tagsd &')
-    endfunction
-    command! -nargs=0 Tagsd call <sid>Tagsd()
-  endif
-endif
 " }}}
 " Appearance {{{
 set cursorline
@@ -302,6 +285,7 @@ set statusline+=\ %*
 set statusline+=\ %r
 set statusline+=%m
 set statusline+=%{PasteForStatusline()}
+set statusline+=%{gutentags#statusline()}
 set statusline+=%=
 set statusline+=\ %{GitStatus()}
 set statusline+=\ %{&ft}\ \|
@@ -329,7 +313,7 @@ Plug 'tpope/vim-sleuth'                                 " Wise indent style
 Plug 'justinmk/vim-dirvish'                             " Managing files
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
-" Plug 'ludovicchabant/vim-gutentags'                     " Tags
+Plug 'ludovicchabant/vim-gutentags'                     " Tags
 
 Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
 Plug 'tomtom/tlib_vim'                                  " Snippets dependency
@@ -433,20 +417,21 @@ nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
+nnoremap <silent><leader>t :Tags<CR>
 " }}}
-" " vim-gutentags {{{
-" let g:gutentags_cache_dir    = '~/.tags'
-" let g:gutentags_project_root = ['.gitignore']
-" let g:gutentags_project_info = [
-"       \ {'type': 'haskell', 'glob': '*.hs'}
-"       \ ]
-" let g:gutentags_ctags_executable_haskell = 'hasktags-gutentags-shim.sh'
-" let g:gutentags_file_list_command = {
-"       \   'markers': {
-"       \       '.git': 'git ls-files',
-"       \   },
-"       \ }
-" " }}}
+" vim-gutentags {{{
+let g:gutentags_cache_dir    = '~/.tags'
+let g:gutentags_project_root = ['.gitignore', '.git', '.project']
+let g:gutentags_project_info = [
+      \ {'type': 'haskell', 'glob': '*.hs'}
+      \ ]
+let g:gutentags_ctags_executable_haskell = 'hasktags-gutentags-shim.sh'
+let g:gutentags_file_list_command = {
+      \   'markers': {
+      \       '.git': 'git ls-files',
+      \   },
+      \ }
+" }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
