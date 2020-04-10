@@ -32,7 +32,7 @@ tnoremap <esc> <c-\><c-n>
 
 " snipmate would switch to normal mode if <bs> was pressed and wouldn't work
 " after re-entering insert mode
-snoremap <bs> <c-v>xa
+" snoremap <bs> <c-v>xa
 
 " Move text
 xnoremap J :move '>+1<CR>gv=gv
@@ -314,10 +314,7 @@ Plug 'justinmk/vim-dirvish'                             " Managing files
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
-
-Plug 'MarcWeber/vim-addon-mw-utils'                     " Snippets dependency
-Plug 'tomtom/tlib_vim'                                  " Snippets dependency
-Plug 'garbas/vim-snipmate'                              " Snippets
+Plug 'Shougo/neosnippet.vim'                            " Snippets
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -385,10 +382,17 @@ function! s:dirvish_toggle() abort
   endif
 endfunction
 " }}}
-" snipmate {{{
-command! -nargs=? -complete=filetype EditSnippets
-      \ execute 'keepj vsplit ' . g:vimdir . '/snippets/' .
-      \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
+" neosnippets {{{
+let g:neosnippet#snippets_directory = g:vimdir . '/snippets'
+let g:neosnippet#disable_runtime_snippets = {
+      \   '_' : 1,
+      \ }
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+    \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+    \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+set conceallevel=2
+set concealcursor=niv
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
@@ -406,12 +410,12 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 " }}}
 " fzf.vim {{{
 function! Browse() abort
-  if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
-    " Use this because Gfiles doesn't work with cached files
-    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-  else
-    exe "Files"
-  endif
+if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
+  " Use this because Gfiles doesn't work with cached files
+  call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
+else
+  exe "Files"
+endif
 endfunction
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
@@ -423,14 +427,14 @@ nnoremap <silent><leader>t :Tags<CR>
 let g:gutentags_cache_dir    = '~/.tags'
 let g:gutentags_project_root = ['.gitignore', '.git', '.project']
 let g:gutentags_project_info = [
-      \ {'type': 'haskell', 'glob': '*.hs'}
-      \ ]
+    \ {'type': 'haskell', 'glob': '*.hs'}
+    \ ]
 let g:gutentags_ctags_executable_haskell = 'hasktags-gutentags-shim.sh'
 let g:gutentags_file_list_command = {
-      \   'markers': {
-      \       '.git': 'git ls-files',
-      \   },
-      \ }
+    \   'markers': {
+    \       '.git': 'git ls-files',
+    \   },
+    \ }
 " }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
