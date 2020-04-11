@@ -294,7 +294,7 @@ set statusline+=\ %*
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'jacoborus/tender.vim'                             " Color scheme
+Plug 'chriskempson/base16-vim'                          " Color scheme
 Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
 
@@ -476,13 +476,12 @@ let g:gutentags_file_list_command = {
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
-" tender {{{
+" base16-vim {{{
 function! CustomColors()
-  highlight! Search guibg=lightblue guifg=bg gui=none
-  highlight! VertSplit guifg=#444444
+  highlight! QuickFixLine guibg=lightblue guifg=bg gui=none
 endfunction
 
 autocmd MyAutocmds ColorScheme * call CustomColors()
-colorscheme tender
+colorscheme base16-tomorrow-night-eighties
 " }}}
 " }}}
