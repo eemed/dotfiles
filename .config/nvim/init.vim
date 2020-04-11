@@ -395,24 +395,25 @@ imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 set conceallevel=2
 set concealcursor=niv
 
-function! NeosnippetComplete() abort
-  let l:snippets = neosnippet#helpers#get_completion_snippets()
-  if empty(l:snippets)
-    return ''
+function! NeosnippetCompletefunc(findstart, base) abort
+  if a:findstart == 1
+    let l:pat = matchstr(getline('.'), '\S\+\%'.col('.').'c')
+    return col('.') - len(l:pat) - 1
+  else
+    let l:snippets = neosnippet#helpers#get_completion_snippets()
+    if empty(l:snippets)
+      return ''
+    endif
+    let l:candidates = map(filter(keys(l:snippets), 'match(v:val, a:base) == 0'),
+          \  '{
+          \      "word": l:snippets[v:val]["word"],
+          \      "menu": get(l:snippets[v:val], "menu_abbr", ""),
+          \      "dup" : 1
+          \   }')
+    return { 'words': l:candidates, 'refresh': 'always' }
   endif
-  let l:pat = matchstr(getline('.'), '\S\+\%'.col('.').'c')
-  let l:candidates = map(filter(keys(l:snippets), 'stridx(v:val, l:pat) == 0'),
-        \  '{
-        \      "word": l:snippets[v:val]["word"],
-        \      "menu": get(l:snippets[v:val], "menu_abbr", ""),
-        \      "dup" : 1
-        \   }')
-  if !empty(l:candidates)
-    call complete(col('.') - len(l:pat), l:candidates)
-  endif
-  return ''
 endfunction
-inoremap <c-x><c-u> <c-r>=NeosnippetComplete()<cr>
+set completefunc=NeosnippetCompletefunc
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1

@@ -1,0 +1,65 @@
+snippet arrow
+alias =>
+	(${1:args}) => {
+		${0}
+	}
+
+snippet function
+alias f
+	function ${1:name}() {
+		${0}
+	}
+
+snippet cl
+	console.log(${0});
+
+snippet require
+alias req 
+	const ${1:name} = require('${0:fs}');
+
+snippet reducer
+alias red
+	export default (state = {}, action) => {
+		switch (action.type) {
+			case ${1:case}:
+				return {
+					${0}
+				};
+			default:
+				return state;
+		}
+	}
+
+snippet type
+alias typ
+	const ${1:type} = '$1';${0}
+
+snippet action
+alias act
+	const ${1:name} = (${2:args}) => ({
+		type: ${3},
+		${0}
+	});
+
+snippet import
+alias imp
+	import ${1:what} from '${0:where}';
+
+snippet react_class
+alias rc
+	class ${1:name} extends React.Component {
+		constructor(props) {
+			super(props);
+			${2}
+		}
+
+		render() {
+			return (
+				${0}
+			);
+		}
+	}
+
+snippet bind
+alias bin
+	this.${1} = this.$1.bind(this);${0}
