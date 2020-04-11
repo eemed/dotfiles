@@ -297,6 +297,7 @@ call plug#begin(g:vimdir . '/plugged')
 Plug 'eemed/vim-one'                                    " Color scheme
 Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
+Plug 'jacoborus/tender.vim'
 
 " Fuzzy find
 Plug 'junegunn/fzf', {
@@ -393,6 +394,25 @@ imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
     \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 set conceallevel=2
 set concealcursor=niv
+
+function! NeosnippetComplete() abort
+  let l:snippets = neosnippet#helpers#get_completion_snippets()
+  if empty(l:snippets)
+    return ''
+  endif
+  let l:pat = matchstr(getline('.'), '\S\+\%'.col('.').'c')
+  let l:candidates = map(filter(keys(l:snippets), 'stridx(v:val, l:pat) == 0'),
+        \  '{
+        \      "word": l:snippets[v:val]["word"],
+        \      "menu": get(l:snippets[v:val], "menu_abbr", ""),
+        \      "dup" : 1
+        \   }')
+  if !empty(l:candidates)
+    call complete(col('.') - len(l:pat), l:candidates)
+  endif
+  return ''
+endfunction
+inoremap <c-x><c-u> <c-r>=NeosnippetComplete()<cr>
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
@@ -417,11 +437,28 @@ else
   exe "Files"
 endif
 endfunction
+
+let g:fzf_colors = {
+      \ 'fg':      ['fg', 'Normal'],
+      \ 'bg':      ['bg', 'Normal'],
+      \ 'hl':      ['fg', 'Comment'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Statement'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'border':  ['fg', 'Ignore'],
+      \ 'prompt':  ['fg', 'Conditional'],
+      \ 'pointer': ['fg', 'Exception'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
+
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 nnoremap <silent><leader>t :Tags<CR>
+imap <c-x><c-f> <plug>(fzf-complete-path)
 " }}}
 " vim-gutentags {{{
 let g:gutentags_cache_dir    = '~/.tags'
@@ -439,7 +476,13 @@ let g:gutentags_file_list_command = {
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
-" vim-one {{{
-colorscheme one
+" tender {{{
+function! CustomColors()
+  highlight! Search guibg=lightblue guifg=bg gui=none
+  highlight! VertSplit guifg=#444444
+endfunction
+
+autocmd MyAutocmds ColorScheme * call CustomColors()
+colorscheme tender
 " }}}
 " }}}
