@@ -294,10 +294,9 @@ set statusline+=\ %*
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'eemed/vim-one'                                    " Color scheme
+Plug 'jacoborus/tender.vim'                             " Color scheme
 Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
-Plug 'jacoborus/tender.vim'
 
 " Fuzzy find
 Plug 'junegunn/fzf', {
