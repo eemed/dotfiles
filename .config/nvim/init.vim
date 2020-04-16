@@ -157,7 +157,7 @@ set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*
 
 " Completion
 set pumheight=10
-set completeopt=menu,longest
+set completeopt=menuone,noselect
 set omnifunc=syntaxcomplete#Complete
 
 set smartindent
@@ -315,6 +315,7 @@ Plug 'romainl/vim-qf'                                   " Quickfix window filter
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'Shougo/neosnippet.vim'                            " Snippets
+Plug 'lifepillar/vim-mucomplete'
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -347,6 +348,7 @@ autocmd MyAutocmds FileType * call LC_maps()
 let g:LanguageClient_diagnosticsSignsMax = 0
 let g:LanguageClient_diagnosticsList = "Location"
 let g:LanguageClient_virtualTextPrefix = '❯ '
+let g:LanguageClient_hasSnippetSupport = 0
 set signcolumn=no
 " let g:LanguageClient_diagnosticsEnable = 0
 " }}}
@@ -412,7 +414,31 @@ function! NeosnippetCompletefunc(findstart, base) abort
     return { 'words': l:candidates, 'refresh': 'always' }
   endif
 endfunction
-set completefunc=NeosnippetCompletefunc
+" set completefunc=NeosnippetCompletefunc
+" }}}
+" mucomplete {{{
+let g:mucomplete#chains = {
+      \ 'default' : ['nsnp', 'path', 'omni', 'tags', 'keyn', 'dict', 'uspl'],
+      \ }
+
+let g:mucomplete#no_mappings = 0
+let g:mucomplete#reopen_immediately = 0
+let g:mucomplete#minimum_prefix_length = 3
+let g:mucomplete#enable_auto_at_startup = 1
+let g:mucomplete#completion_delay = 400
+imap <expr><TAB>
+      \ pumvisible() ? "\<plug>(MUcompleteFwd)" :
+      \ neosnippet#expandable_or_jumpable() ?
+      \    "\<Plug>(neosnippet_expand_or_jump)" : "\<plug>(MUcompleteFwd)"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+      \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+let g:mucomplete#empty_text = 0
+let g:mucomplete#look_behind = 30
+
+imap <expr> <c-y>
+      \ neosnippet#expandable() ?
+      \ "\<Plug>(neosnippet_expand)" : "\<Plug>(MUcompletePopupAccept)"
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
@@ -458,7 +484,7 @@ nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 nnoremap <silent><leader>t :Tags<CR>
-imap <c-x><c-f> <plug>(fzf-complete-path)
+" imap <c-x><c-f> <plug>(fzf-complete-path)
 " }}}
 " vim-gutentags {{{
 let g:gutentags_cache_dir    = '~/.tags'
