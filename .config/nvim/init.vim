@@ -30,10 +30,6 @@ nmap <c-f> [s1z=<c-o>
 nnoremap Y y$
 tnoremap <esc> <c-\><c-n>
 
-" snipmate would switch to normal mode if <bs> was pressed and wouldn't work
-" after re-entering insert mode
-" snoremap <bs> <c-v>xa
-
 " Move text
 xnoremap J :move '>+1<CR>gv=gv
 xnoremap K :move '<-2<CR>gv=gv
@@ -124,8 +120,8 @@ xnoremap ar a[
 onoremap ir :normal vi[<CR>
 onoremap ar :normal va[<CR>
 
-inoremap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
-nnoremap <c-f> [s1z=<c-o>
+inoremap <c-g> <c-g>u<Esc>[s1z=`]a<c-g>u
+nnoremap <c-g> [s1z=<c-o>
 
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
@@ -405,18 +401,17 @@ let g:mucomplete#no_mappings = 0
 let g:mucomplete#reopen_immediately = 0
 let g:mucomplete#minimum_prefix_length = 3
 let g:mucomplete#enable_auto_at_startup = 1
-let g:mucomplete#completion_delay = 400
-let g:mucomplete#empty_text = 0
+let g:mucomplete#completion_delay = 330
+let g:mucomplete#empty_text = 1
 let g:mucomplete#look_behind = 30
-
 let g:mucomplete#no_mappings = 0
 
 imap <c-e> <plug>(MUcompletePopupCancel)
 imap <c-y> <plug>(MUcompletePopupAccept)
 imap <c-j> <plug>(MUcompleteCycFwd)
 imap <c-h> <plug>(MUcompleteCycBwd)
-imap <unique> <c-n> <plug>(MUcompleteFwd)
-imap <unique> <c-p> <plug>(MUcompleteBwd)
+imap <c-n> <plug>(MUcompleteFwd)
+imap <c-p> <plug>(MUcompleteBwd)
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
@@ -462,7 +457,6 @@ nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 nnoremap <silent><leader>t :Tags<CR>
-" imap <c-x><c-f> <plug>(fzf-complete-path)
 " }}}
 " vim-gutentags {{{
 let g:gutentags_cache_dir    = '~/.tags'
