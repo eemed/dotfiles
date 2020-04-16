@@ -395,26 +395,6 @@ imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
     \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 set conceallevel=2
 set concealcursor=niv
-
-function! NeosnippetCompletefunc(findstart, base) abort
-  if a:findstart == 1
-    let l:pat = matchstr(getline('.'), '\S\+\%'.col('.').'c')
-    return col('.') - len(l:pat) - 1
-  else
-    let l:snippets = neosnippet#helpers#get_completion_snippets()
-    if empty(l:snippets)
-      return ''
-    endif
-    let l:candidates = map(filter(keys(l:snippets), 'match(v:val, a:base) == 0'),
-          \  '{
-          \      "word": l:snippets[v:val]["word"],
-          \      "menu": get(l:snippets[v:val], "menu_abbr", ""),
-          \      "dup" : 1
-          \   }')
-    return { 'words': l:candidates, 'refresh': 'always' }
-  endif
-endfunction
-" set completefunc=NeosnippetCompletefunc
 " }}}
 " mucomplete {{{
 let g:mucomplete#chains = {
@@ -426,19 +406,17 @@ let g:mucomplete#reopen_immediately = 0
 let g:mucomplete#minimum_prefix_length = 3
 let g:mucomplete#enable_auto_at_startup = 1
 let g:mucomplete#completion_delay = 400
-imap <expr><TAB>
-      \ pumvisible() ? "\<plug>(MUcompleteFwd)" :
-      \ neosnippet#expandable_or_jumpable() ?
-      \    "\<Plug>(neosnippet_expand_or_jump)" : "\<plug>(MUcompleteFwd)"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-      \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-
 let g:mucomplete#empty_text = 0
 let g:mucomplete#look_behind = 30
 
-imap <expr> <c-y>
-      \ neosnippet#expandable() ?
-      \ "\<Plug>(neosnippet_expand)" : "\<Plug>(MUcompletePopupAccept)"
+let g:mucomplete#no_mappings = 0
+
+imap <c-e> <plug>(MUcompletePopupCancel)
+imap <c-y> <plug>(MUcompletePopupAccept)
+imap <c-j> <plug>(MUcompleteCycFwd)
+imap <c-h> <plug>(MUcompleteCycBwd)
+imap <unique> <c-n> <plug>(MUcompleteFwd)
+imap <unique> <c-p> <plug>(MUcompleteBwd)
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
