@@ -153,7 +153,7 @@ set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*
 
 " Completion
 set pumheight=10
-set completeopt=menuone,noselect
+set completeopt=menu,longest,preview
 set omnifunc=syntaxcomplete#Complete
 
 set smartindent
@@ -311,7 +311,6 @@ Plug 'romainl/vim-qf'                                   " Quickfix window filter
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'Shougo/neosnippet.vim'                            " Snippets
-Plug 'lifepillar/vim-mucomplete'
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -337,11 +336,13 @@ function! LC_maps() abort
     nnoremap <buffer> <silent> gd :call LanguageClient#textDocument_definition()<CR>
     nnoremap <buffer> <silent> <F3> :call LanguageClient#textDocument_formatting()<CR>
     nnoremap <buffer> <leader>L :<c-u> call LanguageClient_contextMenu()<cr>
+    setlocal signcolumn=yes
   endif
 endfunction
 
 autocmd MyAutocmds FileType * call LC_maps()
-let g:LanguageClient_diagnosticsSignsMax = 0
+let g:LanguageClient_useVirtualText = "No"
+" let g:LanguageClient_diagnosticsSignsMax = 0
 let g:LanguageClient_diagnosticsList = "Location"
 let g:LanguageClient_virtualTextPrefix = '❯ '
 let g:LanguageClient_hasSnippetSupport = 0
@@ -391,27 +392,26 @@ imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
     \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 set conceallevel=2
 set concealcursor=niv
-" }}}
-" mucomplete {{{
-let g:mucomplete#chains = {
-      \ 'default' : ['nsnp', 'path', 'omni', 'tags', 'keyn', 'dict', 'uspl'],
-      \ }
 
-let g:mucomplete#no_mappings = 0
-let g:mucomplete#reopen_immediately = 0
-let g:mucomplete#minimum_prefix_length = 3
-let g:mucomplete#enable_auto_at_startup = 1
-let g:mucomplete#completion_delay = 330
-let g:mucomplete#empty_text = 1
-let g:mucomplete#look_behind = 30
-let g:mucomplete#no_mappings = 0
-
-imap <c-e> <plug>(MUcompletePopupCancel)
-imap <c-y> <plug>(MUcompletePopupAccept)
-imap <c-j> <plug>(MUcompleteCycFwd)
-imap <c-h> <plug>(MUcompleteCycBwd)
-imap <c-n> <plug>(MUcompleteFwd)
-imap <c-p> <plug>(MUcompleteBwd)
+function! NeosnippetCompletefunc(findstart, base) abort
+  if a:findstart == 1
+    let l:pat = matchstr(getline('.'), '\S\+\%'.col('.').'c')
+    return col('.') - len(l:pat) - 1
+  else
+    let l:snippets = neosnippet#helpers#get_completion_snippets()
+    if empty(l:snippets)
+      return ''
+    endif
+    let l:candidates = map(filter(keys(l:snippets), 'match(v:val, a:base) == 0'),
+          \  '{
+          \      "word": l:snippets[v:val]["word"],
+          \      "menu": get(l:snippets[v:val], "menu_abbr", ""),
+          \      "dup" : 1
+          \   }')
+    return { 'words': l:candidates, 'refresh': 'always' }
+  endif
+endfunction
+set completefunc=NeosnippetCompletefunc
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
@@ -476,7 +476,10 @@ runtime macros/sandwich/keymap/surround.vim
 " }}}
 " base16-vim {{{
 function! CustomColors()
-  highlight! QuickFixLine guibg=lightblue guifg=bg gui=none
+  highlight! QuickFixLine   guibg=lightblue guifg=bg gui=none
+  highlight! ALEErrorSign   guibg=#393939 guifg=#f2777a
+  highlight! ALEWarningSign guibg=#393939 guifg=#ffcc66
+  highlight! ALEInfoSign    guibg=#393939 guifg=#6699cc
 endfunction
 
 autocmd MyAutocmds ColorScheme * call CustomColors()
