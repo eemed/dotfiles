@@ -1,5 +1,6 @@
 " Setup {{{
 let g:vimdir = fnamemodify($MYVIMRC, ':p:h')
+let g:python3_host_prog = '/usr/bin/python3'
 
 " Install vim-plug
 if empty(glob(g:vimdir . '/autoload/plug.vim'))
@@ -313,10 +314,14 @@ Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'Shougo/neosnippet.vim'                            " Snippets
 
 " Language server protocol until neovim implements its own
-Plug 'autozimu/LanguageClient-neovim', {
-      \ 'branch': 'next',
-      \ 'do': 'bash install.sh',
-      \ }
+if has('nvim-0.5')
+  Plug 'neovim/nvim-lsp'
+else
+  Plug 'autozimu/LanguageClient-neovim', {
+        \ 'branch': 'next',
+        \ 'do': 'bash install.sh',
+        \ }
+endif
 
 " Syntax
 Plug 'Glench/Vim-Jinja2-Syntax'
@@ -324,6 +329,9 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
+if has('nvim-0.5')
+  lua require 'lsp'
+else
 " LanguageClient {{{
 let g:LanguageClient_serverCommands = {
       \ 'rust': ['rustup', 'run', 'stable', 'rls'],
@@ -336,19 +344,19 @@ function! LC_maps() abort
     nnoremap <buffer> <silent> gd :call LanguageClient#textDocument_definition()<CR>
     nnoremap <buffer> <silent> <F3> :call LanguageClient#textDocument_formatting()<CR>
     nnoremap <buffer> <leader>L :<c-u> call LanguageClient_contextMenu()<cr>
-    setlocal signcolumn=yes
   endif
 endfunction
 
 autocmd MyAutocmds FileType * call LC_maps()
 let g:LanguageClient_useVirtualText = "No"
-" let g:LanguageClient_diagnosticsSignsMax = 0
+let g:LanguageClient_diagnosticsSignsMax = 0
 let g:LanguageClient_diagnosticsList = "Location"
 let g:LanguageClient_virtualTextPrefix = '❯ '
 let g:LanguageClient_hasSnippetSupport = 0
 set signcolumn=no
 " let g:LanguageClient_diagnosticsEnable = 0
 " }}}
+endif
 " vim-qf {{{
 nmap [q <Plug>(qf_qf_previous)
 nmap ]q  <Plug>(qf_qf_next)
