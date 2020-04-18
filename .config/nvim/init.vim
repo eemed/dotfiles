@@ -312,8 +312,8 @@ Plug 'romainl/vim-qf'                                   " Quickfix window filter
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'Shougo/neosnippet.vim'                            " Snippets
-Plug 'lifepillar/vim-mucomplete'                        " Complete chains
 Plug 'jiangmiao/auto-pairs'                             " Pairs
+Plug 'alvan/vim-closetag'
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -389,8 +389,15 @@ let g:neosnippet#snippets_directory = g:vimdir . '/snippets'
 let g:neosnippet#disable_runtime_snippets = {
       \   '_' : 1,
       \ }
-smap <c-l> <plug>(neosnippet_expand_or_jump)
-imap <c-l> <plug>(neosnippet_expand_or_jump)
+smap <expr><tab>
+      \ neosnippet#expandable_or_jumpable() ?
+      \ "\<plug>(neosnippet_expand_or_jump)" : "\<tab>"
+
+imap <expr><tab>
+      \ pumvisible() ? "\<c-n>" :
+      \ neosnippet#expandable_or_jumpable() ?
+      \ "\<plug>(neosnippet_expand_or_jump)" : "\<tab>"
+
 set conceallevel=2
 set concealcursor=niv
 
@@ -414,10 +421,16 @@ function! NeosnippetCompletefunc(findstart, base) abort
 endfunction
 set completefunc=NeosnippetCompletefunc
 " }}}
-" mucomplete {{{
-let g:mucomplete#chains = {
-      \ 'default' : ['nsnp', 'path', 'omni', 'tags', 'keyn', 'dict', 'uspl'],
-      \ }
+" autopair {{{
+let g:AutoPairsShortcutJump = ""
+let g:AutoPairsShortcutToggle = ""
+let g:AutoPairsShortcutFastWrap = ""
+let g:AutoPairsShortcutBackInsert = ""
+let g:AutoPairsMultilineClose = 0
+let g:AutoPairsCenterLine = 0
+" }}}
+" closetag {{{
+let g:closetag_filetypes = 'xml,html,xhtml,jsx'
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
