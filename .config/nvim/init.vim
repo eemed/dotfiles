@@ -154,7 +154,7 @@ set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*
 
 " Completion
 set pumheight=10
-set completeopt=menu,longest,preview
+set completeopt=noselect,menuone,preview
 set omnifunc=syntaxcomplete#Complete
 
 set smartindent
@@ -312,16 +312,14 @@ Plug 'romainl/vim-qf'                                   " Quickfix window filter
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'Shougo/neosnippet.vim'                            " Snippets
+Plug 'lifepillar/vim-mucomplete'                        " Complete chains
+Plug 'jiangmiao/auto-pairs'                             " Pairs
 
 " Language server protocol until neovim implements its own
-if has('nvim-0.5')
-  Plug 'neovim/nvim-lsp'
-else
-  Plug 'autozimu/LanguageClient-neovim', {
-        \ 'branch': 'next',
-        \ 'do': 'bash install.sh',
-        \ }
-endif
+Plug 'autozimu/LanguageClient-neovim', {
+      \ 'branch': 'next',
+      \ 'do': 'bash install.sh',
+      \ }
 
 " Syntax
 Plug 'Glench/Vim-Jinja2-Syntax'
@@ -329,9 +327,6 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
-if has('nvim-0.5')
-  lua require 'lsp'
-else
 " LanguageClient {{{
 let g:LanguageClient_serverCommands = {
       \ 'rust': ['rustup', 'run', 'stable', 'rls'],
@@ -343,12 +338,13 @@ function! LC_maps() abort
     nnoremap <buffer> <silent> K :call LanguageClient#textDocument_hover()<cr>
     nnoremap <buffer> <silent> gd :call LanguageClient#textDocument_definition()<CR>
     nnoremap <buffer> <silent> <F3> :call LanguageClient#textDocument_formatting()<CR>
-    nnoremap <buffer> <leader>L :<c-u> call LanguageClient_contextMenu()<cr>
+    nnoremap <silent> <silent> <F4> :call LanguageClient#textDocument_rename()<CR>
+    command! -buffer -nargs=0 LSP call LanguageClient_contextMenu()
   endif
 endfunction
 
 autocmd MyAutocmds FileType * call LC_maps()
-let g:LanguageClient_useVirtualText = "No"
+let g:LanguageClient_useVirtualText = "All"
 let g:LanguageClient_diagnosticsSignsMax = 0
 let g:LanguageClient_diagnosticsList = "Location"
 let g:LanguageClient_virtualTextPrefix = '❯ '
@@ -356,7 +352,6 @@ let g:LanguageClient_hasSnippetSupport = 0
 set signcolumn=no
 " let g:LanguageClient_diagnosticsEnable = 0
 " }}}
-endif
 " vim-qf {{{
 nmap [q <Plug>(qf_qf_previous)
 nmap ]q  <Plug>(qf_qf_next)
@@ -394,10 +389,8 @@ let g:neosnippet#snippets_directory = g:vimdir . '/snippets'
 let g:neosnippet#disable_runtime_snippets = {
       \   '_' : 1,
       \ }
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-    \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-    \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <c-l> <plug>(neosnippet_expand_or_jump)
+imap <c-l> <plug>(neosnippet_expand_or_jump)
 set conceallevel=2
 set concealcursor=niv
 
@@ -420,6 +413,11 @@ function! NeosnippetCompletefunc(findstart, base) abort
   endif
 endfunction
 set completefunc=NeosnippetCompletefunc
+" }}}
+" mucomplete {{{
+let g:mucomplete#chains = {
+      \ 'default' : ['nsnp', 'path', 'omni', 'tags', 'keyn', 'dict', 'uspl'],
+      \ }
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
