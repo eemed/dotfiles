@@ -157,6 +157,8 @@ set pumheight=10
 set completeopt=noselect,menuone,preview
 set omnifunc=syntaxcomplete#Complete
 
+set tags=./tags;,tags;
+
 set smartindent
 set nohlsearch
 
@@ -259,6 +261,24 @@ endfunction
 autocmd MyAutocmds BufWritePost * call MakeOnSaveFT()
 command! -nargs=0 ToggleMakeOnSaveFT call ToggleMakeOnSaveFT()
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
+
+" Toggle layout in insertmode and restore it on insertleave
+if $XDG_SESSION_TYPE ==# "x11" && executable('setxkbmap')
+  let g:toggled = 0
+  function! XTempLayout(layout) abort
+    let g:toggled = 1
+    execute 'silent !setxkbmap ' . a:layout ' &'
+  endfunction
+
+  function! XRestoreLayout() abort
+    if g:toggled == 1
+      let g:toggled = 0
+      execute 'silent !setxkbmap us &'
+    endif
+  endfunction
+  autocmd MyAutocmds InsertLeave * call XRestoreLayout()
+  inoremap <silent> <c-l> <c-o>:call XTempLayout('fi')<cr>
+endif
 " }}}
 " Appearance {{{
 set cursorline
@@ -282,7 +302,6 @@ set statusline+=\ %*
 set statusline+=\ %r
 set statusline+=%m
 set statusline+=%{PasteForStatusline()}
-set statusline+=%{gutentags#statusline()}
 set statusline+=%=
 set statusline+=\ %{GitStatus()}
 set statusline+=\ %{&ft}\ \|
@@ -307,13 +326,12 @@ Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
 Plug 'tpope/vim-sleuth'                                 " Wise indent style
 
-Plug 'justinmk/vim-dirvish'                             " Managing files
+Plug 'justinmk/vim-dirvish'                             " Managing files (netrw is buggy)
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'ludovicchabant/vim-gutentags'                     " Tags
 Plug 'Shougo/neosnippet.vim'                            " Snippets
 Plug 'jiangmiao/auto-pairs'                             " Pairs
-Plug 'alvan/vim-closetag'
+Plug 'alvan/vim-closetag'                               " Close tags
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -477,19 +495,6 @@ nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 nnoremap <silent><leader>t :Tags<CR>
 " }}}
-" vim-gutentags {{{
-let g:gutentags_cache_dir    = '~/.tags'
-let g:gutentags_project_root = ['.gitignore', '.git', '.project']
-let g:gutentags_project_info = [
-    \ {'type': 'haskell', 'glob': '*.hs'}
-    \ ]
-let g:gutentags_ctags_executable_haskell = 'hasktags-gutentags-shim.sh'
-let g:gutentags_file_list_command = {
-    \   'markers': {
-    \       '.git': 'git ls-files',
-    \   },
-    \ }
-" }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
@@ -499,6 +504,7 @@ function! CustomColors()
   highlight! ALEErrorSign   guibg=#393939 guifg=#f2777a
   highlight! ALEWarningSign guibg=#393939 guifg=#ffcc66
   highlight! ALEInfoSign    guibg=#393939 guifg=#6699cc
+  highlight! SpellBad       gui=underline
 endfunction
 
 autocmd MyAutocmds ColorScheme * call CustomColors()
