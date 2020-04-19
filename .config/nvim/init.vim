@@ -121,9 +121,6 @@ xnoremap ar a[
 onoremap ir :normal vi[<CR>
 onoremap ar :normal va[<CR>
 
-inoremap <c-g> <c-g>u<Esc>[s1z=`]a<c-g>u
-nnoremap <c-g> [s1z=<c-o>
-
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
 
@@ -262,23 +259,27 @@ autocmd MyAutocmds BufWritePost * call MakeOnSaveFT()
 command! -nargs=0 ToggleMakeOnSaveFT call ToggleMakeOnSaveFT()
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
 
-" Toggle layout in insertmode and restore it on insertleave
-if $XDG_SESSION_TYPE ==# "x11" && executable('setxkbmap')
-  let g:toggled = 0
-  function! XTempLayout(layout) abort
-    let g:toggled = 1
-    execute 'silent !setxkbmap ' . a:layout ' &'
-  endfunction
+" " I need some finnish letters occasionally
+let g:fix_keys_enabled = 0
+function! FixKeys() abort
+  inoremap ; ö
+  inoremap : Ö
+  inoremap ' ä
+  inoremap " Ä
+  let g:fix_keys_enabled = 1
+endfunction
 
-  function! XRestoreLayout() abort
-    if g:toggled == 1
-      let g:toggled = 0
-      execute 'silent !setxkbmap us &'
-    endif
-  endfunction
-  autocmd MyAutocmds InsertLeave * call XRestoreLayout()
-  inoremap <silent> <c-l> <c-o>:call XTempLayout('fi')<cr>
-endif
+function! RestoreKeys() abort
+  if g:fix_keys_enabled == 1
+    iunmap ;
+    iunmap :
+    iunmap '
+    iunmap "
+    let g:fix_keys_enabled = 0
+  endif
+endfunction
+inoremap <silent> <c-l> <c-o>:call FixKeys()<cr>
+autocmd MyAutocmds InsertLeave * call RestoreKeys()
 " }}}
 " Appearance {{{
 set cursorline
@@ -330,8 +331,6 @@ Plug 'justinmk/vim-dirvish'                             " Managing files (netrw 
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
 Plug 'Shougo/neosnippet.vim'                            " Snippets
-Plug 'jiangmiao/auto-pairs'                             " Pairs
-Plug 'alvan/vim-closetag'                               " Close tags
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -412,7 +411,6 @@ smap <expr><tab>
       \ "\<plug>(neosnippet_expand_or_jump)" : "\<tab>"
 
 imap <expr><tab>
-      \ pumvisible() ? "\<c-n>" :
       \ neosnippet#expandable_or_jumpable() ?
       \ "\<plug>(neosnippet_expand_or_jump)" : "\<tab>"
 
@@ -438,17 +436,6 @@ function! NeosnippetCompletefunc(findstart, base) abort
   endif
 endfunction
 set completefunc=NeosnippetCompletefunc
-" }}}
-" autopair {{{
-let g:AutoPairsShortcutJump = ""
-let g:AutoPairsShortcutToggle = ""
-let g:AutoPairsShortcutFastWrap = ""
-let g:AutoPairsShortcutBackInsert = ""
-let g:AutoPairsMultilineClose = 0
-let g:AutoPairsCenterLine = 0
-" }}}
-" closetag {{{
-let g:closetag_filetypes = 'xml,html,xhtml,jsx'
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
