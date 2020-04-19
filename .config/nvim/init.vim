@@ -414,8 +414,8 @@ imap <expr><tab>
       \ neosnippet#expandable_or_jumpable() ?
       \ "\<plug>(neosnippet_expand_or_jump)" : "\<tab>"
 
-set conceallevel=2
-set concealcursor=niv
+" set conceallevel=2
+" set concealcursor=niv
 
 function! NeosnippetCompletefunc(findstart, base) abort
   if a:findstart == 1
