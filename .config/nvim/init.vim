@@ -151,7 +151,7 @@ set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*
 
 " Completion
 set pumheight=10
-set completeopt=noselect,menuone,preview
+set completeopt=noselect,menuone,menu
 set omnifunc=syntaxcomplete#Complete
 
 set tags=./tags;,tags;
@@ -326,11 +326,17 @@ Plug 'tpope/vim-commentary'                             " Commenting
 Plug 'tpope/vim-fugitive'                               " Git integration
 Plug 'tpope/vim-unimpaired'                             " Bindings
 Plug 'tpope/vim-sleuth'                                 " Wise indent style
+Plug 'tpope/vim-endwise'                                " End statements
 
+Plug '9mm/vim-closer'                                   " End brackets
 Plug 'justinmk/vim-dirvish'                             " Managing files (netrw is buggy)
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'Shougo/neosnippet.vim'                            " Snippets
+Plug 'eemed/vim-minisnip'                               " Snippets
+
+" Vim plugin dev
+" Plug 'junegunn/vader.vim'
+" Plug 'tpope/vim-scriptease'
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -401,38 +407,9 @@ function! s:dirvish_toggle() abort
   endif
 endfunction
 " }}}
-" neosnippets {{{
-let g:neosnippet#snippets_directory = g:vimdir . '/snippets'
-let g:neosnippet#disable_runtime_snippets = {
-      \   '_' : 1,
-      \ }
-smap <expr><tab>
-      \ neosnippet#expandable_or_jumpable() ?
-      \ "\<plug>(neosnippet_expand_or_jump)" : "\<tab>"
-
-imap <expr><tab>
-      \ neosnippet#expandable_or_jumpable() ?
-      \ "\<plug>(neosnippet_expand_or_jump)" : "\<tab>"
-
-function! NeosnippetCompletefunc(findstart, base) abort
-  if a:findstart == 1
-    let l:pat = matchstr(getline('.'), '\S\+\%'.col('.').'c')
-    return col('.') - len(l:pat) - 1
-  else
-    let l:snippets = neosnippet#helpers#get_completion_snippets()
-    if empty(l:snippets)
-      return ''
-    endif
-    let l:candidates = map(filter(keys(l:snippets), 'match(v:val, a:base) == 0'),
-          \  '{
-          \      "word": l:snippets[v:val]["word"],
-          \      "menu": get(l:snippets[v:val], "menu_abbr", ""),
-          \      "dup" : 1
-          \   }')
-    return { 'words': l:candidates, 'refresh': 'always' }
-  endif
-endfunction
-set completefunc=NeosnippetCompletefunc
+" minisnip {{{
+let g:minisnip_dir = g:vimdir . '/minisnip'
+imap <c-x><c-x> <plug>(minisnip-complete)
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
