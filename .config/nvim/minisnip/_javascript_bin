@@ -1,2 +1,1 @@
-this.{{+name+}} = this.{{+<name+}}.bind(this);
-{{--}}
+this.{{+name+}} = this.{{+<name+}}.bind(this);{{++}}

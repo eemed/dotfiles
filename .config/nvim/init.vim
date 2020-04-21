@@ -332,11 +332,12 @@ Plug '9mm/vim-closer'                                   " End brackets
 Plug 'justinmk/vim-dirvish'                             " Managing files (netrw is buggy)
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'eemed/vim-minisnip'                               " Snippets
+" Plug 'eemed/vim-minisnip'                               " Snippets
 
 " Vim plugin dev
 " Plug 'junegunn/vader.vim'
 " Plug 'tpope/vim-scriptease'
+Plug 'henricattoire/aergia'
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -344,9 +345,16 @@ Plug 'autozimu/LanguageClient-neovim', {
       \ 'do': 'bash install.sh',
       \ }
 
-" Syntax
+" " Syntax
 Plug 'Glench/Vim-Jinja2-Syntax'
-Plug 'maxmellon/vim-jsx-pretty'
+" Plug 'pangloss/vim-javascript'
+" Plug 'maxmellon/vim-jsx-pretty'
+" Plug 'neoclide/vim-jsx-improve'
+"
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+autocmd BufNewFile,BufRead *.tsx,*.js set filetype=typescript
+
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{

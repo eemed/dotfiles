@@ -1,2 +1,1 @@
-const {{++}} = require('{{+fs+}}');
-{{--}}
+const {{++}} = require('{{+fs+}}');{{++}}
