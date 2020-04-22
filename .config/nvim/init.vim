@@ -337,7 +337,8 @@ Plug 'sirver/UltiSnips'
 " Vim plugin dev
 " Plug 'junegunn/vader.vim'
 " Plug 'tpope/vim-scriptease'
-Plug 'henricattoire/aergia'
+" Plug 'henricattoire/aergia'
+" let g:aergia_snippets = '~/repos/aergia/snippets'
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -347,14 +348,7 @@ Plug 'autozimu/LanguageClient-neovim', {
 
 " " Syntax
 Plug 'Glench/Vim-Jinja2-Syntax'
-" Plug 'pangloss/vim-javascript'
-" Plug 'maxmellon/vim-jsx-pretty'
-" Plug 'neoclide/vim-jsx-improve'
-"
-Plug 'leafgarland/typescript-vim'
-Plug 'peitalin/vim-jsx-typescript'
-autocmd BufNewFile,BufRead *.tsx,*.js set filetype=typescript
-
+Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
