@@ -332,7 +332,7 @@ Plug '9mm/vim-closer'                                   " End brackets
 Plug 'justinmk/vim-dirvish'                             " Managing files (netrw is buggy)
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
-Plug 'eemed/vim-minisnip'                               " Snippets
+Plug 'sirver/UltiSnips'
 
 " Vim plugin dev
 " Plug 'junegunn/vader.vim'
@@ -410,6 +410,12 @@ endfunction
 " minisnip {{{
 let g:minisnip_dir = g:vimdir . '/minisnip'
 imap <c-x><c-x> <plug>(minisnip-complete)
+" }}}
+" Ultisnips {{{
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsListSnippets="<c-x><c-x>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 " }}}
 " vim-tmux-navigator {{{
 let g:tmux_navigator_no_mappings = 1
