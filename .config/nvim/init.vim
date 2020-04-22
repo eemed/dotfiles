@@ -337,6 +337,7 @@ Plug 'sirver/UltiSnips'
 " Vim plugin dev
 " Plug 'junegunn/vader.vim'
 " Plug 'tpope/vim-scriptease'
+Plug 'henricattoire/aergia'
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -344,9 +345,16 @@ Plug 'autozimu/LanguageClient-neovim', {
       \ 'do': 'bash install.sh',
       \ }
 
-" Syntax
+" " Syntax
 Plug 'Glench/Vim-Jinja2-Syntax'
-Plug 'maxmellon/vim-jsx-pretty'
+" Plug 'pangloss/vim-javascript'
+" Plug 'maxmellon/vim-jsx-pretty'
+" Plug 'neoclide/vim-jsx-improve'
+"
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+autocmd BufNewFile,BufRead *.tsx,*.js set filetype=typescript
+
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
@@ -406,10 +414,6 @@ function! s:dirvish_toggle() abort
     leftabove vsplit | vertical resize 30 | Dirvish
   endif
 endfunction
-" }}}
-" minisnip {{{
-let g:minisnip_dir = g:vimdir . '/minisnip'
-imap <c-x><c-x> <plug>(minisnip-complete)
 " }}}
 " Ultisnips {{{
 let g:UltiSnipsExpandTrigger="<tab>"
