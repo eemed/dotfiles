@@ -1,0 +1,58 @@
+snippet rcl
+	import React from 'react';
+	import PropTypes from 'prop-types';
+	
+	class ${1:class} extends React.Component {
+		constructor(props) {
+			super(props);
+			${2}
+		}
+	
+		render() {
+			return (
+				${0}
+			);
+		}
+	}
+	
+	$1.propTypes = {
+	}
+	
+	$1.defaultProps = {
+	}
+	
+	export default $1;
+
+snippet bin
+	this.${1} = this.$1.bind(this);${0}
+
+snippet cl
+	console.log(${1});${0}
+
+snippet =>
+	(${1:args}) => {
+		${0}
+	}
+
+snippet fun
+	function ${1:name}(${2:args}) {
+		${0}
+	}
+
+snippet imp
+	import ${1} from '${2}';${0}
+
+snippet red
+	export default (state = {}, action) => {
+		switch (action.type) {
+			case ${1:case}:
+				return {
+					${0}
+				};
+			default:
+				return state;
+		}
+	}
+
+snippet req
+	const ${1} = require('${2}');${0}

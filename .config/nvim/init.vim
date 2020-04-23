@@ -333,6 +333,10 @@ Plug 'justinmk/vim-dirvish'                             " Managing files (netrw 
 Plug 'romainl/vim-qf'                                   " Quickfix window filtering
 Plug 'machakann/vim-sandwich'                           " Surround objects
 
+Plug 'MarcWeber/vim-addon-mw-utils'
+Plug 'tomtom/tlib_vim'
+Plug 'garbas/vim-snipmate'                              " Snippets
+
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
       \ 'branch': 'next',
