@@ -143,7 +143,7 @@ set ignorecase smartcase
 
 " Show replacement
 set inccommand=split
-set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*
+set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*
 
 " Completion
 set pumheight=10
@@ -333,6 +333,7 @@ Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'romainl/vim-qf'                     " Quickfix window filtering
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'norcalli/nvim-colorizer.lua'        " Colors
+Plug 'mbbill/undotree'                    " Undo tree
 
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
@@ -345,11 +346,17 @@ Plug 'autozimu/LanguageClient-neovim', {
       \ }
 
 " Syntax
-Plug 'Glench/Vim-Jinja2-Syntax'
+Plug 'pearofducks/ansible-vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
+" undotree {{{
+let g:undotree_SplitWidth = 35
+let g:undotree_DiffAutoOpen = 0
+let g:undotree_SetFocusWhenToggle = 1
+nnoremap <leader>u :UndotreeToggle<cr>
+" }}}
 " LanguageClient {{{
 let g:LanguageClient_serverCommands = {
       \ 'rust': ['rustup', 'run', 'stable', 'rls'],
@@ -380,7 +387,7 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 " }}}
 " colorizer {{{
-lua require'colorizer'.setup()
+lua require'colorizer'.setup({'css'; 'scss'; 'html'; 'tmux'; 'yaml';})
 " }}}
 " vim-qf {{{
 nmap [q <Plug>(qf_qf_previous)
