@@ -26,7 +26,7 @@ nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
 nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
 
 imap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
-nmap <c-f> [s1z=<c-o>
+nmap <c-f> mm[s1z=`m
 
 nnoremap Y y$
 tnoremap <esc> <c-\><c-n>
@@ -50,12 +50,12 @@ xnoremap gm :m''<CR>
 xnoremap gM :M''<CR>
 
 " Disable exmode
-nnoremap Q <nop>
+nnoremap Q @q
+nnoremap g. :normal `[v`]<cr>
 
 " Saving
-noremap  <silent><c-s> <Esc>:update<CR>
-inoremap <silent><c-s> <Esc>:update<CR>a
-xnoremap <silent><c-s> <Esc>:update<CR>gv
+nnoremap <silent><c-s> :update<CR>
+inoremap <silent><c-s> <c-o>:update<CR>
 
 " Copy paste
 nnoremap <leader>p "+p
@@ -93,12 +93,6 @@ for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', 
   execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
 endfor
 
-" line text objects
-xnoremap il g_o^
-onoremap il :<C-u>normal vil<CR>
-xnoremap al $o0
-onoremap al :<C-u>normal val<CR>
-
 " number text object (integer and float)
 function! VisualNumber() abort
   call search('\d\([^0-9\.]\|$\)', 'cW')
@@ -123,6 +117,8 @@ onoremap ar :normal va[<CR>
 
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
+
+nnoremap <leader>o :only<cr>
 
 set pastetoggle=<F2>
 " }}}
@@ -251,7 +247,9 @@ endfunction
 
 function! MakeOnSaveFT() abort
   if get(g:makeonsave, &ft, '') == &ft && &ft != ''
+    normal! mm
     silent make
+    normal! `m
   endif
 endfunction
 
@@ -311,9 +309,10 @@ set statusline+=\ %*
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'chriskempson/base16-vim'                          " Color scheme
-Plug 'christoomey/vim-tmux-navigator'                   " Move between tmux and vim splits
-Plug 'tmux-plugins/vim-tmux-focus-events'               " Fix tmux focus events
+Plug 'chriskempson/base16-vim'            " Color scheme
+
+Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
+Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
 
 " Fuzzy find
 Plug 'junegunn/fzf', {
@@ -321,21 +320,23 @@ Plug 'junegunn/fzf', {
       \ 'do': { -> fzf#install() }
       \ }
 Plug 'junegunn/fzf.vim'
+Plug 'junegunn/vim-easy-align'            " Align stuff
 
-Plug 'tpope/vim-commentary'                             " Commenting
-Plug 'tpope/vim-fugitive'                               " Git integration
-Plug 'tpope/vim-unimpaired'                             " Bindings
-Plug 'tpope/vim-sleuth'                                 " Wise indent style
-Plug 'tpope/vim-endwise'                                " End statements
+Plug 'tpope/vim-commentary'               " Commenting
+Plug 'tpope/vim-fugitive'                 " Git integration
+Plug 'tpope/vim-unimpaired'               " Bindings
+Plug 'tpope/vim-sleuth'                   " Wise indent style
+Plug 'tpope/vim-endwise'                  " End statements
 
-Plug '9mm/vim-closer'                                   " End brackets
-Plug 'justinmk/vim-dirvish'                             " Managing files (netrw is buggy)
-Plug 'romainl/vim-qf'                                   " Quickfix window filtering
-Plug 'machakann/vim-sandwich'                           " Surround objects
+Plug '9mm/vim-closer'                     " End brackets
+Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
+Plug 'romainl/vim-qf'                     " Quickfix window filtering
+Plug 'machakann/vim-sandwich'             " Surround objects
+Plug 'norcalli/nvim-colorizer.lua'        " Colors
 
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
-Plug 'garbas/vim-snipmate'                              " Snippets
+Plug 'garbas/vim-snipmate'                " Snippets
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -343,7 +344,7 @@ Plug 'autozimu/LanguageClient-neovim', {
       \ 'do': 'bash install.sh',
       \ }
 
-" " Syntax
+" Syntax
 Plug 'Glench/Vim-Jinja2-Syntax'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
@@ -357,29 +358,36 @@ let g:LanguageClient_serverCommands = {
 
 function! LC_maps() abort
   if has_key(g:LanguageClient_serverCommands, &filetype)
-    nnoremap <buffer> <silent> K :call LanguageClient#textDocument_hover()<cr>
-    nnoremap <buffer> <silent> gd :call LanguageClient#textDocument_definition()<CR>
+    nnoremap <buffer> <silent> K    :call LanguageClient#textDocument_hover()<cr>
+    nnoremap <buffer> <silent> gd   :call LanguageClient#textDocument_definition()<CR>
     nnoremap <buffer> <silent> <F3> :call LanguageClient#textDocument_formatting()<CR>
     nnoremap <silent> <silent> <F4> :call LanguageClient#textDocument_rename()<CR>
-    command! -buffer -nargs=0 LSP call LanguageClient_contextMenu()
+    command! -buffer  -nargs=0 LSP  call  LanguageClient_contextMenu()
   endif
 endfunction
 
 autocmd MyAutocmds FileType * call LC_maps()
-let g:LanguageClient_useVirtualText = "All"
+let g:LanguageClient_useVirtualText      = "All"
 let g:LanguageClient_diagnosticsSignsMax = 0
-let g:LanguageClient_diagnosticsList = "Location"
-let g:LanguageClient_virtualTextPrefix = '❯ '
-let g:LanguageClient_hasSnippetSupport = 0
+let g:LanguageClient_diagnosticsList     = "Location"
+let g:LanguageClient_virtualTextPrefix   = '❯ '
+let g:LanguageClient_hasSnippetSupport   = 0
 set signcolumn=no
 " let g:LanguageClient_diagnosticsEnable = 0
 " }}}
+" vim-easyalign {{{
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
+" }}}
+" colorizer {{{
+lua require'colorizer'.setup()
+" }}}
 " vim-qf {{{
 nmap [q <Plug>(qf_qf_previous)
-nmap ]q  <Plug>(qf_qf_next)
+nmap ]q <Plug>(qf_qf_next)
 
 nmap [l <Plug>(qf_loc_previous)
-nmap ]l  <Plug>(qf_loc_next)
+nmap ]l <Plug>(qf_loc_next)
 " }}}
 " dirvish {{{
 let g:loaded_netrwPlugin = 1
@@ -457,9 +465,9 @@ runtime macros/sandwich/keymap/surround.vim
 " base16-vim {{{
 function! CustomColors()
   highlight! QuickFixLine   guibg=lightblue guifg=bg gui=none
-  highlight! ALEErrorSign   guibg=#393939 guifg=#f2777a
-  highlight! ALEWarningSign guibg=#393939 guifg=#ffcc66
-  highlight! ALEInfoSign    guibg=#393939 guifg=#6699cc
+  highlight! ALEErrorSign   guibg=#393939   guifg=#f2777a
+  highlight! ALEWarningSign guibg=#393939   guifg=#ffcc66
+  highlight! ALEInfoSign    guibg=#393939   guifg=#6699cc
   highlight! SpellBad       gui=underline
 endfunction
 
