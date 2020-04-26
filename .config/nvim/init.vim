@@ -327,7 +327,6 @@ Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'tpope/vim-unimpaired'               " Bindings
 Plug 'tpope/vim-sleuth'                   " Wise indent style
 Plug 'tpope/vim-endwise'                  " End statements
-Plug 'chuling/vim-equinusocio-material'
 
 Plug '9mm/vim-closer'                     " End brackets
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
