@@ -86,7 +86,7 @@ nnoremap <c-left>   :vertical resize -10<CR>
 nnoremap <c-up>     :resize +10<CR>
 nnoremap <c-down>   :resize -10<CR>
 
-for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
+for char in [ '$', '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
   execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
   execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
   execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
@@ -281,7 +281,7 @@ autocmd MyAutocmds InsertLeave * call RestoreKeys()
 " }}}
 " Appearance {{{
 set cursorline
-let &colorcolumn=join(range(101,999), ",")
+" let &colorcolumn=join(range(101,999), ",")
 set synmaxcol=200
 set termguicolors
 set t_Co=256
@@ -327,6 +327,7 @@ Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'tpope/vim-unimpaired'               " Bindings
 Plug 'tpope/vim-sleuth'                   " Wise indent style
 Plug 'tpope/vim-endwise'                  " End statements
+Plug 'chuling/vim-equinusocio-material'
 
 Plug '9mm/vim-closer'                     " End brackets
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
@@ -334,6 +335,8 @@ Plug 'romainl/vim-qf'                     " Quickfix window filtering
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'norcalli/nvim-colorizer.lua'        " Colors
 Plug 'mbbill/undotree'                    " Undo tree
+Plug 'kassio/neoterm'                     " Running commands in terminal
+Plug 'lervag/vimtex'                      " LaTeX
 
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
@@ -351,6 +354,22 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
+" neoterm {{{
+let g:neoterm_default_mod = 'botright'
+let g:neoterm_size = 12
+let g:neoterm_autoscroll = 1
+let g:neoterm_auto_repl_cmd = 0
+nnoremap <leader>t :Ttoggle<cr>
+nnoremap `<space> :T<space>
+nnoremap `<cr> :Texec !!<cr>
+" Use gx{text-object} in normal mode
+nmap gx <Plug>(neoterm-repl-send)
+" Send selected contents in visual mode.
+xmap gx <Plug>(neoterm-repl-send)
+
+autocmd MyAutocmds BufWinEnter,WinEnter term://* startinsert
+autocmd MyAutocmds BufLeave term://* stopinsert
+" }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
 let g:undotree_DiffAutoOpen = 0
@@ -464,18 +483,19 @@ nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
-nnoremap <silent><leader>t :Tags<CR>
+nnoremap <silent><leader>T :Tags<CR>
 " }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
 " base16-vim {{{
 function! CustomColors()
-  highlight! QuickFixLine   guibg=lightblue guifg=bg gui=none
+  highlight! QuickFixLine   guibg=lightblue guifg=bg  gui=none
   highlight! ALEErrorSign   guibg=#393939   guifg=#f2777a
   highlight! ALEWarningSign guibg=#393939   guifg=#ffcc66
   highlight! ALEInfoSign    guibg=#393939   guifg=#6699cc
   highlight! SpellBad       gui=underline
+  highlight! MatchParen     gui=none        guifg=#f2777a guibg=#222222
 endfunction
 
 autocmd MyAutocmds ColorScheme * call CustomColors()

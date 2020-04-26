@@ -1,2 +1,2 @@
-nnoremap <buffer> <C-s> :wq<CR><CR>
+nnoremap <buffer> <C-s> :wq<CR>
 setlocal signcolumn=no
