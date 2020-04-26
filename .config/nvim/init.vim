@@ -15,6 +15,7 @@ augroup end
 " }}}
 " Key mappings {{{
 let mapleader = " "
+let maplocalleader = ","
 
 function! SortLines(type) abort
   '[,']sort i
@@ -185,6 +186,7 @@ nnoremap <leader>c :Config<CR>
 command! -nargs=? -complete=filetype EditFileTypePlugin
       \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
+nnoremap <localleader>c :EditFileTypePlugin<cr>
 
 " Grep
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
@@ -383,11 +385,9 @@ let g:LanguageClient_serverCommands = {
 
 function! LC_maps() abort
   if has_key(g:LanguageClient_serverCommands, &filetype)
-    nnoremap <buffer> <silent> K    :call LanguageClient#textDocument_hover()<cr>
-    nnoremap <buffer> <silent> gd   :call LanguageClient#textDocument_definition()<CR>
-    nnoremap <buffer> <silent> <F3> :call LanguageClient#textDocument_formatting()<CR>
-    nnoremap <silent> <silent> <F4> :call LanguageClient#textDocument_rename()<CR>
-    command! -buffer  -nargs=0 LSP  call  LanguageClient_contextMenu()
+    nnoremap <buffer> <silent> K     :call LanguageClient#textDocument_hover()<cr>
+    nnoremap <buffer> <silent> gd    :call LanguageClient#textDocument_definition()<CR>
+    nnoremap <buffer> <localleader>M :call  LanguageClient_contextMenu()<CR>
   endif
 endfunction
 
