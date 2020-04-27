@@ -259,7 +259,7 @@ autocmd MyAutocmds BufWritePost * call MakeOnSaveFT()
 command! -nargs=0 ToggleMakeOnSaveFT call ToggleMakeOnSaveFT()
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
 
-" " I need some finnish letters occasionally
+" I need some finnish letters occasionally
 let g:fix_keys_enabled = 0
 function! FixKeys() abort
   inoremap ; ö
@@ -283,7 +283,6 @@ autocmd MyAutocmds InsertLeave * call RestoreKeys()
 " }}}
 " Appearance {{{
 set cursorline
-" let &colorcolumn=join(range(101,999), ",")
 set synmaxcol=200
 set termguicolors
 set t_Co=256
@@ -336,7 +335,6 @@ Plug 'romainl/vim-qf'                     " Quickfix window filtering
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'norcalli/nvim-colorizer.lua'        " Colors
 Plug 'mbbill/undotree'                    " Undo tree
-Plug 'kassio/neoterm'                     " Running commands in terminal
 Plug 'lervag/vimtex'                      " LaTeX
 
 Plug 'MarcWeber/vim-addon-mw-utils'
@@ -355,22 +353,6 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
-" neoterm {{{
-let g:neoterm_default_mod = 'botright'
-let g:neoterm_size = 12
-let g:neoterm_autoscroll = 1
-let g:neoterm_auto_repl_cmd = 0
-nnoremap <leader>t :Ttoggle<cr>
-nnoremap `<space> :T<space>
-nnoremap `<cr> :Texec !!<cr>
-" Use gx{text-object} in normal mode
-nmap gx <Plug>(neoterm-repl-send)
-" Send selected contents in visual mode.
-xmap gx <Plug>(neoterm-repl-send)
-
-autocmd MyAutocmds BufWinEnter,WinEnter term://* startinsert
-autocmd MyAutocmds BufLeave term://* stopinsert
-" }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
 let g:undotree_DiffAutoOpen = 0
@@ -385,9 +367,10 @@ let g:LanguageClient_serverCommands = {
 
 function! LC_maps() abort
   if has_key(g:LanguageClient_serverCommands, &filetype)
-    nnoremap <buffer> <silent> K     :call LanguageClient#textDocument_hover()<cr>
-    nnoremap <buffer> <silent> gd    :call LanguageClient#textDocument_definition()<CR>
-    nnoremap <buffer> <leader>M :call  LanguageClient_contextMenu()<CR>
+    nnoremap <buffer> <silent>  K     :call LanguageClient#textDocument_hover()<cr>
+    nnoremap <buffer> <silent>  gd    :call LanguageClient#textDocument_definition()<CR>
+    nnoremap <buffer> <f5>      :call LanguageClient_contextMenu()<CR>
+    nnoremap <buffer> <leader>F :call LanguageClient#textDocument_formatting()<cr>
   endif
 endfunction
 
