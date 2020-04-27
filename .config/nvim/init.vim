@@ -15,7 +15,7 @@ augroup end
 " }}}
 " Key mappings {{{
 let mapleader = " "
-let maplocalleader = ","
+let maplocalleader = "\\"
 
 function! SortLines(type) abort
   '[,']sort i
@@ -387,7 +387,7 @@ function! LC_maps() abort
   if has_key(g:LanguageClient_serverCommands, &filetype)
     nnoremap <buffer> <silent> K     :call LanguageClient#textDocument_hover()<cr>
     nnoremap <buffer> <silent> gd    :call LanguageClient#textDocument_definition()<CR>
-    nnoremap <buffer> <localleader>M :call  LanguageClient_contextMenu()<CR>
+    nnoremap <buffer> <leader>M :call  LanguageClient_contextMenu()<CR>
   endif
 endfunction
 
