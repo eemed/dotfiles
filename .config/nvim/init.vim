@@ -207,7 +207,21 @@ command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
 
-" Format
+" Goto definition
+function! GD() abort
+  let l:word = expand('<cword>')
+  let l:tags = taglist(l:word)
+  if len(l:tags) > 0
+    execute 'tjump ' . l:tags[0]["name"]
+  elseif IsLSP()
+    call LanguageClient#textDocument_definition()
+  else
+    normal! gd
+  endif
+endfunction
+nnoremap <silent> gd :<c-u>call GD()<cr>
+
+" Formatting
 function! FormatFile() abort
   if get(b:, 'formatcmd', '') == ''
     echom 'Cannot find b:formatcmd.'
@@ -223,7 +237,18 @@ function! FormatFile() abort
     call winrestview(l:view)
   endif
 endfunction
+
+function! Format() abort
+  if get(b:, 'formatcmd', '') != ''
+    call FormatFile()
+  elseif IsLSP()
+    call LanguageClient#textDocument_formatting()<cr>
+  else
+    echom 'Cannot format file.'
+  endif
+endfunction
 command! -nargs=0 Format call FormatFile()
+nnoremap <silent> <leader>F :Format<cr>
 
 " Hex representation
 function! AsHex() abort
@@ -368,10 +393,12 @@ let g:LanguageClient_serverCommands = {
 function! LC_maps() abort
   if has_key(g:LanguageClient_serverCommands, &filetype)
     nnoremap <buffer> <silent>  K     :call LanguageClient#textDocument_hover()<cr>
-    nnoremap <buffer> <silent>  gd    :call LanguageClient#textDocument_definition()<CR>
     nnoremap <buffer> <f5>      :call LanguageClient_contextMenu()<CR>
-    nnoremap <buffer> <leader>F :call LanguageClient#textDocument_formatting()<cr>
   endif
+endfunction
+
+function! IsLSP() abort
+  return has_key(g:LanguageClient_serverCommands, &filetype)
 endfunction
 
 autocmd MyAutocmds FileType * call LC_maps()
