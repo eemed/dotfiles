@@ -82,10 +82,10 @@ function! StripWhitespace() abort
 endfunction
 nnoremap <leader>s :call StripWhitespace()<cr>
 
-nnoremap <c-right>  :vertical resize +10<CR>
-nnoremap <c-left>   :vertical resize -10<CR>
-nnoremap <c-up>     :resize +10<CR>
-nnoremap <c-down>   :resize -10<CR>
+nnoremap <M-right>  :vertical resize +10<CR>
+nnoremap <M-left>   :vertical resize -10<CR>
+nnoremap <M-up>     :resize +10<CR>
+nnoremap <M-down>   :resize -10<CR>
 
 for char in [ '$', '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
   execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
@@ -208,7 +208,7 @@ command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 nnoremap <leader>f :Grep<space>
 
 " Goto definition
-function! GD() abort
+function! s:GD() abort
   let l:word = expand('<cword>')
   let l:tags = taglist(l:word)
   if len(l:tags) > 0
@@ -219,10 +219,10 @@ function! GD() abort
     normal! gd
   endif
 endfunction
-nnoremap <silent> gd :<c-u>call GD()<cr>
+nnoremap <silent> gd :<c-u>call <sid>GD()<cr>
 
 " Formatting
-function! FormatFile() abort
+function! s:FormatFile() abort
   if get(b:, 'formatcmd', '') == ''
     echom 'Cannot find b:formatcmd.'
   else
@@ -238,7 +238,7 @@ function! FormatFile() abort
   endif
 endfunction
 
-function! Format() abort
+function! s:Format() abort
   if get(b:, 'formatcmd', '') != ''
     call FormatFile()
   elseif IsLSP()
@@ -247,7 +247,7 @@ function! Format() abort
     echom 'Cannot format file.'
   endif
 endfunction
-command! -nargs=0 Format call FormatFile()
+command! -nargs=0 Format call <sid>FormatFile()
 nnoremap <silent> <leader>F :Format<cr>
 
 " Hex representation
