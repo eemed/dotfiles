@@ -312,6 +312,10 @@ set synmaxcol=200
 set termguicolors
 set t_Co=256
 
+" Toggle cursor line on inactive window
+autocmd MyAutocmds WinEnter * set cursorline
+autocmd MyAutocmds WinLeave * set nocursorline
+
 function! GitStatus() abort
   return get(g:, 'loaded_fugitive', 0) ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
 endfunction
