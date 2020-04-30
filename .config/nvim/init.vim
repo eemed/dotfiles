@@ -344,7 +344,7 @@ Plug 'chriskempson/base16-vim'            " Color scheme
 Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
 
-" Fuzzy find
+" Fuzzy find everything
 Plug 'junegunn/fzf', {
       \ 'dir': '~/.fzf',
       \ 'do': { -> fzf#install() }
@@ -356,14 +356,14 @@ Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'tpope/vim-unimpaired'               " Bindings
 Plug 'tpope/vim-sleuth'                   " Wise indent style
-Plug 'tpope/vim-endwise'                  " End statements
+Plug 'tpope/vim-endwise'                  " End structures
 
 Plug '9mm/vim-closer'                     " End brackets
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
-Plug 'romainl/vim-qf'                     " Quickfix window filtering
+Plug 'romainl/vim-qf'                     " Quickfix window overall improvements
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'norcalli/nvim-colorizer.lua'        " Colors
-Plug 'mbbill/undotree'                    " Undo tree
+Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'lervag/vimtex'                      " LaTeX
 
 Plug 'MarcWeber/vim-addon-mw-utils'
