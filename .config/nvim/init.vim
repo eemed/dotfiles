@@ -384,7 +384,7 @@ Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
 " snipmate {{{
-snoremap <bs> <c-v>di
+snoremap <bs> <c-v>c
 command! -nargs=? -complete=filetype EditSnippets
       \ execute 'keepj vsplit ' . g:vimdir . '/snippets/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
