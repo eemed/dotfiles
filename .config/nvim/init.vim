@@ -365,11 +365,11 @@ Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'norcalli/nvim-colorizer.lua'        " Colors
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'lervag/vimtex'                      " LaTeX
-Plug 'lifepillar/vim-mucomplete'          " Complete
 
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
 Plug 'garbas/vim-snipmate'                " Snippets
+Plug 'lifepillar/vim-mucomplete'          " Complete
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -383,6 +383,13 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
+" snipmate {{{
+snoremap <bs> <c-v>xi
+command! -nargs=? -complete=filetype EditSnippets
+      \ execute 'keepj vsplit ' . g:vimdir . '/snippets/' .
+      \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
+nnoremap <localleader>s :EditSnippets<cr>
+" }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
 let g:undotree_DiffAutoOpen = 0
@@ -390,22 +397,38 @@ let g:undotree_SetFocusWhenToggle = 1
 nnoremap <leader>u :UndotreeToggle<cr>
 " }}}
 " mucomplete {{{
-let g:mucomplete#completion_delay = 100
-let g:mucomplete#reopen_immediately = 0
+if get(g:, 'loaded_mucomplete', 0) == 0
+  let g:mucomplete#no_mappings = 1
+  let g:mucomplete#completion_delay = 100
+  let g:mucomplete#reopen_immediately = 0
 
-imap <c-n> <plug>(MUcompleteFwd)
-imap <c-p> <plug>(MUcompleteBwd)
-imap <c-j> <plug>(MUcompleteCycFwd)
-imap <c-k> <plug>(MUcompleteCycBwd)
+  imap <c-n> <plug>(MUcompleteFwd)
+  imap <c-p> <plug>(MUcompleteBwd)
+  imap <c-j> <plug>(MUcompleteCycFwd)
+  imap <c-k> <plug>(MUcompleteCycBwd)
+  nnoremap yoC :MUcompleteAutoToggle<cr>
+  set shortmess+=c    " Shut off completion messages
 
-let g:snipMate = {}
-let g:snipMate['no_match_completion_feedkeys_chars'] = ''
-let g:mucomplete#chains = { 'default': ['snip', 'path', 'omni', 'tags', 'keyn', 'spel'] }
-nnoremap yoC :MUcompleteAutoToggle<cr>
-set shortmess+=c    " Shut off completion messages
+  let g:snipMate = {}
+  let g:snipMate['no_match_completion_feedkeys_chars'] = ''
 
-let g:mucomplete#can_complete = {}
-let g:mucomplete#can_complete.default = { 'omni': { t -> t =~# '\m\k\%(\k\|\.\)$' } }
+  if filereadable('tags')
+    let g:mucomplete#chains = { 'default': ['snip', 'path', 'omni', 'tags', 'keyn', 'uspl'] }
+  else
+    let g:mucomplete#chains = { 'default': ['snip', 'path', 'omni', 'keyn', 'uspl'] }
+  endif
+
+  let g:mucomplete#can_complete = {}
+  let g:mucomplete#can_complete.default = { 'omni': { t -> t =~# '\m\k\k\%(\k\|\.\)$' } }
+  let g:mucomplete#minimum_prefix_length = 3
+  fun! s:dismiss_or_delete()
+    return pumvisible()
+          \ && len(matchstr(getline('.'), '\S*\%'.col('.').'c')) <= get(g:, 'mucomplete#minimum_prefix_length', 4)
+          \ ? "\<c-e>\<bs>" : "\<bs>"
+
+  endf
+  inoremap <expr> <bs> <sid>dismiss_or_delete()
+endif
 " }}}
 " LanguageClient {{{
 let g:LanguageClient_serverCommands = {
