@@ -403,6 +403,9 @@ let g:snipMate['no_match_completion_feedkeys_chars'] = ''
 let g:mucomplete#chains = { 'default': ['snip', 'path', 'omni', 'tags', 'keyn', 'spel'] }
 nnoremap yoC :MUcompleteAutoToggle<cr>
 set shortmess+=c    " Shut off completion messages
+
+let g:mucomplete#can_complete = {}
+let g:mucomplete#can_complete.default = { 'omni': { t -> t =~# '\m\k\%(\k\|\.\)$' } }
 " }}}
 " LanguageClient {{{
 let g:LanguageClient_serverCommands = {
