@@ -1,5 +1,5 @@
 " Setup {{{
-let g:vimdir = fnamemodify($MYVIMRC, ':p:h')
+let g:vimdir = stdpath('config')
 let g:python3_host_prog = '/usr/bin/python3'
 
 " Install vim-plug
@@ -50,8 +50,7 @@ xnoremap gT :T''<CR>
 xnoremap gm :m''<CR>
 xnoremap gM :M''<CR>
 
-" Disable exmode
-nnoremap Q @q
+nnoremap Q @@
 nnoremap g. :normal `[v`]<cr>
 
 " Saving
@@ -167,7 +166,7 @@ set updatetime=300
 set foldmethod=marker
 
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
-function! SetScrolloff() abort
+function! s:SetScrolloff() abort
   if index(['qf'], &filetype) == -1
     set scrolloff=5
     set sidescrolloff=10
@@ -176,7 +175,7 @@ function! SetScrolloff() abort
     set sidescrolloff=0
   endif
 endfunction
-autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
+autocmd MyAutocmds BufEnter,WinEnter * call <sid>SetScrolloff()
 
 function SetSanePath() abort
   " Set a basic &path
@@ -206,11 +205,11 @@ function SetSanePath() abort
 endfunction
 call SetSanePath()
 
-function! CD(path) abort
+function! s:CD(path) abort
   execute 'cd ' . a:path
   call SetSanePath()
 endfunction
-command! -nargs=? -complete=dir CD :call CD(<q-args>)
+command! -nargs=? -complete=dir CD :call s:CD(<q-args>)
 cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
 
 " }}}
@@ -242,16 +241,42 @@ command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
 
+" Show documentation
+function! s:K() abort
+  if <sid>hasLSP()
+    call LanguageClient#textDocument_hover()
+    return
+  endif
+
+  try
+    normal! [d
+  catch /E387.*/
+    echomsg 'Match is on current line.'
+  catch /.*/
+    normal! K
+  endtry
+endfunction
+nnoremap <silent> K :<c-u>call <sid>K()<cr>
+
 " Goto definition
 function! s:GD() abort
+  if <sid>hasLSP()
+    call LanguageClient#textDocument_definition()
+    return
+  endif
+
   let l:word = expand('<cword>')
   let l:tags = taglist(l:word)
   if len(l:tags) > 0
     execute 'tjump ' . l:tags[0]["name"]
-  elseif IsLSP()
-    call LanguageClient#textDocument_definition()
   else
-    normal! gd
+    try
+      normal! [
+    catch /E387.*/
+      echomsg 'Match is on current line.'
+    catch /.*/
+      normal! gd
+    endtry
   endif
 endfunction
 nnoremap <silent> gd :<c-u>call <sid>GD()<cr>
@@ -276,7 +301,7 @@ endfunction
 function! s:Format() abort
   if get(b:, 'formatcmd', '') != ''
     call FormatFile()
-  elseif IsLSP()
+  elseif <sid>hasLSP()
     call LanguageClient#textDocument_formatting()<cr>
   else
     echom 'Cannot format file.'
@@ -286,18 +311,18 @@ command! -nargs=0 Format call <sid>FormatFile()
 nnoremap <silent> <leader>F :Format<cr>
 
 " Hex representation
-function! AsHex() abort
+function! s:AsHex() abort
   let l:name = expand('%:p')
   new
   setlocal buftype=nofile bufhidden=hide noswapfile filetype=xxd
   execute 'read !xxd ' .  shellescape(l:name, 1)
 endfunction
-command! -nargs=0 AsHex call AsHex()
+command! -nargs=0 AsHex call <sid>AsHex()
 
 " Make on save
 " Run &makeprg on filesave blocking
 let g:makeonsave = []
-function! ToggleMakeOnSaveFT() abort
+function! s:ToggleMakeOnSaveFT() abort
   if get(g:makeonsave, &ft, '') == &ft
     call remove(g:makeonsave, &ft)
     echom 'MakeOnSave disabled'
@@ -307,7 +332,7 @@ function! ToggleMakeOnSaveFT() abort
   endif
 endfunction
 
-function! MakeOnSaveFT() abort
+function! s:MakeOnSaveFT() abort
   if get(g:makeonsave, &ft, '') == &ft && &ft != ''
     normal! mm
     silent make
@@ -315,13 +340,13 @@ function! MakeOnSaveFT() abort
   endif
 endfunction
 
-autocmd MyAutocmds BufWritePost * call MakeOnSaveFT()
-command! -nargs=0 ToggleMakeOnSaveFT call ToggleMakeOnSaveFT()
-nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
+autocmd MyAutocmds BufWritePost * call <sid>MakeOnSaveFT()
+command! -nargs=0 ToggleMakeOnSaveFT call <sid>ToggleMakeOnSaveFT()
+nnoremap yom :<c-u>call <sid>ToggleMakeOnSaveFT()<cr>
 
 " I need some finnish letters occasionally
 let g:fix_keys_enabled = 0
-function! FixKeys() abort
+function! s:FixKeys() abort
   inoremap ; ö
   inoremap : Ö
   inoremap ' ä
@@ -329,7 +354,7 @@ function! FixKeys() abort
   let g:fix_keys_enabled = 1
 endfunction
 
-function! RestoreKeys() abort
+function! s:RestoreKeys() abort
   if g:fix_keys_enabled == 1
     iunmap ;
     iunmap :
@@ -338,8 +363,8 @@ function! RestoreKeys() abort
     let g:fix_keys_enabled = 0
   endif
 endfunction
-inoremap <silent> <c-l> <c-o>:call FixKeys()<cr>
-autocmd MyAutocmds InsertLeave * call RestoreKeys()
+inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
+autocmd MyAutocmds InsertLeave * call <sid>RestoreKeys()
 " }}}
 " Appearance {{{
 set cursorline
@@ -472,18 +497,17 @@ let g:LanguageClient_serverCommands = {
       \ 'javascript': ['npx', 'javascript-typescript-stdio'],
       \ }
 
-function! LC_maps() abort
+function! s:LC_maps() abort
   if has_key(g:LanguageClient_serverCommands, &filetype)
-    nnoremap <buffer> <silent>  K     :call LanguageClient#textDocument_hover()<cr>
     nnoremap <buffer> <f5>      :call LanguageClient_contextMenu()<CR>
   endif
 endfunction
 
-function! IsLSP() abort
+function! s:hasLSP() abort
   return has_key(g:LanguageClient_serverCommands, &filetype)
 endfunction
 
-autocmd MyAutocmds FileType * call LC_maps()
+autocmd MyAutocmds FileType * call <sid>LC_maps()
 let g:LanguageClient_useVirtualText      = "All"
 let g:LanguageClient_diagnosticsSignsMax = 0
 let g:LanguageClient_diagnosticsList     = "Location"
