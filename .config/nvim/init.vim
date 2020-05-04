@@ -143,7 +143,7 @@ set ignorecase smartcase
 
 " Show replacement
 set inccommand=split
-set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*
+set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*,*.pdf
 
 " Completion
 set pumheight=10
@@ -178,7 +178,7 @@ function! SetScrolloff() abort
 endfunction
 autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
 
-function! SetSanePath() abort
+function SetSanePath() abort
   " Set a basic &path
   set path=.,,
 
@@ -205,6 +205,14 @@ function! SetSanePath() abort
   let &path .= join(l:final_directories, ',')
 endfunction
 call SetSanePath()
+
+function! CD(path) abort
+  execute 'cd ' . a:path
+  call SetSanePath()
+endfunction
+command! -nargs=? -complete=dir CD :call CD(<q-args>)
+cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
+
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -585,4 +593,3 @@ autocmd MyAutocmds ColorScheme * call CustomColors()
 colorscheme base16-tomorrow-night-eighties
 " }}}
 " }}}
-
