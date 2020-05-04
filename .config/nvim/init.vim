@@ -248,6 +248,15 @@ function! s:K() abort
     return
   endif
 
+  let l:word = expand('<cword>')
+  let l:tags = taglist(l:word)
+  " Let vim show vim documentation
+  if len(l:tags) > 0 && match(l:tags[0]["filename"], 'vim/runtime') == -1
+    let l:tag = l:tags[0]
+    echomsg '[' . l:tag['kind']. '] ' . l:tag['cmd'][2:-3]
+    return
+  endif
+
   try
     normal! [d
   catch /E387.*/
@@ -269,15 +278,16 @@ function! s:GD() abort
   let l:tags = taglist(l:word)
   if len(l:tags) > 0
     execute 'tjump ' . l:tags[0]["name"]
-  else
-    try
-      normal! [
-    catch /E387.*/
-      echomsg 'Match is on current line.'
-    catch /.*/
-      normal! gd
-    endtry
+    return
   endif
+
+  try
+    normal! [
+  catch /E387.*/
+    echomsg 'Match is on current line.'
+  catch /.*/
+    normal! gd
+  endtry
 endfunction
 nnoremap <silent> gd :<c-u>call <sid>GD()<cr>
 
@@ -320,15 +330,15 @@ endfunction
 command! -nargs=0 AsHex call <sid>AsHex()
 
 " Make on save
-" Run &makeprg on filesave blocking
+" Run &makeprg on filesave
 let g:makeonsave = []
 function! s:ToggleMakeOnSaveFT() abort
   if get(g:makeonsave, &ft, '') == &ft
     call remove(g:makeonsave, &ft)
-    echom 'MakeOnSave disabled'
+    echom '[MakeOnSave] off'
   else
     call add(g:makeonsave, &ft)
-    echom 'MakeOnSave enabled'
+    echom '[MakeOnSave] on'
   endif
 endfunction
 
@@ -404,12 +414,12 @@ Plug 'chriskempson/base16-vim'            " Color scheme
 Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
 
-" Fuzzy find everything
-Plug 'junegunn/fzf', {
-      \ 'dir': '~/.fzf',
-      \ 'do': { -> fzf#install() }
-      \ }
-Plug 'junegunn/fzf.vim'
+" " Fuzzy find everything
+" Plug 'junegunn/fzf', {
+"       \ 'dir': '~/.fzf',
+"       \ 'do': { -> fzf#install() }
+"       \ }
+" Plug 'junegunn/fzf.vim'
 Plug 'junegunn/vim-easy-align'            " Align stuff
 
 Plug 'tpope/vim-commentary'               " Commenting
@@ -422,9 +432,7 @@ Plug '9mm/vim-closer'                     " End brackets
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'romainl/vim-qf'                     " Quickfix window overall improvements
 Plug 'machakann/vim-sandwich'             " Surround objects
-Plug 'norcalli/nvim-colorizer.lua'        " Colors
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
-Plug 'lervag/vimtex'                      " LaTeX
 
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
@@ -520,9 +528,6 @@ set signcolumn=no
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 " }}}
-" colorizer {{{
-lua require'colorizer'.setup({'css'; 'scss'; 'html'; 'tmux'; 'yaml';})
-" }}}
 " vim-qf {{{
 nmap [q <Plug>(qf_qf_previous)
 nmap ]q <Plug>(qf_qf_next)
@@ -569,37 +574,37 @@ tnoremap <silent> <m-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " vim-fugitive {{{
 nnoremap <silent><leader>g :vertical Gstatus<CR>
 " }}}
-" fzf.vim {{{
-function! Browse() abort
-if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
-  " Use this because Gfiles doesn't work with cached files
-  call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-else
-  exe "Files"
-endif
-endfunction
+" " fzf.vim {{{
+" function! Browse() abort
+" if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
+"   " Use this because Gfiles doesn't work with cached files
+"   call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
+" else
+"   exe "Files"
+" endif
+" endfunction
 
-let g:fzf_colors = {
-      \ 'fg':      ['fg', 'Normal'],
-      \ 'bg':      ['bg', 'Normal'],
-      \ 'hl':      ['fg', 'Comment'],
-      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Statement'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'border':  ['fg', 'Ignore'],
-      \ 'prompt':  ['fg', 'Conditional'],
-      \ 'pointer': ['fg', 'Exception'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment'] }
+" let g:fzf_colors = {
+"       \ 'fg':      ['fg', 'Normal'],
+"       \ 'bg':      ['bg', 'Normal'],
+"       \ 'hl':      ['fg', 'Comment'],
+"       \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+"       \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+"       \ 'hl+':     ['fg', 'Statement'],
+"       \ 'info':    ['fg', 'PreProc'],
+"       \ 'border':  ['fg', 'Ignore'],
+"       \ 'prompt':  ['fg', 'Conditional'],
+"       \ 'pointer': ['fg', 'Exception'],
+"       \ 'marker':  ['fg', 'Keyword'],
+"       \ 'spinner': ['fg', 'Label'],
+"       \ 'header':  ['fg', 'Comment'] }
 
-nnoremap <silent><c-p> :call Browse()<CR>
-nnoremap <silent><leader>b :Buffers<CR>
-nnoremap <silent><leader>l :BLines<CR>
-nnoremap <silent><leader>h :History<CR>
-nnoremap <silent><leader>T :Tags<CR>
-" }}}
+" nnoremap <silent><c-p> :call Browse()<CR>
+" nnoremap <silent><leader>b :Buffers<CR>
+" nnoremap <silent><leader>l :BLines<CR>
+" nnoremap <silent><leader>h :History<CR>
+" nnoremap <silent><leader>T :Tags<CR>
+" " }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
@@ -617,3 +622,46 @@ autocmd MyAutocmds ColorScheme * call CustomColors()
 colorscheme base16-tomorrow-night-eighties
 " }}}
 " }}}
+
+" make list-like commands more intuitive
+function! CCR()
+    let cmdline = getcmdline()
+    if cmdline =~ '\v\C^(ls|files|buffers)'
+        " like :ls but prompts for a buffer command
+        return "\<CR>:b"
+    elseif cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
+        " like :g//# but prompts for a command
+        return "\<CR>:"
+    elseif cmdline =~ '\v\C^(dli|il)'
+        " like :dlist or :ilist but prompts for a count for :djump or :ijump
+        return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
+    elseif cmdline =~ '\v\C^(cli|lli)'
+        " like :clist or :llist but prompts for an error/location number
+        return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
+    elseif cmdline =~ '\C^old'
+        " like :oldfiles but prompts for an old file to edit
+        set nomore
+        return "\<CR>:sil se more|e #<"
+    elseif cmdline =~ '\C^changes'
+        " like :changes but prompts for a change to jump to
+        set nomore
+        return "\<CR>:sil se more|norm! g;\<S-Left>"
+    elseif cmdline =~ '\C^ju'
+        " like :jumps but prompts for a position to jump to
+        set nomore
+        return "\<CR>:sil se more|norm! \<C-o>\<S-Left>"
+    elseif cmdline =~ '\C^marks'
+        " like :marks but prompts for a mark to jump to
+        return "\<CR>:norm! `"
+    elseif cmdline =~ '\C^undol'
+        " like :undolist but prompts for a change to undo
+        return "\<CR>:u "
+    else
+        return "\<CR>"
+    endif
+endfunction
+cnoremap <expr> <CR> CCR()
+
+nnoremap <c-p> :find<space>
+nnoremap <leader>b :ls<cr>:b
+nnoremap <leader>l :g//#<left><left>
