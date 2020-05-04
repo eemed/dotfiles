@@ -136,7 +136,6 @@ set nowrap
 set list listchars=tab:→\ ,nbsp:•,trail:•
 set breakindent
 let &showbreak='↳ '
-set path=.,src/
 set include=
 
 " Commands without remembering case. Useful for plugin commands
@@ -178,6 +177,34 @@ function! SetScrolloff() abort
   endif
 endfunction
 autocmd MyAutocmds BufEnter,WinEnter * call SetScrolloff()
+
+function! SetSanePath() abort
+  " Set a basic &path
+  set path=.,,
+
+  " Check if inside git repository and retrieve current branch
+  let l:branch = system('git rev-parse --abbrev-ref HEAD 2>/dev/null')
+  if l:branch == ''
+    return
+  endif
+
+  " Retrieve list of tracked directories
+  let l:tree_command = "git ls-tree -d --name-only " . l:branch
+  let l:git_directories = systemlist(l:tree_command . ' 2>/dev/null')
+  if empty(l:git_directories)
+    return
+  endif
+
+  " Remove dot directories
+  let l:directories = filter(l:git_directories, { idx, val -> val !~ '^\.' })
+
+  " Add recursive wildcard to each directory
+  let l:final_directories = map(l:directories, { idx, val -> val . '/**' })
+
+  " Add all directories to &path
+  let &path .= join(l:final_directories, ',')
+endfunction
+call SetSanePath()
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -401,6 +428,7 @@ if get(g:, 'loaded_mucomplete', 0) == 0
   let g:mucomplete#no_mappings = 1
   let g:mucomplete#completion_delay = 100
   let g:mucomplete#reopen_immediately = 0
+  let g:mucomplete#empty_text = 1
 
   imap <c-n> <plug>(MUcompleteFwd)
   imap <c-p> <plug>(MUcompleteBwd)
@@ -557,3 +585,4 @@ autocmd MyAutocmds ColorScheme * call CustomColors()
 colorscheme base16-tomorrow-night-eighties
 " }}}
 " }}}
+
