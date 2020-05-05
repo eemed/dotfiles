@@ -247,23 +247,6 @@ command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
 
-function! FormatFile() abort
-  if get(b:, 'formatcmd', '') == ''
-    return -1
-  else
-    let l:view = winsaveview()
-    let l:cmd = '%! ' . b:formatcmd
-    silent execute l:cmd
-    if v:shell_error > 0
-      silent undo
-      redraw
-      echom 'Format command "' . b:formatcmd . '" failed.'
-    endif
-    call winrestview(l:view)
-    return 0
-  endif
-endfunction
-
 " Hex representation {{{
 function! s:AsHex() abort
   let l:name = expand('%:p')
@@ -431,6 +414,23 @@ Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
 " vim-chained {{{
+function! FormatFile() abort
+  if get(b:, 'formatcmd', '') == ''
+    return -1
+  else
+    let l:view = winsaveview()
+    let l:cmd = '%! ' . b:formatcmd
+    silent execute l:cmd
+    if v:shell_error > 0
+      silent undo
+      redraw
+      echom 'Format command "' . b:formatcmd . '" failed.'
+    endif
+    call winrestview(l:view)
+    return 0
+  endif
+endfunction
+
 let g:chained#chains = {}
 let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "DefineHover", "DefaultHover"]
 let g:chained#chains.goto = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
@@ -479,12 +479,12 @@ if get(g:, 'loaded_mucomplete', 0) == 0
   let g:mucomplete#can_complete = {}
   let g:mucomplete#can_complete.default = { 'omni': { t -> t =~# '\m\k\k\%(\k\|\.\)$' } }
   let g:mucomplete#minimum_prefix_length = 3
-  fun! s:dismiss_or_delete()
+  function! s:dismiss_or_delete()
     return pumvisible()
           \ && len(matchstr(getline('.'), '\S*\%'.col('.').'c')) <= get(g:, 'mucomplete#minimum_prefix_length', 4)
           \ ? "\<c-e>\<bs>" : "\<bs>"
 
-  endf
+  endfunction
   inoremap <expr> <bs> <sid>dismiss_or_delete()
 endif
 " }}}
