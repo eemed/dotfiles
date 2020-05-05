@@ -120,6 +120,10 @@ nnoremap m? :set makeprg<cr>
 
 nnoremap <leader>o :only<cr>
 
+nnoremap <c-p> :find<space>
+nnoremap <leader>b :ls<cr>:b
+nnoremap <leader>l :g//#<left><left>
+
 set pastetoggle=<F2>
 " }}}
 " Settings {{{
@@ -136,6 +140,7 @@ set list listchars=tab:→\ ,nbsp:•,trail:•
 set breakindent
 let &showbreak='↳ '
 set include=
+set keywordprg=
 
 " Commands without remembering case. Useful for plugin commands
 set ignorecase smartcase
@@ -241,60 +246,105 @@ command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
 
-" Show documentation
-function! s:K() abort
-  if <sid>hasLSP()
-    call LanguageClient#textDocument_hover()
-    return
-  endif
+function! ExecuteChain(chain) abort
+  for l:fun in a:chain
+    let l:ret = function(l:fun)()
+    if l:ret == 0
+      return
+    endif
+  endfor
+  echomsg 'Chain exhausted.'
+endfunction
 
+" Documentation lookup {{{
+function! s:LangClientK()
+  if has_key(g:LanguageClient_serverCommands, &filetype)
+    call LanguageClient#textDocument_hover()
+    return 0
+  else
+    return -1
+  endif
+endfunction
+
+function! s:TagK()
   let l:word = expand('<cword>')
   let l:tags = taglist(l:word)
   " Let vim show vim documentation
   if len(l:tags) > 0 && match(l:tags[0]["filename"], 'vim/runtime') == -1
     let l:tag = l:tags[0]
     echomsg '[' . l:tag['kind']. '] ' . l:tag['cmd'][2:-3]
-    return
+    return 0
+  else
+    return -1
   endif
+endfunction
 
+function! s:DefineK() abort
   try
     normal! [d
+    return 0
   catch /E387.*/
     echomsg 'Match is on current line.'
+    return 0
   catch /.*/
-    normal! K
+    return -1
   endtry
 endfunction
-nnoremap <silent> K :<c-u>call <sid>K()<cr>
 
-" Goto definition
-function! s:GD() abort
-  if <sid>hasLSP()
+function! s:DefaultK()
+  try
+    normal! K
+    return 0
+  catch /.*/
+    return -1
+  endtry
+endfunction
+" }}}
+" Goto definition {{{
+function! s:LangClientGD() abort
+  if has_key(g:LanguageClient_serverCommands, &filetype)
     call LanguageClient#textDocument_definition()
-    return
+    return 0
+  else
+    return -1
   endif
+endfunction
 
+function! s:TagGD() abort
   let l:word = expand('<cword>')
   let l:tags = taglist(l:word)
   if len(l:tags) > 0
     execute 'tjump ' . l:tags[0]["name"]
-    return
+    return 0
   endif
+  return -1
+endfunction
 
+function! s:DefineGD() abort
   try
     normal! [
+    return 0
   catch /E387.*/
     echomsg 'Match is on current line.'
+    return 0
   catch /.*/
-    normal! gd
+    return -1
   endtry
 endfunction
-nnoremap <silent> gd :<c-u>call <sid>GD()<cr>
 
-" Formatting
+function! s:DefaultGD() abort
+  try
+    normal! gd
+    return 0
+  catch /.*/
+    return -1
+  endtry
+endfunction
+" }}}
+" Formatting {{{
 function! s:FormatFile() abort
   if get(b:, 'formatcmd', '') == ''
-    echom 'Cannot find b:formatcmd.'
+    return -1
   else
     let l:view = winsaveview()
     let l:cmd = '%! ' . b:formatcmd
@@ -305,22 +355,29 @@ function! s:FormatFile() abort
       echom 'Format command "' . b:formatcmd . '" failed.'
     endif
     call winrestview(l:view)
+    return 0
   endif
 endfunction
 
-function! s:Format() abort
-  if get(b:, 'formatcmd', '') != ''
-    call FormatFile()
-  elseif <sid>hasLSP()
-    call LanguageClient#textDocument_formatting()<cr>
+function! s:LangClientFormat() abort
+  if has_key(g:LanguageClient_serverCommands, &filetype)
+    call LanguageClient#textDocument_formatting()
+    return 0
   else
-    echom 'Cannot format file.'
+    return -1
   endif
 endfunction
-command! -nargs=0 Format call <sid>FormatFile()
-nnoremap <silent> <leader>F :Format<cr>
+" }}}
 
-" Hex representation
+let g:chains = {}
+let g:chains.docs = ["s:LangClientK", "s:TagK", "s:DefineK", "s:DefaultK"]
+let g:chains.gotor = ["s:LangClientGD", "s:TagGD", "s:DefineGD", "s:DefaultGD"]
+let g:chains.format = ["s:FormatFile", "s:LangClientFormat"]
+nnoremap <silent> K :<c-u>call ExecuteChain(g:chains.docs)<cr>
+nnoremap <silent> gd :<c-u>call ExecuteChain(g:chains.gotor)<cr>
+nnoremap <silent> <leader>F :<c-u>call ExecuteChain(g:chains.format)<cr>
+
+" Hex representation {{{
 function! s:AsHex() abort
   let l:name = expand('%:p')
   new
@@ -328,8 +385,47 @@ function! s:AsHex() abort
   execute 'read !xxd ' .  shellescape(l:name, 1)
 endfunction
 command! -nargs=0 AsHex call <sid>AsHex()
-
-" Make on save
+" }}}
+" make list-like commands more intuitive {{{
+function! CCR()
+    let cmdline = getcmdline()
+    if cmdline =~ '\v\C^(ls|files|buffers)'
+        " like :ls but prompts for a buffer command
+        return "\<CR>:b"
+    elseif cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
+        " like :g//# but prompts for a command
+        return "\<CR>:"
+    elseif cmdline =~ '\v\C^(dli|il)'
+        " like :dlist or :ilist but prompts for a count for :djump or :ijump
+        return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
+    elseif cmdline =~ '\v\C^(cli|lli)'
+        " like :clist or :llist but prompts for an error/location number
+        return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
+    elseif cmdline =~ '\C^old'
+        " like :oldfiles but prompts for an old file to edit
+        set nomore
+        return "\<CR>:sil se more|e #<"
+    elseif cmdline =~ '\C^changes'
+        " like :changes but prompts for a change to jump to
+        set nomore
+        return "\<CR>:sil se more|norm! g;\<S-Left>"
+    elseif cmdline =~ '\C^ju'
+        " like :jumps but prompts for a position to jump to
+        set nomore
+        return "\<CR>:sil se more|norm! \<C-o>\<S-Left>"
+    elseif cmdline =~ '\C^marks'
+        " like :marks but prompts for a mark to jump to
+        return "\<CR>:norm! `"
+    elseif cmdline =~ '\C^undol'
+        " like :undolist but prompts for a change to undo
+        return "\<CR>:u "
+    else
+        return "\<CR>"
+    endif
+endfunction
+cnoremap <expr> <CR> CCR()
+" }}}
+" Make on save {{{
 " Run &makeprg on filesave
 let g:makeonsave = []
 function! s:ToggleMakeOnSaveFT() abort
@@ -353,8 +449,8 @@ endfunction
 autocmd MyAutocmds BufWritePost * call <sid>MakeOnSaveFT()
 command! -nargs=0 ToggleMakeOnSaveFT call <sid>ToggleMakeOnSaveFT()
 nnoremap yom :<c-u>call <sid>ToggleMakeOnSaveFT()<cr>
-
-" I need some finnish letters occasionally
+" }}}
+" I need some finnish letters occasionally {{{
 let g:fix_keys_enabled = 0
 function! s:FixKeys() abort
   inoremap ; ö
@@ -375,6 +471,7 @@ function! s:RestoreKeys() abort
 endfunction
 inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
 autocmd MyAutocmds InsertLeave * call <sid>RestoreKeys()
+" }}}
 " }}}
 " Appearance {{{
 set cursorline
@@ -414,12 +511,6 @@ Plug 'chriskempson/base16-vim'            " Color scheme
 Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
 
-" " Fuzzy find everything
-" Plug 'junegunn/fzf', {
-"       \ 'dir': '~/.fzf',
-"       \ 'do': { -> fzf#install() }
-"       \ }
-" Plug 'junegunn/fzf.vim'
 Plug 'junegunn/vim-easy-align'            " Align stuff
 
 Plug 'tpope/vim-commentary'               " Commenting
@@ -511,10 +602,6 @@ function! s:LC_maps() abort
   endif
 endfunction
 
-function! s:hasLSP() abort
-  return has_key(g:LanguageClient_serverCommands, &filetype)
-endfunction
-
 autocmd MyAutocmds FileType * call <sid>LC_maps()
 let g:LanguageClient_useVirtualText      = "All"
 let g:LanguageClient_diagnosticsSignsMax = 0
@@ -522,7 +609,6 @@ let g:LanguageClient_diagnosticsList     = "Location"
 let g:LanguageClient_virtualTextPrefix   = '❯ '
 let g:LanguageClient_hasSnippetSupport   = 0
 set signcolumn=no
-" let g:LanguageClient_diagnosticsEnable = 0
 " }}}
 " vim-easyalign {{{
 xmap ga <Plug>(EasyAlign)
@@ -574,37 +660,6 @@ tnoremap <silent> <m-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " vim-fugitive {{{
 nnoremap <silent><leader>g :vertical Gstatus<CR>
 " }}}
-" " fzf.vim {{{
-" function! Browse() abort
-" if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
-"   " Use this because Gfiles doesn't work with cached files
-"   call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-" else
-"   exe "Files"
-" endif
-" endfunction
-
-" let g:fzf_colors = {
-"       \ 'fg':      ['fg', 'Normal'],
-"       \ 'bg':      ['bg', 'Normal'],
-"       \ 'hl':      ['fg', 'Comment'],
-"       \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-"       \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-"       \ 'hl+':     ['fg', 'Statement'],
-"       \ 'info':    ['fg', 'PreProc'],
-"       \ 'border':  ['fg', 'Ignore'],
-"       \ 'prompt':  ['fg', 'Conditional'],
-"       \ 'pointer': ['fg', 'Exception'],
-"       \ 'marker':  ['fg', 'Keyword'],
-"       \ 'spinner': ['fg', 'Label'],
-"       \ 'header':  ['fg', 'Comment'] }
-
-" nnoremap <silent><c-p> :call Browse()<CR>
-" nnoremap <silent><leader>b :Buffers<CR>
-" nnoremap <silent><leader>l :BLines<CR>
-" nnoremap <silent><leader>h :History<CR>
-" nnoremap <silent><leader>T :Tags<CR>
-" " }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
@@ -622,46 +677,3 @@ autocmd MyAutocmds ColorScheme * call CustomColors()
 colorscheme base16-tomorrow-night-eighties
 " }}}
 " }}}
-
-" make list-like commands more intuitive
-function! CCR()
-    let cmdline = getcmdline()
-    if cmdline =~ '\v\C^(ls|files|buffers)'
-        " like :ls but prompts for a buffer command
-        return "\<CR>:b"
-    elseif cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
-        " like :g//# but prompts for a command
-        return "\<CR>:"
-    elseif cmdline =~ '\v\C^(dli|il)'
-        " like :dlist or :ilist but prompts for a count for :djump or :ijump
-        return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
-    elseif cmdline =~ '\v\C^(cli|lli)'
-        " like :clist or :llist but prompts for an error/location number
-        return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
-    elseif cmdline =~ '\C^old'
-        " like :oldfiles but prompts for an old file to edit
-        set nomore
-        return "\<CR>:sil se more|e #<"
-    elseif cmdline =~ '\C^changes'
-        " like :changes but prompts for a change to jump to
-        set nomore
-        return "\<CR>:sil se more|norm! g;\<S-Left>"
-    elseif cmdline =~ '\C^ju'
-        " like :jumps but prompts for a position to jump to
-        set nomore
-        return "\<CR>:sil se more|norm! \<C-o>\<S-Left>"
-    elseif cmdline =~ '\C^marks'
-        " like :marks but prompts for a mark to jump to
-        return "\<CR>:norm! `"
-    elseif cmdline =~ '\C^undol'
-        " like :undolist but prompts for a change to undo
-        return "\<CR>:u "
-    else
-        return "\<CR>"
-    endif
-endfunction
-cnoremap <expr> <CR> CCR()
-
-nnoremap <c-p> :find<space>
-nnoremap <leader>b :ls<cr>:b
-nnoremap <leader>l :g//#<left><left>
