@@ -264,14 +264,6 @@ function! FormatFile() abort
   endif
 endfunction
 
-let g:chains = {}
-let g:chains.hover = ["LanguageClientHover", "TagsHover", "DefineHover", "DefaultHover"]
-let g:chains.goto = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
-let g:chains.format = ["FormatFile", "LanguageClientFormat"]
-nnoremap <silent> K         :<c-u>call chained#ExecuteChain('hover')<cr>
-nnoremap <silent> gd        :<c-u>call chained#ExecuteChain('goto')<cr>
-nnoremap <silent> <leader>F :<c-u>call chained#ExecuteChain('format')<cr>
-
 " Hex representation {{{
 function! s:AsHex() abort
   let l:name = expand('%:p')
@@ -438,6 +430,16 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
+" vim-chained {{{
+let g:chained#chains = {}
+let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "DefineHover", "DefaultHover"]
+let g:chained#chains.goto = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
+let g:chained#chains.format = ["FormatFile", "LanguageClientFormat"]
+
+nnoremap <silent> K         :<c-u>call chained#ExecuteChain('hover')<cr>
+nnoremap <silent> gd        :<c-u>call chained#ExecuteChain('goto')<cr>
+nnoremap <silent> <leader>F :<c-u>call chained#ExecuteChain('format')<cr>
+" }}}
 " snipmate {{{
 snoremap <bs> <c-v>c
 command! -nargs=? -complete=filetype EditSnippets
