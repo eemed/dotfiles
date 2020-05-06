@@ -443,6 +443,7 @@ let g:chained#chains.format = ["FormatFile", "LanguageClientFormat"]
 
 nnoremap <silent> K         :<c-u>call chained#ExecuteChain('hover')<cr>
 nnoremap <silent> gd        :<c-u>call chained#ExecuteChain('goto')<cr>
+nnoremap <silent> gD        :<c-u>call chained#ExecuteChainSplit('goto')<cr>
 nnoremap <silent> <leader>F :<c-u>call chained#ExecuteChain('format')<cr>
 " }}}
 " snipmate {{{
