@@ -1,1 +1,1 @@
-let &define='^\(function\s*\)\?\ze\i\+\s*()\s*{'
+let &define='^\(function\s*\)\?\ze\i\+\s*()\s*{\?'
