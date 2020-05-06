@@ -403,6 +403,7 @@ Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
 Plug 'garbas/vim-snipmate'                " Snippets
+Plug 'duggiefresh/vim-easydir'            " Automatically create directories
 Plug 'lifepillar/vim-mucomplete'          " Complete
 Plug 'eemed/vim-chained'                  " Chain functions
 
