@@ -494,11 +494,11 @@ function! s:LC_maps() abort
 endfunction
 
 autocmd MyAutocmds FileType * call <sid>LC_maps()
-let g:LanguageClient_useVirtualText      = "All"
+let g:LanguageClient_useVirtualText      = "No"
 let g:LanguageClient_diagnosticsSignsMax = 0
 let g:LanguageClient_diagnosticsList     = "Location"
 let g:LanguageClient_virtualTextPrefix   = '❯ '
-let g:LanguageClient_hasSnippetSupport   = 0
+" let g:LanguageClient_hasSnippetSupport   = 0
 set signcolumn=no
 " }}}
 " vim-easyalign {{{
