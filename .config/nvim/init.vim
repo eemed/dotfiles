@@ -166,6 +166,7 @@ set nowritebackup
 set noswapfile
 let &undodir = g:vimdir . '/undo'
 let &dir = g:vimdir . '/swap'
+set viminfo='20
 
 set updatetime=300
 set foldmethod=marker
@@ -245,137 +246,6 @@ command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
 command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
 
 nnoremap <leader>f :Grep<space>
-
-function! ExecuteChain(chain) abort
-  for l:fun in a:chain
-    let l:ret = function(l:fun)()
-    if l:ret == 0
-      return
-    endif
-  endfor
-  echomsg 'Chain exhausted.'
-endfunction
-
-" Documentation lookup {{{
-function! s:LangClientK()
-  if has_key(g:LanguageClient_serverCommands, &filetype)
-    call LanguageClient#textDocument_hover()
-    return 0
-  else
-    return -1
-  endif
-endfunction
-
-function! s:TagK()
-  let l:word = expand('<cword>')
-  let l:tags = taglist(l:word)
-  " Let vim show vim documentation
-  if len(l:tags) > 0 && match(l:tags[0]["filename"], 'vim/runtime') == -1
-    let l:tag = l:tags[0]
-    echomsg '[' . l:tag['kind']. '] ' . l:tag['cmd'][2:-3]
-    return 0
-  else
-    return -1
-  endif
-endfunction
-
-function! s:DefineK() abort
-  try
-    normal! [d
-    return 0
-  catch /E387.*/
-    echomsg 'Match is on current line.'
-    return 0
-  catch /.*/
-    return -1
-  endtry
-endfunction
-
-function! s:DefaultK()
-  try
-    normal! K
-    return 0
-  catch /.*/
-    return -1
-  endtry
-endfunction
-" }}}
-" Goto definition {{{
-function! s:LangClientGD() abort
-  if has_key(g:LanguageClient_serverCommands, &filetype)
-    call LanguageClient#textDocument_definition()
-    return 0
-  else
-    return -1
-  endif
-endfunction
-
-function! s:TagGD() abort
-  let l:word = expand('<cword>')
-  let l:tags = taglist(l:word)
-  if len(l:tags) > 0
-    execute 'tjump ' . l:tags[0]["name"]
-    return 0
-  endif
-  return -1
-endfunction
-
-function! s:DefineGD() abort
-  try
-    normal! [
-    return 0
-  catch /E387.*/
-    echomsg 'Match is on current line.'
-    return 0
-  catch /.*/
-    return -1
-  endtry
-endfunction
-
-function! s:DefaultGD() abort
-  try
-    normal! gd
-    return 0
-  catch /.*/
-    return -1
-  endtry
-endfunction
-" }}}
-" Formatting {{{
-function! s:FormatFile() abort
-  if get(b:, 'formatcmd', '') == ''
-    return -1
-  else
-    let l:view = winsaveview()
-    let l:cmd = '%! ' . b:formatcmd
-    silent execute l:cmd
-    if v:shell_error > 0
-      silent undo
-      redraw
-      echom 'Format command "' . b:formatcmd . '" failed.'
-    endif
-    call winrestview(l:view)
-    return 0
-  endif
-endfunction
-
-function! s:LangClientFormat() abort
-  if has_key(g:LanguageClient_serverCommands, &filetype)
-    call LanguageClient#textDocument_formatting()
-    return 0
-  else
-    return -1
-  endif
-endfunction
-" }}}
-
-let g:chains = {}
-let g:chains.docs = ["s:LangClientK", "s:TagK", "s:DefineK", "s:DefaultK"]
-let g:chains.gotor = ["s:LangClientGD", "s:TagGD", "s:DefineGD", "s:DefaultGD"]
-let g:chains.format = ["s:FormatFile", "s:LangClientFormat"]
-nnoremap <silent> K :<c-u>call ExecuteChain(g:chains.docs)<cr>
-nnoremap <silent> gd :<c-u>call ExecuteChain(g:chains.gotor)<cr>
-nnoremap <silent> <leader>F :<c-u>call ExecuteChain(g:chains.format)<cr>
 
 " Hex representation {{{
 function! s:AsHex() abort
@@ -529,6 +399,7 @@ Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
 Plug 'garbas/vim-snipmate'                " Snippets
 Plug 'lifepillar/vim-mucomplete'          " Complete
+Plug 'eemed/vim-chained'                  " Chain functions
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -542,6 +413,33 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
+" vim-chained {{{
+function! FormatFile() abort
+  if get(b:, 'formatcmd', '') == ''
+    return -1
+  else
+    let l:view = winsaveview()
+    let l:cmd = '%! ' . b:formatcmd
+    silent execute l:cmd
+    if v:shell_error > 0
+      silent undo
+      redraw
+      echom 'Format command "' . b:formatcmd . '" failed.'
+    endif
+    call winrestview(l:view)
+    return 0
+  endif
+endfunction
+
+let g:chained#chains = {}
+let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "DefineHover", "DefaultHover"]
+let g:chained#chains.goto = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
+let g:chained#chains.format = ["FormatFile", "LanguageClientFormat"]
+
+nnoremap <silent> K         :<c-u>call chained#ExecuteChain('hover')<cr>
+nnoremap <silent> gd        :<c-u>call chained#ExecuteChain('goto')<cr>
+nnoremap <silent> <leader>F :<c-u>call chained#ExecuteChain('format')<cr>
+" }}}
 " snipmate {{{
 snoremap <bs> <c-v>c
 command! -nargs=? -complete=filetype EditSnippets
@@ -581,12 +479,12 @@ if get(g:, 'loaded_mucomplete', 0) == 0
   let g:mucomplete#can_complete = {}
   let g:mucomplete#can_complete.default = { 'omni': { t -> t =~# '\m\k\k\%(\k\|\.\)$' } }
   let g:mucomplete#minimum_prefix_length = 3
-  fun! s:dismiss_or_delete()
+  function! s:dismiss_or_delete()
     return pumvisible()
           \ && len(matchstr(getline('.'), '\S*\%'.col('.').'c')) <= get(g:, 'mucomplete#minimum_prefix_length', 4)
           \ ? "\<c-e>\<bs>" : "\<bs>"
 
-  endf
+  endfunction
   inoremap <expr> <bs> <sid>dismiss_or_delete()
 endif
 " }}}
