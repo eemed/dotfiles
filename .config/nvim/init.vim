@@ -120,10 +120,6 @@ nnoremap m? :set makeprg<cr>
 
 nnoremap <leader>o :only<cr>
 
-nnoremap <c-p> :find<space>
-nnoremap <leader>b :ls<cr>:b
-nnoremap <leader>l :g//#<left><left>
-
 set pastetoggle=<F2>
 " }}}
 " Settings {{{
@@ -256,50 +252,6 @@ function! s:AsHex() abort
 endfunction
 command! -nargs=0 AsHex call <sid>AsHex()
 " }}}
-" make list-like commands more intuitive {{{
-function! CCR()
-  let cmdtype = getcmdtype()
-  if cmdtype != ':'
-    return "\<CR>"
-  endif
-
-  let cmdline = getcmdline()
-  if cmdline =~ '\v\C^(ls|files|buffers)'
-    " like :ls but prompts for a buffer command
-    return "\<CR>:b"
-  elseif cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
-    " like :g//# but prompts for a command
-    return "\<CR>:"
-  elseif cmdline =~ '\v\C^(dli|il)'
-    " like :dlist or :ilist but prompts for a count for :djump or :ijump
-    return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
-  elseif cmdline =~ '\v\C^(cli|lli)'
-    " like :clist or :llist but prompts for an error/location number
-    return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
-  elseif cmdline =~ '\C^old'
-    " like :oldfiles but prompts for an old file to edit
-    set nomore
-    return "\<CR>:sil se more|e #<"
-  elseif cmdline =~ '\C^changes'
-    " like :changes but prompts for a change to jump to
-    set nomore
-    return "\<CR>:sil se more|norm! g;\<S-Left>"
-  elseif cmdline =~ '\C^ju'
-    " like :jumps but prompts for a position to jump to
-    set nomore
-    return "\<CR>:sil se more|norm! \<C-o>\<S-Left>"
-  elseif cmdline =~ '\C^marks'
-    " like :marks but prompts for a mark to jump to
-    return "\<CR>:norm! `"
-  elseif cmdline =~ '\C^undol'
-    " like :undolist but prompts for a change to undo
-    return "\<CR>:u "
-  else
-    return "\<CR>"
-  endif
-endfunction
-cnoremap <expr> <CR> CCR()
-" }}}
 " Make on save {{{
 " Run &makeprg on filesave
 let g:makeonsave = []
@@ -386,6 +338,9 @@ Plug 'chriskempson/base16-vim'            " Color scheme
 Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
 
+" Fuzzy find
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 Plug 'junegunn/vim-easy-align'            " Align stuff
 
 Plug 'tpope/vim-commentary'               " Commenting
@@ -446,6 +401,37 @@ nnoremap <silent> K         :<c-u>call chained#ExecuteChain('hover')<cr>
 nnoremap <silent> gd        :<c-u>call chained#ExecuteChain('goto')<cr>
 nnoremap <silent> gD        :<c-u>call chained#ExecuteChainSplit('goto')<cr>
 nnoremap <silent> <leader>F :<c-u>call chained#ExecuteChain('format')<cr>
+" }}}
+" fzf.vim {{{
+function! Browse() abort
+if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
+  " Use this because Gfiles doesn't work with cached files
+  call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
+else
+  exe "Files"
+endif
+endfunction
+
+let g:fzf_colors = {
+      \ 'fg':      ['fg', 'Normal'],
+      \ 'bg':      ['bg', 'Normal'],
+      \ 'hl':      ['fg', 'Comment'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Statement'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'border':  ['fg', 'Ignore'],
+      \ 'prompt':  ['fg', 'Conditional'],
+      \ 'pointer': ['fg', 'Exception'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
+
+nnoremap <silent><c-p> :call Browse()<CR>
+nnoremap <silent><leader>b :Buffers<CR>
+nnoremap <silent><leader>l :BLines<CR>
+nnoremap <silent><leader>h :History<CR>
+nnoremap <silent><leader>t :Tags<CR>
 " }}}
 " snipmate {{{
 snoremap <bs> <c-v>c
