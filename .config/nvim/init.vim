@@ -393,7 +393,7 @@ function! FormatFile() abort
 endfunction
 
 let g:chained#chains = {}
-let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "DefineHover", "DefaultHover"]
+let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "DefineHover", "DefaultHover", "IncludeHover"]
 let g:chained#chains.goto = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
 let g:chained#chains.format = ["FormatFile", "LanguageClientFormat"]
 
@@ -567,4 +567,10 @@ endfunction
 autocmd MyAutocmds ColorScheme * call CustomColors()
 colorscheme base16-tomorrow-night-eighties
 " }}}
+" }}}
+" Local settings {{{
+let s:vimrc_local = fnamemodify(resolve(expand('<sfile>:p')), ':h').'/vimrc_local'
+if filereadable(s:vimrc_local)
+  execute 'source' s:vimrc_local
+endif
 " }}}
