@@ -17,12 +17,6 @@ augroup end
 let mapleader = " "
 let maplocalleader = "\\"
 
-function! SortLines(type) abort
-  '[,']sort i
-endfunction
-xnoremap <silent> gs :sort i<cr>
-nnoremap <silent> gs :set opfunc=SortLines<cr>g@
-
 nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
 nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
 
@@ -42,16 +36,8 @@ nnoremap <leader>S :source <c-r>%<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <BS> <C-^>
 
-" Copy or move text. Start at where you want to copy the text to
-" find the block you want to copy using ? or / select it and use these bindings
-" t = copy, m = move
-xnoremap gt :t''<CR>
-xnoremap gT :T''<CR>
-xnoremap gm :m''<CR>
-xnoremap gM :M''<CR>
-
-nnoremap Q @@
-nnoremap g. :normal `[v`]<cr>
+nnoremap Q @q
+nnoremap gV `[v`]
 
 " Saving
 nnoremap <silent><c-s> :update<CR>
@@ -102,23 +88,8 @@ endfunction
 xnoremap in :<C-u>call VisualNumber()<CR>
 onoremap in :<C-u>normal vin<CR>
 
-" buffer text objects
-let loaded_matchit = 1
-xnoremap i% :<C-u>let z = @/\|1;/^./kz<CR>G??<CR>:let @/ = z<CR>V'z
-onoremap i% :<C-u>normal vi%<CR>
-xnoremap a% GoggV
-onoremap a% :<C-u>normal va%<CR>
-
-" square brackets text objects
-xnoremap ir i[
-xnoremap ar a[
-onoremap ir :normal vi[<CR>
-onoremap ar :normal va[<CR>
-
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
-
-nnoremap <leader>o :only<cr>
 
 set pastetoggle=<F2>
 " }}}
@@ -213,7 +184,6 @@ function! s:CD(path) abort
 endfunction
 command! -nargs=? -complete=dir CD :call s:CD(<q-args>)
 cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
-
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -224,7 +194,7 @@ command! -nargs=? -complete=filetype EditFileTypePlugin
       \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 nnoremap <localleader>c :EditFileTypePlugin<cr>
 
-" Grep
+" Grep {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
   set grepprg=ag\ --vimgrep\ --smart-case
@@ -239,18 +209,7 @@ function! Grep(...) abort
 endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
-command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
-
 nnoremap <leader>f :Grep<space>
-
-" Hex representation {{{
-function! s:AsHex() abort
-  let l:name = expand('%:p')
-  new
-  setlocal buftype=nofile bufhidden=hide noswapfile filetype=xxd
-  execute 'read !xxd ' .  shellescape(l:name, 1)
-endfunction
-command! -nargs=0 AsHex call <sid>AsHex()
 " }}}
 " Make on save {{{
 " Run &makeprg on filesave
@@ -319,21 +278,11 @@ function! PasteForStatusline() abort
 endfunction
 
 set laststatus=2
-set statusline=
-set statusline+=\ %f
-set statusline+=\ %*
-set statusline+=\ %r
-set statusline+=%m
-set statusline+=%{PasteForStatusline()}
-set statusline+=%=
-set statusline+=\ %{GitStatus()}
-set statusline+=\ %{&ft}\ \|
-set statusline+=\ %l/%L\ :\ %c
-set statusline+=\ %*
+set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}\ \|\ %l/%L\ :\ %c\ %*
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'chriskempson/base16-vim'            " Color scheme
+Plug 'arzg/vim-colors-xcode'              " Color scheme
 
 Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
@@ -554,18 +503,9 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
-" base16-vim {{{
-function! CustomColors()
-  highlight! QuickFixLine   guibg=lightblue guifg=bg  gui=none
-  highlight! ALEErrorSign   guibg=#393939   guifg=#f2777a
-  highlight! ALEWarningSign guibg=#393939   guifg=#ffcc66
-  highlight! ALEInfoSign    guibg=#393939   guifg=#6699cc
-  highlight! SpellBad       gui=underline
-  highlight! MatchParen     gui=none        guifg=#f2777a guibg=#222222
-endfunction
-
-autocmd MyAutocmds ColorScheme * call CustomColors()
-colorscheme base16-tomorrow-night-eighties
+" xcode {{{
+let g:xcodedark_green_comments = 1
+colorscheme xcodedark
 " }}}
 " }}}
 " Local settings {{{
