@@ -343,12 +343,14 @@ endfunction
 
 let g:chained#chains = {}
 let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "DefineHover", "DefaultHover", "IncludeHover"]
-let g:chained#chains.goto = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
+let g:chained#chains.definition = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
+let g:chained#chains.references = ["LanguageClientReferences", "GrepPath"]
 let g:chained#chains.format = ["FormatFile", "LanguageClientFormat"]
 
 nnoremap <silent> K         :<c-u>call chained#ExecuteChain('hover')<cr>
-nnoremap <silent> gd        :<c-u>call chained#ExecuteChain('goto')<cr>
-nnoremap <silent> gD        :<c-u>call chained#ExecuteChainSplit('goto')<cr>
+nnoremap <silent> gd        :<c-u>call chained#ExecuteChain('definition')<cr>
+nnoremap <silent> gD        :<c-u>call chained#ExecuteChainSplit('definition')<cr>
+nnoremap <silent> gr        :<c-u>call chained#ExecuteChain('references')<cr>
 nnoremap <silent> <leader>F :<c-u>call chained#ExecuteChain('format')<cr>
 " }}}
 " fzf.vim {{{
@@ -404,8 +406,8 @@ if get(g:, 'loaded_mucomplete', 0) == 0
 
   imap <c-n> <plug>(MUcompleteFwd)
   imap <c-p> <plug>(MUcompleteBwd)
-  imap <c-j> <plug>(MUcompleteCycFwd)
-  imap <c-k> <plug>(MUcompleteCycBwd)
+  imap <expr> <c-j> pumvisible() ? "\<plug>(MUcompleteCycFwd)" : "\<c-j>"
+  imap <expr> <c-k> pumvisible() ? "\<plug>(MUcompleteCycBwd)" : "\<c-k>"
   nnoremap yoC :MUcompleteAutoToggle<cr>
   set shortmess+=c    " Shut off completion messages
 
