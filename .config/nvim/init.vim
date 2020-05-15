@@ -108,6 +108,7 @@ set breakindent
 let &showbreak='↳ '
 set include=
 set keywordprg=
+set nrformats+=alpha
 
 " Commands without remembering case. Useful for plugin commands
 set ignorecase smartcase
