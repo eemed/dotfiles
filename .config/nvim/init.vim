@@ -17,8 +17,8 @@ augroup end
 let mapleader = " "
 let maplocalleader = "\\"
 
-nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
-nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
+nnoremap k gk
+nnoremap j gj
 
 imap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
 nmap <c-f> mm[s1z=`m
@@ -118,7 +118,7 @@ set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*,*.pdf
 
 " Completion
 set pumheight=10
-set completeopt=noselect,menuone,menu
+set completeopt+=noselect,menuone
 set omnifunc=syntaxcomplete#Complete
 
 set tags=./tags;,tags;
@@ -390,6 +390,7 @@ command! -nargs=? -complete=filetype EditSnippets
       \ execute 'keepj vsplit ' . g:vimdir . '/snippets/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
 nnoremap <localleader>s :EditSnippets<cr>
+smap <c-e> <Plug>snipMateNextOrTrigger
 " }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
@@ -400,25 +401,29 @@ nnoremap <leader>u :UndotreeToggle<cr>
 " mucomplete {{{
 if get(g:, 'loaded_mucomplete', 0) == 0
   let g:mucomplete#no_mappings = 1
+  let g:mucomplete#no_popup_mappings = 0
+
   let g:mucomplete#completion_delay = 100
   let g:mucomplete#reopen_immediately = 0
   let g:mucomplete#empty_text = 1
 
-  imap <c-n> <plug>(MUcompleteFwd)
-  imap <c-p> <plug>(MUcompleteBwd)
+  imap <tab> <plug>(MUcompleteFwd)
+  imap <s-tab> <plug>(MUcompleteBwd)
   imap <expr> <c-j> pumvisible() ? "\<plug>(MUcompleteCycFwd)" : "\<c-j>"
   imap <expr> <c-k> pumvisible() ? "\<plug>(MUcompleteCycBwd)" : "\<c-k>"
+
+  imap <expr> <c-e> (pumvisible()
+        \ ? "\<c-y>\<plug>snipMateNextOrTrigger"
+        \ : "\<plug>snipMateNextOrTrigger")
   nnoremap yoC :MUcompleteAutoToggle<cr>
-  set shortmess+=c    " Shut off completion messages
 
   let g:snipMate = {}
   let g:snipMate['no_match_completion_feedkeys_chars'] = ''
 
-  if filereadable('tags')
-    let g:mucomplete#chains = { 'default': ['snip', 'path', 'omni', 'tags', 'keyn', 'uspl'] }
-  else
-    let g:mucomplete#chains = { 'default': ['snip', 'path', 'omni', 'keyn', 'uspl'] }
-  endif
+  let g:mucomplete#chains = { 'default': ['snip', 'omni', 'path', 'c-n', 'uspl'] }
+  set complete-=t
+  set complete-=i
+  set shortmess+=c    " Shut off completion messages
 
   let g:mucomplete#can_complete = {}
   let g:mucomplete#can_complete.default = { 'omni': { t -> t =~# '\m\k\k\%(\k\|\.\)$' } }
