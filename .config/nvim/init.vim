@@ -392,6 +392,7 @@ command! -nargs=? -complete=filetype EditSnippets
       \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
 nnoremap <localleader>s :EditSnippets<cr>
 smap <c-e> <Plug>snipMateNextOrTrigger
+imap <c-b> <Plug>snipMateBack
 " }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
@@ -412,7 +413,6 @@ if get(g:, 'loaded_mucomplete', 0) == 0
   imap <s-tab> <plug>(MUcompleteBwd)
   imap <expr> <c-j> pumvisible() ? "\<plug>(MUcompleteCycFwd)" : "\<c-j>"
   imap <expr> <c-k> pumvisible() ? "\<plug>(MUcompleteCycBwd)" : "\<c-k>"
-
   imap <expr> <c-e> (pumvisible()
         \ ? "\<c-y>\<plug>snipMateNextOrTrigger"
         \ : "\<plug>snipMateNextOrTrigger")
