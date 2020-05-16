@@ -407,7 +407,7 @@ if get(g:, 'loaded_mucomplete', 0) == 0
 
   let g:mucomplete#completion_delay = 100
   let g:mucomplete#reopen_immediately = 0
-  let g:mucomplete#empty_text = 1
+  " let g:mucomplete#empty_text = 1
 
   imap <tab> <plug>(MUcompleteFwd)
   imap <s-tab> <plug>(MUcompleteBwd)
