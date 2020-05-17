@@ -314,8 +314,7 @@ Plug 'tomtom/tlib_vim'
 Plug 'garbas/vim-snipmate'                " Snippets
 Plug 'duggiefresh/vim-easydir'            " Automatically create directories
 Plug 'lifepillar/vim-mucomplete'          " Complete
-" Plug 'eemed/vim-chained'                  " Chain functions
-Plug '~/repos/vim-chained'                  " Chain functions
+Plug 'eemed/vim-chained'                  " Chain functions
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
