@@ -91,6 +91,7 @@ onoremap in :<C-u>normal vin<CR>
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
 
+nnoremap gF <c-w>f
 set pastetoggle=<F2>
 " }}}
 " Settings {{{
@@ -343,8 +344,8 @@ function! FormatFile() abort
 endfunction
 
 let g:chained#chains = {}
-let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "DefineHover", "DefaultHover", "IncludeHover"]
-let g:chained#chains.definition = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
+let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "DefaultHover"]
+let g:chained#chains.definition = ["LanguageClientDefinition", "TagsDefinition", "DefaultDefinition"]
 let g:chained#chains.references = ["LanguageClientReferences", "GrepPath"]
 let g:chained#chains.format = ["FormatFile", "LanguageClientFormat"]
 
