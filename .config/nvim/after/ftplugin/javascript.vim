@@ -4,9 +4,7 @@ let b:formatcmd = "npx prettier " . shellescape(expand('%'))
 setlocal isfname+=@-@ " some node_modules are namespaced with an @
 setlocal suffixesadd+=.js,.json,.jsx,.ts,.tsx
 setlocal include=^\\s*[^\/]\\+\\(from\\\|require(\\)\\s*['\"\.]
-let &define  = '^\s*'
-             \ . '\(export\s\)*\(default\s\)*\(var\|const\|let\|function\|class\\)\s'
-             \ . '\)'
+let &l:define  = '^\s*\(\(export\s\)*\(default\s\)*\(function\|class\)\s\|const\s*\ze\i*\s*=\s*(.*)\s*=>\s*{\)'
 
 function! LoadMainNodeModule(fname)
     let nodeModules = "./node_modules/"

@@ -4,8 +4,7 @@ let g:python3_host_prog = '/usr/bin/python3'
 
 " Install vim-plug
 if empty(glob(g:vimdir . '/autoload/plug.vim'))
-  execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs
-        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
@@ -92,6 +91,10 @@ nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
 
 nnoremap gF <c-w>f
+
+nnoremap <silent> [[ m':call search(&define, 'bW')<cr>
+nnoremap <silent> ]] m':call search(&define, "W")<CR>
+
 set pastetoggle=<F2>
 " }}}
 " Settings {{{
@@ -311,7 +314,8 @@ Plug 'tomtom/tlib_vim'
 Plug 'garbas/vim-snipmate'                " Snippets
 Plug 'duggiefresh/vim-easydir'            " Automatically create directories
 Plug 'lifepillar/vim-mucomplete'          " Complete
-Plug 'eemed/vim-chained'                  " Chain functions
+" Plug 'eemed/vim-chained'                  " Chain functions
+Plug '~/repos/vim-chained'                  " Chain functions
 
 " Language server protocol until neovim implements its own
 Plug 'autozimu/LanguageClient-neovim', {
@@ -344,8 +348,8 @@ function! FormatFile() abort
 endfunction
 
 let g:chained#chains = {}
-let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "DefaultHover"]
-let g:chained#chains.definition = ["LanguageClientDefinition", "TagsDefinition", "DefaultDefinition"]
+let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "KeywordprgHover", "DefineHover", "DefaultHover"]
+let g:chained#chains.definition = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
 let g:chained#chains.references = ["LanguageClientReferences", "GrepPath"]
 let g:chained#chains.format = ["FormatFile", "LanguageClientFormat"]
 
