@@ -1,37 +1,3 @@
-#
-# ~/.bashrc
-#
-
-[[ $- != *i* ]] && return
-
-# Completion
-[ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
-
-xhost +local:root > /dev/null 2>&1
-
-complete -cf sudo
-
-# Bash won't get SIGWINCH if another process is in the foreground.
-# Enable checkwinsize so that bash will check the terminal size when
-# it regains control.  #65623
-# http://cnswww.cns.cwru.edu/~chet/bash/FAQ (E11)
-shopt -s checkwinsize
-shopt -s expand_aliases
-# Enable history appending instead of overwriting.  #139609
-shopt -s histappend
-# Delete history duplicates
-export HISTCONTROL=ignoreboth:erasedups
-
-# Change the window title of X terminals
-case ${TERM} in
-    xterm*|rxvt*|Eterm*|aterm|kterm|gnome*|interix|konsole*|st*)
-        PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\007"'
-        ;;
-    screen*|tmux*)
-        PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\033\\"'
-        ;;
-esac
-
 # Remove ctrl+s freeze
 stty susp undef
 
@@ -64,7 +30,7 @@ PAGER=less; export PAGER
 # My aliases
 alias ll="ls -l"
 alias la="ls -la"
-alias tmux="env TERM=xterm-256color tmux"
+alias tmux="env TERM=xterm-256color tmux -f ~/.dotfiles/tmux.conf"
 alias stack-ghcid="ghcid --command 'stack ghci'"
 alias vim="nvim"
 alias g="git"
@@ -74,7 +40,6 @@ alias headphones="sudo rmmod btusb ; sudo modprobe btusb"
 alias open="gio open"
 function cdl(){ cd $1; ls -l;}
 
-[ -f ~/.bashrc_personal ] && source ~/.bashrc_personal
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 [ -d ~/.fzf ] && \
   PATH=$PATH:~/.fzf/bin ;\
