@@ -18,6 +18,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_USER_CONFIG_DIR="$HOME/.config"
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/.local/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.local/lib
 
 # Prompt
 export PROMPT_DIRTRIM=3
@@ -30,7 +31,7 @@ PAGER=less; export PAGER
 # My aliases
 alias ll="ls -l"
 alias la="ls -la"
-alias tmux="env TERM=xterm-256color tmux -f ~/.dotfiles/tmux.conf"
+alias tmux="env TERM=xterm-256color tmux"
 alias stack-ghcid="ghcid --command 'stack ghci'"
 alias vim="nvim"
 alias g="git"
