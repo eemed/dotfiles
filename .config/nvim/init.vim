@@ -287,7 +287,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'eemed/sitruuna.vim'                 " Color scheme
+Plug 'chriskempson/base16-vim'            " Color scheme
 
 Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
@@ -500,8 +500,8 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
-" sitruuna.vim {{{
-colorscheme sitruuna
+" colorscheme {{{
+colorscheme base16-default-dark
 " }}}
 " }}}
 " Local settings {{{
