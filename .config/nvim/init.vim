@@ -287,7 +287,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'arzg/vim-colors-xcode'              " Color scheme
+Plug 'eemed/sitruuna.vim'                 " Color scheme
 
 Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
@@ -367,21 +367,6 @@ else
   exe "Files"
 endif
 endfunction
-
-let g:fzf_colors = {
-      \ 'fg':      ['fg', 'Normal'],
-      \ 'bg':      ['bg', 'Normal'],
-      \ 'hl':      ['fg', 'Comment'],
-      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Statement'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'border':  ['fg', 'Ignore'],
-      \ 'prompt':  ['fg', 'Conditional'],
-      \ 'pointer': ['fg', 'Exception'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment'] }
 
 nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
@@ -515,9 +500,8 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
-" xcode {{{
-let g:xcodedark_green_comments = 1
-colorscheme xcodedark
+" sitruuna.vim {{{
+colorscheme sitruuna
 " }}}
 " }}}
 " Local settings {{{
