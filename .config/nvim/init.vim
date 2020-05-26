@@ -351,11 +351,13 @@ let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "KeywordprgHov
 let g:chained#chains.definition = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
 let g:chained#chains.references = ["LanguageClientReferences", "GrepPath"]
 let g:chained#chains.format = ["FormatFile", "LanguageClientFormat"]
+let g:chained#chains.impl = ["LanguageClientImplementation"]
 
 nnoremap <silent> K         :<c-u>call chained#ExecuteChain('hover')<cr>
 nnoremap <silent> gd        :<c-u>call chained#ExecuteChain('definition')<cr>
 nnoremap <silent> gD        :<c-u>call chained#ExecuteChainSplit('definition')<cr>
 nnoremap <silent> gr        :<c-u>call chained#ExecuteChain('references')<cr>
+nnoremap <silent> gi        :<c-u>call chained#ExecuteChain('impl')<cr>
 nnoremap <silent> <leader>F :<c-u>call chained#ExecuteChain('format')<cr>
 " }}}
 " fzf.vim {{{
