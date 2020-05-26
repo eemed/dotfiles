@@ -510,7 +510,7 @@ augroup on_change_colorschema
   autocmd!
   autocmd ColorScheme * call s:base16_customize()
 augroup END
-colorscheme base16-default-dark
+colorscheme base16-eighties
 " }}}
 " }}}
 " Local settings {{{
