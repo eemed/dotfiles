@@ -338,7 +338,6 @@ if executable('node')
     return !col || getline('.')[col - 1]  =~# '\s'
   endfunction
 
-  inoremap <silent><expr> <c-l> coc#refresh()
   let g:coc_snippet_next = '<tab>'
   let g:coc_snippet_prev = '<s-tab>'
 
@@ -351,6 +350,7 @@ if executable('node')
   nmap <silent> gy <Plug>(coc-type-definition)
   nmap <silent> gi <Plug>(coc-implementation)
   nmap <silent> gr <Plug>(coc-references)
+  nmap <silent> gR <Plug>(coc-rename)
   nmap <silent> <leader>a <Plug>(coc-codeaction)
 
   " Use K to show documentation in preview window.
@@ -363,9 +363,6 @@ if executable('node')
       call CocAction('doHover')
     endif
   endfunction
-
-  " Symbol renaming.
-  nmap <silent> gR <Plug>(coc-rename)
 
   " Add `:Format` command to format current buffer.
   command! -nargs=0 Format :call CocAction('format')
