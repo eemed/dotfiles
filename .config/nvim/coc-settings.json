@@ -1,0 +1,6 @@
+{
+  "coc.source.file.triggerCharacters": ["/", "."],
+  "suggest.triggerCompletionWait": 300,
+  "suggest.snippetIndicator": " [S]",
+  "suggest.autoTrigger": "trigger"
+}

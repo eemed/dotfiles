@@ -325,27 +325,6 @@ call plug#end() " }}}
 nnoremap <localleader>s :CocCommand snippets.editSnippets<cr>
 
 if executable('node')
-  let g:suggest_enabled_ft = ['json', 'javascript', 'rust']
-  function! s:ToggleSuggest() abort
-    if index(g:suggest_enabled_ft, &ft) != -1
-      call remove(g:suggest_enabled_ft, &ft)
-      let b:coc_suggest_disable = 1
-      echom '[Completion] off'
-    else
-      call add(g:suggest_enabled_ft, &ft)
-      let b:coc_suggest_disable = 0
-      echom '[Completion] on'
-    endif
-  endfunction
-  nnoremap yoC :<c-u>call <sid>ToggleSuggest()<cr>
-
-  function! AutoDisableSuggest() abort
-    if index(g:suggest_enabled_ft, &ft, '') == -1
-      let b:coc_suggest_disable = 1
-    endif
-  endfunction
-  autocmd MyAutocmds BufEnter,WinEnter * call AutoDisableSuggest()
-
   set signcolumn=no
 
   inoremap <silent><expr> <TAB>
@@ -359,6 +338,7 @@ if executable('node')
     return !col || getline('.')[col - 1]  =~# '\s'
   endfunction
 
+  inoremap <silent><expr> <c-l> coc#refresh()
   let g:coc_snippet_next = '<tab>'
   let g:coc_snippet_prev = '<s-tab>'
 
