@@ -309,18 +309,11 @@ Plug 'romainl/vim-qf'                     " Quickfix window overall improvements
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 
-Plug 'MarcWeber/vim-addon-mw-utils'
-Plug 'tomtom/tlib_vim'
-Plug 'garbas/vim-snipmate'                " Snippets
 Plug 'duggiefresh/vim-easydir'            " Automatically create directories
-Plug 'lifepillar/vim-mucomplete'          " Complete
-Plug 'eemed/vim-chained'                  " Chain functions
 
-" Language server protocol until neovim implements its own
-Plug 'autozimu/LanguageClient-neovim', {
-      \ 'branch': 'next',
-      \ 'do': 'bash install.sh',
-      \ }
+if executable('node')
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+endif
 
 " Syntax
 Plug 'pearofducks/ansible-vim'
@@ -328,46 +321,85 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
 call plug#end() " }}}
 " Plugin configuration {{{
-" vim-chained {{{
-function! FormatFile() abort
-  if get(b:, 'formatcmd', '') == ''
-    return -1
-  else
-    let l:view = winsaveview()
-    let l:cmd = '%! ' . b:formatcmd
-    silent execute l:cmd
-    if v:shell_error > 0
-      silent undo
-      redraw
-      echom 'Format command "' . b:formatcmd . '" failed.'
+" coc {{{
+nnoremap <localleader>s :CocCommand snippets.editSnippets<cr>
+
+if executable('node')
+  let g:suggest_enabled_ft = ['json', 'javascript', 'rust']
+  function! s:ToggleSuggest() abort
+    if index(g:suggest_enabled_ft, &ft) != -1
+      call remove(g:suggest_enabled_ft, &ft)
+      let b:coc_suggest_disable = 1
+      echom '[Completion] off'
+    else
+      call add(g:suggest_enabled_ft, &ft)
+      let b:coc_suggest_disable = 0
+      echom '[Completion] on'
     endif
-    call winrestview(l:view)
-    return 0
-  endif
-endfunction
+  endfunction
+  nnoremap yoC :<c-u>call <sid>ToggleSuggest()<cr>
 
-let g:chained#chains = {}
-let g:chained#chains.hover = ["LanguageClientHover", "TagsHover", "KeywordprgHover", "DefineHover", "DefaultHover"]
-let g:chained#chains.definition = ["LanguageClientDefinition", "TagsDefinition", "DefineDefinition", "DefaultDefinition"]
-let g:chained#chains.references = ["LanguageClientReferences", "GrepPath"]
-let g:chained#chains.format = ["FormatFile", "LanguageClientFormat"]
-let g:chained#chains.impl = ["LanguageClientImplementation"]
+  function! AutoDisableSuggest() abort
+    if index(g:suggest_enabled_ft, &ft, '') == -1
+      let b:coc_suggest_disable = 1
+    endif
+  endfunction
+  autocmd MyAutocmds BufEnter,WinEnter * call AutoDisableSuggest()
 
-nnoremap <silent> K         :<c-u>call chained#ExecuteChain('hover')<cr>
-nnoremap <silent> gd        :<c-u>call chained#ExecuteChain('definition')<cr>
-nnoremap <silent> gD        :<c-u>call chained#ExecuteChainSplit('definition')<cr>
-nnoremap <silent> gr        :<c-u>call chained#ExecuteChain('references')<cr>
-nnoremap <silent> gi        :<c-u>call chained#ExecuteChain('impl')<cr>
-nnoremap <silent> <leader>F :<c-u>call chained#ExecuteChain('format')<cr>
+  set signcolumn=no
+
+  inoremap <silent><expr> <TAB>
+        \ pumvisible() ? "\<C-y>" :
+        \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+        \ <SID>check_back_space() ? "\<TAB>" :
+        \ coc#refresh()
+
+  function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
+  endfunction
+
+  let g:coc_snippet_next = '<tab>'
+  let g:coc_snippet_prev = '<s-tab>'
+
+  " Use `[g` and `]g` to navigate diagnostics
+  nmap <silent> [g <Plug>(coc-diagnostic-prev)
+  nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+  " GoTo code navigation.
+  nmap <silent> gd <Plug>(coc-definition)
+  nmap <silent> gy <Plug>(coc-type-definition)
+  nmap <silent> gi <Plug>(coc-implementation)
+  nmap <silent> gr <Plug>(coc-references)
+  nmap <silent> <leader>a <Plug>(coc-codeaction)
+
+  " Use K to show documentation in preview window.
+  nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+  function! s:show_documentation()
+    if (index(['vim','help'], &filetype) >= 0)
+      execute 'h '.expand('<cword>')
+    else
+      call CocAction('doHover')
+    endif
+  endfunction
+
+  " Symbol renaming.
+  nmap <silent> gR <Plug>(coc-rename)
+
+  " Add `:Format` command to format current buffer.
+  command! -nargs=0 Format :call CocAction('format')
+  nnoremap <leader>F  :Format<cr>
+endif
 " }}}
 " fzf.vim {{{
 function! Browse() abort
-if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
-  " Use this because Gfiles doesn't work with cached files
-  call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-else
-  exe "Files"
-endif
+  if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
+    " Use this because Gfiles doesn't work with cached files
+    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
+  else
+    exe "Files"
+  endif
 endfunction
 
 nnoremap <silent><c-p> :call Browse()<CR>
@@ -376,78 +408,11 @@ nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 nnoremap <silent><leader>t :Tags<CR>
 " }}}
-" snipmate {{{
-snoremap <bs> <c-v>c
-command! -nargs=? -complete=filetype EditSnippets
-      \ execute 'keepj vsplit ' . g:vimdir . '/snippets/' .
-      \ (empty(<q-args>) ? &ft : <q-args>) . '.snippets'
-nnoremap <localleader>s :EditSnippets<cr>
-smap <c-e> <Plug>snipMateNextOrTrigger
-imap <c-b> <Plug>snipMateBack
-" }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
 let g:undotree_DiffAutoOpen = 0
 let g:undotree_SetFocusWhenToggle = 1
 nnoremap <leader>u :UndotreeToggle<cr>
-" }}}
-" mucomplete {{{
-if get(g:, 'loaded_mucomplete', 0) == 0
-  let g:mucomplete#no_mappings = 1
-  let g:mucomplete#no_popup_mappings = 0
-
-  let g:mucomplete#completion_delay = 100
-  let g:mucomplete#reopen_immediately = 0
-  " let g:mucomplete#empty_text = 1
-
-  imap <tab> <plug>(MUcompleteFwd)
-  imap <s-tab> <plug>(MUcompleteBwd)
-  imap <expr> <c-j> pumvisible() ? "\<plug>(MUcompleteCycFwd)" : "\<c-j>"
-  imap <expr> <c-k> pumvisible() ? "\<plug>(MUcompleteCycBwd)" : "\<c-k>"
-  imap <expr> <c-e> (pumvisible()
-        \ ? "\<c-y>\<plug>snipMateNextOrTrigger"
-        \ : "\<plug>snipMateNextOrTrigger")
-  nnoremap yoC :MUcompleteAutoToggle<cr>
-
-  let g:snipMate = {}
-  let g:snipMate['no_match_completion_feedkeys_chars'] = ''
-
-  let g:mucomplete#chains = { 'default': ['snip', 'omni', 'path', 'c-n', 'uspl'] }
-  set complete-=t
-  set complete-=i
-  set shortmess+=c    " Shut off completion messages
-
-  let g:mucomplete#can_complete = {}
-  let g:mucomplete#can_complete.default = { 'omni': { t -> t =~# '\m\k\k\%(\k\|\.\)$' } }
-  let g:mucomplete#minimum_prefix_length = 3
-  function! s:dismiss_or_delete()
-    return pumvisible()
-          \ && len(matchstr(getline('.'), '\S*\%'.col('.').'c')) <= get(g:, 'mucomplete#minimum_prefix_length', 4)
-          \ ? "\<c-e>\<bs>" : "\<bs>"
-
-  endfunction
-  inoremap <expr> <bs> <sid>dismiss_or_delete()
-endif
-" }}}
-" LanguageClient {{{
-let g:LanguageClient_serverCommands = {
-      \ 'rust': ['rustup', 'run', 'stable', 'rls'],
-      \ 'javascript': ['npx', 'javascript-typescript-stdio'],
-      \ }
-
-function! s:LC_maps() abort
-  if has_key(g:LanguageClient_serverCommands, &filetype)
-    nnoremap <buffer> <f5>      :call LanguageClient_contextMenu()<CR>
-  endif
-endfunction
-
-autocmd MyAutocmds FileType * call <sid>LC_maps()
-let g:LanguageClient_useVirtualText      = "No"
-let g:LanguageClient_diagnosticsSignsMax = 0
-let g:LanguageClient_diagnosticsList     = "Location"
-let g:LanguageClient_virtualTextPrefix   = '❯ '
-" let g:LanguageClient_hasSnippetSupport   = 0
-set signcolumn=no
 " }}}
 " vim-easyalign {{{
 xmap ga <Plug>(EasyAlign)
@@ -506,6 +471,9 @@ runtime macros/sandwich/keymap/surround.vim
 let base16colorspace=256  " Access colors present in 256 colorspace
 function! s:base16_customize() abort
   call Base16hi("QuickFixLine", g:base16_gui01, g:base16_gui06, g:base16_cterm01, g:base16_cterm06, "bold", "")
+  highlight! CocErrorFloat guifg=#f2777a
+  highlight! CocWarningFloat guifg=#ffcc66
+  highlight! CocInfoFloat guifg=#6699cc
 endfunction
 
 augroup on_change_colorschema
