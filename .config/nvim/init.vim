@@ -323,7 +323,7 @@ call plug#end() " }}}
 " Plugin configuration {{{
 " coc {{{
 nnoremap <localleader>s :CocCommand snippets.editSnippets<cr>
-
+call coc#add_extension('coc-json', 'coc-snippets')
 if executable('node')
   set signcolumn=no
 
