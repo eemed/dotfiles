@@ -18,34 +18,23 @@
 #+END_SRC
 * Packages
 ** Org
-*** Basic
 #+BEGIN_SRC emacs-lisp
-      (setq org-src-window-setup 'current-window)
+  (use-package org
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook 'org-indent-mode)
+    (global-set-key (kbd "C-c l") 'org-store-link)
+    (global-set-key (kbd "C-c a") 'org-agenda)
+    (global-set-key (kbd "C-c c") 'org-capture))
 #+END_SRC
-*** Basic org mode
-#+BEGIN_SRC emacs-lisp
-      (use-package org
-      :ensure t
-      :config
-      (add-hook 'org-mode-hook 'org-indent-mode))
-#+END_SRC
-*** Org bullets
-#+BEGIN_SRC emacs-lisp
-      (use-package org-bullets
-      :ensure t
-      :config
-      (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
-#+END_SRC
-** Helpers
-*** Which key
+** Which key
 #+BEGIN_SRC emacs-lisp
       (use-package which-key
       :ensure t
       :init
       (which-key-mode))
 #+END_SRC
-** Languages
-*** JS - JSX
+** JS - JSX
 #+BEGIN_SRC emacs-lisp
   (use-package rjsx-mode
     :ensure t
@@ -73,15 +62,12 @@ Searching for everything
             (setq ivy-use-virtual-buffers t)
             (setq ivy-count-format "%d/%d "))
 #+END_SRC
-*** Counsel
-Ivy commands for normal emacs commands
+*** Counsel-projectile
 #+BEGIN_SRC emacs-lisp
   (use-package counsel
     :ensure t
     :after ivy
-    :config
-    (global-set-key "\C-s" 'swiper)
-    (global-set-key "\C-r" 'swiper-backward))
+    :config)
 
   (use-package counsel-projectile
     :ensure t
@@ -91,10 +77,10 @@ Ivy commands for normal emacs commands
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 #+END_SRC
 *** Swiper
-Search for files
+Search in files
 #+BEGIN_SRC emacs-lisp
-      (use-package swiper
-        :ensure t)
+  ;; (use-package swiper
+  ;;   :ensure t)
 #+END_SRC
 
 ** Company
@@ -190,7 +176,7 @@ Search for files
     (interactive)
     (my/scroll 'up))
   (bind-keys ("C-v" . my/scroll-up)
-  ("M-v" . my/scroll))
+             ("M-v" . my/scroll))
 
   (setq scroll-conservatively 100)
   (setq mouse-wheel-scroll-amount '(2 ((shift) . 2))) ;; one line at a time
@@ -240,15 +226,25 @@ Search for files
   (global-set-key (kbd "C-o") (lambda() (interactive) (end-of-line)(newline-and-indent)))
   (global-set-key (kbd "M-o") (lambda() (interactive) (beginning-of-line)(open-line 1)))
 
-  (defun xah-select-current-line ()
-     "Select current line.
-  URL `http://ergoemacs.org/emacs/modernization_mark-word.html'
-  Version 2016-07-22"
-    (interactive)
-    (end-of-line)
-    (set-mark (line-beginning-position)))
+  ;; (defun xah-select-current-line ()
+  ;;    "Select current line.
+  ;; URL `http://ergoemacs.org/emacs/modernization_mark-word.html'
+  ;; Version 2016-07-22"
+  ;;   (interactive)
+  ;;   (end-of-line)
+  ;;   (set-mark (line-beginning-position)))
 
-  (global-set-key (kbd "C-c l") 'xah-select-current-line)
+  ;; (global-set-key (kbd "C-c l") 'xah-select-current-line)
+#+END_SRC
+** Close buffer and window
+#+BEGIN_SRC emacs-lisp
+  (defun close-and-kill-this-pane ()
+    "If there are multiple windows, then close this pane and kill the buffer in it also."
+    (interactive)
+    (kill-this-buffer)
+    (if (not (one-window-p))
+        (delete-window)))
+  (global-set-key (kbd "C-c x") 'close-and-kill-this-pane)
 #+END_SRC
 ** Backup directory
 #+BEGIN_SRC emacs-lisp
@@ -260,5 +256,3 @@ Search for files
 #+BEGIN_SRC emacs-lisp
   (setq whitespace-style '(tabs face tab-mark))
 #+END_SRC
-
-
