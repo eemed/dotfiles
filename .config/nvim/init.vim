@@ -60,11 +60,6 @@ function! StripWhitespace() abort
 endfunction
 nnoremap <leader>s :call StripWhitespace()<cr>
 
-nnoremap <M-right>  :vertical resize +10<CR>
-nnoremap <M-left>   :vertical resize -10<CR>
-nnoremap <M-up>     :resize +10<CR>
-nnoremap <M-down>   :resize -10<CR>
-
 for char in [ '$', '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
   execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
   execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
@@ -424,15 +419,10 @@ function! s:dirvish_toggle() abort
 endfunction
 " }}}
 " vim-tmux-navigator {{{
-let g:tmux_navigator_no_mappings = 1
-nnoremap <silent> <m-h> :TmuxNavigateLeft<cr>
-nnoremap <silent> <m-j> :TmuxNavigateDown<cr>
-nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
-nnoremap <silent> <m-l> :TmuxNavigateRight<cr>
-tnoremap <silent> <m-h> <C-\><C-n>:TmuxNavigateLeft<cr>
-tnoremap <silent> <m-j> <C-\><C-n>:TmuxNavigateDown<cr>
-tnoremap <silent> <m-k> <C-\><C-n>:TmuxNavigateUp<cr>
-tnoremap <silent> <m-l> <C-\><C-n>:TmuxNavigateRight<cr>
+tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
+tnoremap <silent> <c-j> <C-\><C-n>:TmuxNavigateDown<cr>
+tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
+tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " }}}
 " vim-fugitive {{{
 nnoremap <silent><leader>g :vertical Gstatus<CR>
