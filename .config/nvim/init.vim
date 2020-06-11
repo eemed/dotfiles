@@ -42,12 +42,6 @@ nnoremap gV `[v`]
 nnoremap <silent><c-s> :update<CR>
 inoremap <silent><c-s> <c-o>:update<CR>
 
-" Copy paste
-nnoremap <leader>p "+p
-nnoremap <leader>P "+P
-nnoremap <leader>y "+y
-xnoremap <leader>y "+y
-
 " Too many mistakes
 cabbrev W   w
 cabbrev Q   q
@@ -113,6 +107,8 @@ let &showbreak='↳ '
 set include=
 set keywordprg=
 set nrformats+=alpha
+
+set clipboard=unnamed,unnamedplus
 
 " Commands without remembering case. Useful for plugin commands
 set ignorecase smartcase
