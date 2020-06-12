@@ -286,7 +286,6 @@ Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'junegunn/vim-easy-align'            " Align stuff
 
 Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
@@ -299,7 +298,7 @@ Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'romainl/vim-qf'                     " Quickfix window overall improvements
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
-
+Plug 'godlygeek/tabular'                  " Align stuff
 Plug 'duggiefresh/vim-easydir'            " Automatically create directories
 
 if executable('node')
@@ -381,10 +380,6 @@ let g:undotree_SplitWidth = 35
 let g:undotree_DiffAutoOpen = 0
 let g:undotree_SetFocusWhenToggle = 1
 nnoremap <leader>u :UndotreeToggle<cr>
-" }}}
-" vim-easyalign {{{
-xmap ga <Plug>(EasyAlign)
-nmap ga <Plug>(EasyAlign)
 " }}}
 " vim-qf {{{
 nmap [q <Plug>(qf_qf_previous)
