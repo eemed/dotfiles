@@ -309,6 +309,7 @@ endif
 Plug 'pearofducks/ansible-vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'rust-lang/rust.vim'
+Plug 'vim-python/python-syntax'
 call plug#end() " }}}
 " Plugin configuration {{{
 " coc {{{
@@ -420,7 +421,7 @@ tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
 tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " }}}
 " vim-fugitive {{{
-nnoremap <silent><leader>g :vertical Gstatus<CR>
+nnoremap <silent><leader>g :Gstatus<CR>
 " }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
@@ -438,6 +439,7 @@ augroup on_change_colorschema
   autocmd!
   autocmd ColorScheme * call s:base16_customize()
 augroup END
+let g:python_highlight_all = 1
 colorscheme base16-eighties
 " }}}
 " }}}
