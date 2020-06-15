@@ -1,0 +1,40 @@
+for char in [ '$', '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
+  execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+  execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+  execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+  execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+endfor
+
+set ignorecase
+set smartcase
+let mapleader = " "
+
+eclipseaction eclipsegotoimpl org.eclipse.jdt.ui.edit.text.java.open.implementation
+" nnoremap gd :eclipsegotoimpl<CR>
+
+eclipseaction QuickFormat org.eclipse.jdt.ui.edit.text.java.quick.format
+nnoremap <leader>f :QuickFormat<CR>
+
+eclipseaction SearchReferencesInProject org.eclipse.jdt.ui.edit.text.java.search.references.in.project
+
+eclipseaction GotoLastEditPosition org.eclipse.ui.edit.text.gotoLastEditPosition
+
+"Action definition id of the edit shift right action.
+eclipseaction ShiftRight org.eclipse.ui.edit.text.shiftRight
+
+"Action definition id of the edit shift left action.
+eclipseaction ShiftLeft org.eclipse.ui.edit.text.shiftLeft
+
+eclipseaction eclipseopenresource org.eclipse.ui.navigate.openResource
+nnoremap <c-p> :eclipseopenresource<cr>
+
+eclipseuiaction eclipseshowdoc org.eclipse.ui.edit.text.showInformation
+nnoremap K   :eclipseshowdoc<cr>
+
+eclipseaction eclipsefindref org.eclipse.jdt.ui.edit.text.java.search.references.in.workspace
+nnoremap gr :eclipsefindref<cr>
+
+eclipseaction eclipserename org.eclipse.jdt.ui.edit.text.java.rename.element
+nnoremap gR :Rename<cr>
+
+" vim:filetype=vim
