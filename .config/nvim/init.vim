@@ -421,7 +421,7 @@ tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
 tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " }}}
 " vim-fugitive {{{
-nnoremap <silent><leader>g :Gstatus<CR>
+nnoremap <silent><leader>g :vertical Gstatus<CR>
 " }}}
 " vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
