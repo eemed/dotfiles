@@ -278,7 +278,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'chriskempson/base16-vim'            " Color scheme
+Plug 'NLKNguyen/papercolor-theme'
 
 Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
@@ -427,20 +427,9 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 runtime macros/sandwich/keymap/surround.vim
 " }}}
 " colorscheme {{{
-let base16colorspace=256  " Access colors present in 256 colorspace
-function! s:base16_customize() abort
-  call Base16hi("QuickFixLine", g:base16_gui01, g:base16_gui06, g:base16_cterm01, g:base16_cterm06, "bold", "")
-  highlight! CocErrorFloat guifg=#f2777a
-  highlight! CocWarningFloat guifg=#ffcc66
-  highlight! CocInfoFloat guifg=#6699cc
-endfunction
-
-augroup on_change_colorschema
-  autocmd!
-  autocmd ColorScheme * call s:base16_customize()
-augroup END
 let g:python_highlight_all = 1
-colorscheme base16-eighties
+set background=light
+colorscheme PaperColor
 " }}}
 " }}}
 " Local settings {{{
