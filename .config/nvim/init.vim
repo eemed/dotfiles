@@ -192,6 +192,7 @@ nnoremap <localleader>c :EditFileTypePlugin<cr>
 
 " Format {{{
 function! s:FormatFile() abort
+  write
   if get(b:, 'formatcmd', '') == ''
     echo '[Format] no command set'
     return -1
@@ -202,7 +203,10 @@ function! s:FormatFile() abort
     if v:shell_error > 0
       silent undo
       redraw
+      echohl ErrorMsg
       echo '[Format] command "' . b:formatcmd . '" failed.'
+      echohl None
+      return v:shell_error
     endif
     call winrestview(l:view)
     echo '[Format] file formatted'
