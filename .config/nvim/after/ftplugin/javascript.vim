@@ -1,5 +1,6 @@
 compiler eslint
 let b:formatcmd = "npx prettier " . shellescape(expand('%'))
+nnoremap <buffer> <localleader>f :Format<cr>
 
 setlocal isfname+=@-@ " some node_modules are namespaced with an @
 setlocal suffixesadd+=.js,.json,.jsx,.ts,.tsx

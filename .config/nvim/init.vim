@@ -190,6 +190,27 @@ command! -nargs=? -complete=filetype EditFileTypePlugin
       \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 nnoremap <localleader>c :EditFileTypePlugin<cr>
 
+" Format {{{
+function! s:FormatFile() abort
+  if get(b:, 'formatcmd', '') == ''
+    echo '[Format] no command set'
+    return -1
+  else
+    let l:view = winsaveview()
+    let l:cmd = '%! ' . b:formatcmd
+    silent execute l:cmd
+    if v:shell_error > 0
+      silent undo
+      redraw
+      echo '[Format] command "' . b:formatcmd . '" failed.'
+    endif
+    call winrestview(l:view)
+    echo '[Format] file formatted'
+    return 0
+  endif
+endfunction
+command! -nargs=0 Format call <sid>FormatFile()
+" }}}
 " Grep {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
@@ -356,8 +377,8 @@ if executable('node')
   endfunction
 
   " Add `:Format` command to format current buffer.
-  command! -nargs=0 Format :call CocAction('format')
-  nnoremap <leader>F  :Format<cr>
+  command! -nargs=0 FormatCoc :call CocAction('format')
+  nnoremap <leader>F  :FormatCoc<cr>
 endif
 " }}}
 " fzf.vim {{{
