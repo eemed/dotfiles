@@ -26,17 +26,12 @@ nnoremap Y y$
 tnoremap <esc> <c-\><c-n>
 
 " Move text
-xnoremap J :move '>+1<CR>gv=gv
-xnoremap K :move '<-2<CR>gv=gv
 xnoremap < <gv
 xnoremap > >gv
 
 nnoremap <leader>S :source <c-r>%<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <BS> <C-^>
-
-nnoremap Q @q
-nnoremap gV `[v`]
 
 " Saving
 nnoremap <silent><c-s> :update<CR>
@@ -79,8 +74,6 @@ onoremap in :<C-u>normal vin<CR>
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
 
-nnoremap gF <c-w>f
-
 nnoremap <silent> [[ m':call search(&define, 'bW')<cr>
 nnoremap <silent> ]] m':call search(&define, "W")<CR>
 
@@ -117,8 +110,6 @@ set pumheight=10
 set completeopt+=noselect,menuone
 set omnifunc=syntaxcomplete#Complete
 
-set tags=./tags;,tags;
-
 set smartindent
 set nohlsearch
 
@@ -135,17 +126,21 @@ set updatetime=300
 set foldmethod=marker
 
 autocmd MyAutocmds FocusLost,BufLeave * silent! update
-function! s:SetScrolloff() abort
-  if index(['qf'], &filetype) == -1
-    set scrolloff=5
-    set sidescrolloff=10
-  else
-    set scrolloff=0
-    set sidescrolloff=0
-  endif
-endfunction
-autocmd MyAutocmds BufEnter,WinEnter * call <sid>SetScrolloff()
 
+set scrolloff=5
+set sidescrolloff=10
+autocmd MyAutocmds FileType qf setlocal scrolloff=0 sidescrolloff=0
+" }}}
+" Commands {{{
+command! -nargs=0 Config execute ':edit ' . $MYVIMRC
+nnoremap <leader>c :Config<CR>
+
+command! -nargs=? -complete=filetype EditFileTypePlugin
+      \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
+      \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
+nnoremap <localleader>c :EditFileTypePlugin<cr>
+
+" Sane path {{{
 function SetSanePath() abort
   " Set a basic &path
   set path=.,,
@@ -181,21 +176,11 @@ endfunction
 command! -nargs=? -complete=dir CD :call s:CD(<q-args>)
 cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
 " }}}
-" Commands {{{
-command! -nargs=0 Config execute ':edit ' . $MYVIMRC
-nnoremap <leader>c :Config<CR>
-
-command! -nargs=? -complete=filetype EditFileTypePlugin
-      \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
-      \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
-nnoremap <localleader>c :EditFileTypePlugin<cr>
-
 " Format {{{
 function! s:FormatFile() abort
   write
   if get(b:, 'formatcmd', '') == ''
     echo '[Format] no command set'
-    return -1
   else
     let l:view = winsaveview()
     let l:cmd = '%! ' . b:formatcmd
@@ -210,7 +195,6 @@ function! s:FormatFile() abort
     endif
     call winrestview(l:view)
     echo '[Format] file formatted'
-    return 0
   endif
 endfunction
 command! -nargs=0 Format call <sid>FormatFile()
@@ -399,7 +383,6 @@ nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
-nnoremap <silent><leader>t :Tags<CR>
 " }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
