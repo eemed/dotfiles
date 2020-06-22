@@ -78,6 +78,51 @@ nnoremap <silent> [[ m':call search(&define, 'bW')<cr>
 nnoremap <silent> ]] m':call search(&define, "W")<CR>
 
 set pastetoggle=<F2>
+
+nnoremap <c-p> :find<space>
+nmap <leader>h :oldfiles<cr>
+nmap <leader>b :buffers<cr>
+nmap <leader>l ://#<left><left>
+
+" make list-like commands more intuitive
+function! CCR()
+    let cmdline = getcmdline()
+    if getcmdtype() == ":"
+      if cmdline =~ '\v\C^(ls|files|buffers)'
+          " like :ls but prompts for a buffer command
+          return "\<CR>:b"
+      elseif cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
+          " like :g//# but prompts for a command
+          return "\<CR>:"
+      elseif cmdline =~ '\v\C^(dli|il)'
+          " like :dlist or :ilist but prompts for a count for :djump or :ijump
+          return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
+      elseif cmdline =~ '\v\C^(cli|lli)'
+          " like :clist or :llist but prompts for an error/location number
+          return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
+      elseif cmdline =~ '\C^old'
+          " like :oldfiles but prompts for an old file to edit
+          set nomore
+          return "\<CR>:sil se more|e #<"
+      elseif cmdline =~ '\C^changes'
+          " like :changes but prompts for a change to jump to
+          set nomore
+          return "\<CR>:sil se more|norm! g;\<S-Left>"
+      elseif cmdline =~ '\C^ju'
+          " like :jumps but prompts for a position to jump to
+          set nomore
+          return "\<CR>:sil se more|norm! \<C-o>\<S-Left>"
+      elseif cmdline =~ '\C^marks'
+          " like :marks but prompts for a mark to jump to
+          return "\<CR>:norm! `"
+      elseif cmdline =~ '\C^undol'
+          " like :undolist but prompts for a change to undo
+          return "\<CR>:u "
+      endif
+    endif
+    return "\<CR>"
+endfunction
+cnoremap <expr> <CR> CCR()
 " }}}
 " Settings {{{
 filetype plugin indent on
@@ -107,7 +152,7 @@ set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*,*.pdf
 
 " Completion
 set pumheight=10
-set completeopt+=noselect,menuone
+set completeopt=noselect,menuone,menu
 set omnifunc=syntaxcomplete#Complete
 
 set smartindent
@@ -129,7 +174,6 @@ autocmd MyAutocmds FocusLost,BufLeave * silent! update
 
 set scrolloff=5
 set sidescrolloff=10
-autocmd MyAutocmds FileType qf setlocal scrolloff=0 sidescrolloff=0
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -287,22 +331,22 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'NLKNguyen/papercolor-theme'
+Plug 'cideM/yui'
 
 Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
 
 " Fuzzy find
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
+" Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'tpope/vim-unimpaired'               " Bindings
 Plug 'tpope/vim-sleuth'                   " Wise indent style
-Plug 'tpope/vim-endwise'                  " End structures
+" Plug 'tpope/vim-endwise'                  " End structures
 
-Plug '9mm/vim-closer'                     " End brackets
+" Plug '9mm/vim-closer'                     " End brackets
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'romainl/vim-qf'                     " Quickfix window overall improvements
 Plug 'machakann/vim-sandwich'             " Surround objects
@@ -310,79 +354,64 @@ Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
 Plug 'duggiefresh/vim-easydir'            " Automatically create directories
 
-if executable('node')
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
-endif
+Plug 'neovim/nvim-lsp'
+Plug 'haorenW1025/completion-nvim'
+Plug 'haorenW1025/diagnostic-nvim'
 
 " Syntax
-Plug 'pearofducks/ansible-vim'
-Plug 'maxmellon/vim-jsx-pretty'
-Plug 'rust-lang/rust.vim'
-Plug 'vim-python/python-syntax'
+" Plug 'pearofducks/ansible-vim'
+" Plug 'maxmellon/vim-jsx-pretty'
+" Plug 'rust-lang/rust.vim'
+" Plug 'vim-python/python-syntax'
 call plug#end() " }}}
 " Plugin configuration {{{
-" coc {{{
-nnoremap <localleader>s :CocCommand snippets.editSnippets<cr>
-call coc#add_extension('coc-json', 'coc-snippets')
-if executable('node')
-  set signcolumn=no
+" nvim-lsp {{{
+lua << EOF
+  local nvim_lsp = require('nvim_lsp')
 
-  inoremap <silent><expr> <TAB>
-        \ pumvisible() ? "\<C-y>" :
-        \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-        \ <SID>check_back_space() ? "\<TAB>" :
-        \ coc#refresh()
+  local on_attach = function(_, bufnr)
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+    require'diagnostic'.on_attach()
+    require'completion'.on_attach()
 
-  function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-  endfunction
+    -- Mappings.
+    local opts = { noremap=true, silent=true }
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gD'        , '<Cmd>lua vim.lsp.buf.declaration()<CR>'            , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gd'        , '<Cmd>lua vim.lsp.buf.definition()<CR>'             , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'K'         , '<Cmd>lua vim.lsp.buf.hover()<CR>'                  , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gi'        , '<cmd>lua vim.lsp.buf.implementation()<CR>'         , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<C-k>'     , '<cmd>lua vim.lsp.buf.signature_help()<CR>'         , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>D' , '<cmd>lua vim.lsp.buf.type_definition()<CR>'        , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<leader>F' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
+  end
 
-  let g:coc_snippet_next = '<tab>'
-  let g:coc_snippet_prev = '<s-tab>'
+  local servers = {'bashls', 'diagnosticls', 'tsserver', 'pyls', 'rls', 'vimls'}
+  for _, lsp in ipairs(servers) do
+    nvim_lsp[lsp].setup {
+      on_attach = on_attach,
+    }
+  end
+EOF
 
-  " Use `[g` and `]g` to navigate diagnostics
-  nmap <silent> [g <Plug>(coc-diagnostic-prev)
-  nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-  " GoTo code navigation.
-  nmap <silent> gd <Plug>(coc-definition)
-  nmap <silent> gy <Plug>(coc-type-definition)
-  nmap <silent> gi <Plug>(coc-implementation)
-  nmap <silent> gr <Plug>(coc-references)
-  nmap <silent> gR <Plug>(coc-rename)
-  nmap <silent> <leader>a <Plug>(coc-codeaction)
-
-  " Use K to show documentation in preview window.
-  nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-  function! s:show_documentation()
-    if (index(['vim','help'], &filetype) >= 0)
-      execute 'h '.expand('<cword>')
-    else
-      call CocAction('doHover')
-    endif
-  endfunction
-
-  " Add `:Format` command to format current buffer.
-  command! -nargs=0 FormatCoc :call CocAction('format')
-  nnoremap <leader>F  :FormatCoc<cr>
-endif
-" }}}
-" fzf.vim {{{
-function! Browse() abort
-  if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
-    " Use this because Gfiles doesn't work with cached files
-    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-  else
-    exe "Files"
-  endif
-endfunction
-
-nnoremap <silent><c-p> :call Browse()<CR>
-nnoremap <silent><leader>b :Buffers<CR>
-nnoremap <silent><leader>l :BLines<CR>
-nnoremap <silent><leader>h :History<CR>
+" <c-w>p to jump to floating window
+let g:completion_chain_complete_list = {
+      \ 'default' : {
+      \   'default': [
+      \       {'complete_items': ['lsp', 'path']},
+      \       {'mode': '<c-p>'},
+      \       {'mode': '<c-n>'}],
+      \   'comment': []
+      \   }
+      \}
+" let g:completion_enable_snippet = 'UltiSnips'
+let g:completion_trigger_character = ['.', '::' , '/']
+let g:completion_enable_auto_hover = 0
+let g:completion_enable_fuzzy_match = 1
+let g:diagnostic_enable_virtual_text = 0
+let g:completion_trigger_keyword_length = 3
 " }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
@@ -437,7 +466,9 @@ runtime macros/sandwich/keymap/surround.vim
 " colorscheme {{{
 let g:python_highlight_all = 1
 set background=light
-colorscheme PaperColor
+let g:yui_comments = 'emphasize'
+autocmd MyAutocmds ColorScheme * highlight Folded guifg=#777777 guibg=#e1e1e1
+colorscheme yui
 " }}}
 " }}}
 " Local settings {{{
