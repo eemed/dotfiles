@@ -414,6 +414,11 @@ let g:completion_enable_auto_hover = 0
 let g:completion_enable_fuzzy_match = 1
 let g:diagnostic_enable_virtual_text = 0
 let g:completion_trigger_keyword_length = 3
+
+call sign_define("LspDiagnosticsErrorSign", {"text" : "!", "texthl" : "LspDiagnosticsError"})
+call sign_define("LspDiagnosticsWarningSign", {"text" : "!", "texthl" : "LspDiagnosticsWarning"})
+call sign_define("LspDiagnosticsInformationSign", {"text" : "-", "texthl" : "LspDiagnosticsInformation"})
+call sign_define("LspDiagnosticsHintSign", {"text" : "-", "texthl" : "LspDiagnosticsHint"})
 " }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
@@ -469,7 +474,24 @@ runtime macros/sandwich/keymap/surround.vim
 let g:python_highlight_all = 1
 set background=light
 let g:yui_comments = 'emphasize'
+
 autocmd MyAutocmds ColorScheme * highlight Folded guifg=#777777 guibg=#e1e1e1
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsError             ErrorMsg
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsErrorSign         ErrorMsg
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsErrorSignFloating ErrorMsg
+
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsWarning             WarningMsg
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsWarningSign         WarningMsg
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsWarningSignFloating WarningMsg
+
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsHint             Search
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsHintSign         Search
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsHintSignFloating Search
+
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsInformation             Search
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsInformationSign         Search
+autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsInformationSignFloating Search
+
 colorscheme yui
 " }}}
 " }}}
