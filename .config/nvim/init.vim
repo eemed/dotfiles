@@ -79,12 +79,7 @@ nnoremap <silent> ]] m':call search(&define, "W")<CR>
 
 set pastetoggle=<F2>
 
-nnoremap <c-p> :find<space>
-nmap <leader>h :oldfiles<cr>
-nmap <leader>b :buffers<cr>
-nmap <leader>l ://#<left><left>
-
-" make list-like commands more intuitive
+" make list-like commands more intuitive {{{
 function! CCR()
     let cmdline = getcmdline()
     if getcmdtype() == ":"
@@ -124,6 +119,29 @@ function! CCR()
 endfunction
 cnoremap <expr> <CR> CCR()
 " }}}
+" I need some finnish letters occasionally {{{
+let g:fix_keys_enabled = 0
+function! s:FixKeys() abort
+  inoremap ; ö
+  inoremap : Ö
+  inoremap ' ä
+  inoremap " Ä
+  let g:fix_keys_enabled = 1
+endfunction
+
+function! s:RestoreKeys() abort
+  if g:fix_keys_enabled == 1
+    iunmap ;
+    iunmap :
+    iunmap '
+    iunmap "
+    let g:fix_keys_enabled = 0
+  endif
+endfunction
+inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
+autocmd MyAutocmds InsertLeave * call <sid>RestoreKeys()
+" }}}
+" }}}
 " Settings {{{
 filetype plugin indent on
 set hidden
@@ -156,7 +174,7 @@ set completeopt=noselect,menuone,menu
 set omnifunc=syntaxcomplete#Complete
 
 set smartindent
-set nohlsearch
+set hlsearch
 
 " Use undo files
 set undofile
@@ -174,16 +192,32 @@ autocmd MyAutocmds FocusLost,BufLeave * silent! update
 
 set scrolloff=5
 set sidescrolloff=10
+
+" Remove search highlight {{{
+noremap <expr> <Plug>(StopHL) execute('nohlsearch')[-1]
+noremap! <expr> <Plug>(StopHL) execute('nohlsearch')[-1]
+
+function! HlSearch()
+  let s:pos = match(getline('.'), @/, col('.') - 1) + 1
+  if s:pos != col('.')
+    call StopHL()
+  endif
+endfunction
+
+function! StopHL()
+  if !v:hlsearch || mode() isnot 'n'
+    return
+  else
+    sil call feedkeys("\<Plug>(StopHL)", 'm')
+  endif
+endfunction
+
+augroup SearchHighlight
+  autocmd!
+  autocmd CursorMoved * call HlSearch()
+  autocmd InsertEnter * call StopHL()
+augroup end
 " }}}
-" Commands {{{
-command! -nargs=0 Config execute ':edit ' . $MYVIMRC
-nnoremap <leader>c :Config<CR>
-
-command! -nargs=? -complete=filetype EditFileTypePlugin
-      \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
-      \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
-nnoremap <localleader>c :EditFileTypePlugin<cr>
-
 " Sane path {{{
 function SetSanePath() abort
   " Set a basic &path
@@ -219,6 +253,27 @@ function! s:CD(path) abort
 endfunction
 command! -nargs=? -complete=dir CD :call s:CD(<q-args>)
 cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
+" }}}
+" }}}
+" Commands {{{
+command! -nargs=0 Config execute ':edit ' . $MYVIMRC
+nnoremap <leader>c :Config<CR>
+
+command! -nargs=? -complete=filetype EditFileTypePlugin
+      \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
+      \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
+nnoremap <localleader>c :EditFileTypePlugin<cr>
+
+" Scratch buffer {{{
+function! s:Scratch()
+    noswapfile hide enew
+    setlocal buftype=nofile
+    setlocal bufhidden=hide
+    "setlocal nobuflisted
+    "lcd ~
+    file scratch
+endfunction
+command! -nargs=0 Scratch call <sid>Scratch()
 " }}}
 " Format {{{
 function! s:FormatFile() abort
@@ -285,28 +340,6 @@ autocmd MyAutocmds BufWritePost * call <sid>MakeOnSaveFT()
 command! -nargs=0 ToggleMakeOnSaveFT call <sid>ToggleMakeOnSaveFT()
 nnoremap yom :<c-u>call <sid>ToggleMakeOnSaveFT()<cr>
 " }}}
-" I need some finnish letters occasionally {{{
-let g:fix_keys_enabled = 0
-function! s:FixKeys() abort
-  inoremap ; ö
-  inoremap : Ö
-  inoremap ' ä
-  inoremap " Ä
-  let g:fix_keys_enabled = 1
-endfunction
-
-function! s:RestoreKeys() abort
-  if g:fix_keys_enabled == 1
-    iunmap ;
-    iunmap :
-    iunmap '
-    iunmap "
-    let g:fix_keys_enabled = 0
-  endif
-endfunction
-inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
-autocmd MyAutocmds InsertLeave * call <sid>RestoreKeys()
-" }}}
 " }}}
 " Appearance {{{
 set cursorline
@@ -337,8 +370,8 @@ Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
 Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
 
 " Fuzzy find
-" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
-" Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
@@ -385,7 +418,7 @@ lua << EOF
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<leader>F' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
-    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
+    vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
   end
 
   local servers = {'bashls', 'diagnosticls', 'tsserver', 'pyls', 'rls', 'vimls'}
@@ -419,6 +452,36 @@ call sign_define("LspDiagnosticsErrorSign", {"text" : "!", "texthl" : "LspDiagno
 call sign_define("LspDiagnosticsWarningSign", {"text" : "!", "texthl" : "LspDiagnosticsWarning"})
 call sign_define("LspDiagnosticsInformationSign", {"text" : "-", "texthl" : "LspDiagnosticsInformation"})
 call sign_define("LspDiagnosticsHintSign", {"text" : "-", "texthl" : "LspDiagnosticsHint"})
+" }}}
+" fzf.vim {{{
+function! Browse() abort
+  if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
+    " Use this because Gfiles doesn't work with cached files
+    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
+  else
+    exe "Files"
+  endif
+endfunction
+
+nnoremap <silent><c-p> :call Browse()<CR>
+nnoremap <silent><leader>b :Buffers<CR>
+nnoremap <silent><leader>l :BLines<CR>
+nnoremap <silent><leader>h :History<CR>
+
+let g:fzf_colors = {
+      \ 'fg':      ['fg', 'Normal'],
+      \ 'bg':      ['bg', 'Normal'],
+      \ 'hl':      ['fg', 'Comment'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Comment'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'border':  ['fg', 'Ignore'],
+      \ 'prompt':  ['fg', 'Conditional'],
+      \ 'pointer': ['fg', 'Exception'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
 " }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
@@ -475,7 +538,7 @@ let g:python_highlight_all = 1
 set background=light
 let g:yui_comments = 'emphasize'
 
-autocmd MyAutocmds ColorScheme * highlight Folded guifg=#777777 guibg=#e1e1e1
+autocmd MyAutocmds ColorScheme * highlight Folded guifg=#888888 guibg=#ebe8dd
 autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsError             ErrorMsg
 autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsErrorSign         ErrorMsg
 autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsErrorSignFloating ErrorMsg
