@@ -19,6 +19,11 @@ let maplocalleader = "\\"
 nnoremap k gk
 nnoremap j gj
 
+nnoremap <c-h> :wincmd h<cr>
+nnoremap <c-j> :wincmd j<cr>
+nnoremap <c-k> :wincmd k<cr>
+nnoremap <c-l> :wincmd l<cr>
+
 imap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
 nmap <c-f> mm[s1z=`m
 
@@ -79,46 +84,6 @@ nnoremap <silent> ]] m':call search(&define, "W")<CR>
 
 set pastetoggle=<F2>
 
-" make list-like commands more intuitive {{{
-function! CCR()
-    let cmdline = getcmdline()
-    if getcmdtype() == ":"
-      if cmdline =~ '\v\C^(ls|files|buffers)'
-          " like :ls but prompts for a buffer command
-          return "\<CR>:b"
-      elseif cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
-          " like :g//# but prompts for a command
-          return "\<CR>:"
-      elseif cmdline =~ '\v\C^(dli|il)'
-          " like :dlist or :ilist but prompts for a count for :djump or :ijump
-          return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
-      elseif cmdline =~ '\v\C^(cli|lli)'
-          " like :clist or :llist but prompts for an error/location number
-          return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
-      elseif cmdline =~ '\C^old'
-          " like :oldfiles but prompts for an old file to edit
-          set nomore
-          return "\<CR>:sil se more|e #<"
-      elseif cmdline =~ '\C^changes'
-          " like :changes but prompts for a change to jump to
-          set nomore
-          return "\<CR>:sil se more|norm! g;\<S-Left>"
-      elseif cmdline =~ '\C^ju'
-          " like :jumps but prompts for a position to jump to
-          set nomore
-          return "\<CR>:sil se more|norm! \<C-o>\<S-Left>"
-      elseif cmdline =~ '\C^marks'
-          " like :marks but prompts for a mark to jump to
-          return "\<CR>:norm! `"
-      elseif cmdline =~ '\C^undol'
-          " like :undolist but prompts for a change to undo
-          return "\<CR>:u "
-      endif
-    endif
-    return "\<CR>"
-endfunction
-cnoremap <expr> <CR> CCR()
-" }}}
 " I need some finnish letters occasionally {{{
 let g:fix_keys_enabled = 0
 function! s:FixKeys() abort
@@ -175,6 +140,7 @@ set omnifunc=syntaxcomplete#Complete
 
 set smartindent
 set hlsearch
+nnoremap <esc> :nohl<cr><esc>
 
 " Use undo files
 set undofile
@@ -193,30 +159,14 @@ autocmd MyAutocmds FocusLost,BufLeave * silent! update
 set scrolloff=5
 set sidescrolloff=10
 
-" Remove search highlight {{{
-noremap <expr> <Plug>(StopHL) execute('nohlsearch')[-1]
-noremap! <expr> <Plug>(StopHL) execute('nohlsearch')[-1]
-
-function! HlSearch()
-  let s:pos = match(getline('.'), @/, col('.') - 1) + 1
-  if s:pos != col('.')
-    call StopHL()
+" Autocreate directories {{{
+function! s:create_and_save_directory()
+  let l:directory = expand('<afile>:p:h')
+  if l:directory !~# '^\w\+:' && !isdirectory(l:directory)
+    call mkdir(l:directory, 'p')
   endif
 endfunction
-
-function! StopHL()
-  if !v:hlsearch || mode() isnot 'n'
-    return
-  else
-    sil call feedkeys("\<Plug>(StopHL)", 'm')
-  endif
-endfunction
-
-augroup SearchHighlight
-  autocmd!
-  autocmd CursorMoved * call HlSearch()
-  autocmd InsertEnter * call StopHL()
-augroup end
+autocmd MyAutocmds BufWritePre,FileWritePre * call <sid>create_and_save_directory()
 " }}}
 " Sane path {{{
 function SetSanePath() abort
@@ -254,6 +204,11 @@ endfunction
 command! -nargs=? -complete=dir CD :call s:CD(<q-args>)
 cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
 " }}}
+" Quickfix {{{
+autocmd MyAutocmds WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
+autocmd MyAutocmds QuickFixCmdPost [^l]* nested cwindow
+autocmd MyAutocmds QuickFixCmdPost    l* nested lwindow
+" }}}
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -269,8 +224,6 @@ function! s:Scratch()
     noswapfile hide enew
     setlocal buftype=nofile
     setlocal bufhidden=hide
-    "setlocal nobuflisted
-    "lcd ~
     file scratch
 endfunction
 command! -nargs=0 Scratch call <sid>Scratch()
@@ -366,9 +319,6 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 call plug#begin(g:vimdir . '/plugged')
 Plug 'cideM/yui'
 
-Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
-Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
-
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
@@ -377,25 +327,15 @@ Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'tpope/vim-unimpaired'               " Bindings
 Plug 'tpope/vim-sleuth'                   " Wise indent style
-" Plug 'tpope/vim-endwise'                  " End structures
-
-" Plug '9mm/vim-closer'                     " End brackets
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
-Plug 'romainl/vim-qf'                     " Quickfix window overall improvements
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
-Plug 'duggiefresh/vim-easydir'            " Automatically create directories
 
+" nvim-0.5
 Plug 'neovim/nvim-lsp'
 Plug 'haorenW1025/completion-nvim'
 Plug 'haorenW1025/diagnostic-nvim'
-
-" Syntax
-" Plug 'pearofducks/ansible-vim'
-" Plug 'maxmellon/vim-jsx-pretty'
-" Plug 'rust-lang/rust.vim'
-" Plug 'vim-python/python-syntax'
 call plug#end() " }}}
 " Plugin configuration {{{
 " nvim-lsp {{{
@@ -413,7 +353,7 @@ lua << EOF
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gd'        , '<Cmd>lua vim.lsp.buf.definition()<CR>'             , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'K'         , '<Cmd>lua vim.lsp.buf.hover()<CR>'                  , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gi'        , '<cmd>lua vim.lsp.buf.implementation()<CR>'         , opts)
-    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<C-k>'     , '<cmd>lua vim.lsp.buf.signature_help()<CR>'         , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<C-k>'     , '<cmd>lua vim.lsp.buf.signature_help()<CR>'         , opts)
     -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>D' , '<cmd>lua vim.lsp.buf.type_definition()<CR>'        , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
@@ -489,13 +429,6 @@ let g:undotree_DiffAutoOpen = 0
 let g:undotree_SetFocusWhenToggle = 1
 nnoremap <leader>u :UndotreeToggle<cr>
 " }}}
-" vim-qf {{{
-nmap [q <Plug>(qf_qf_previous)
-nmap ]q <Plug>(qf_qf_next)
-
-nmap [l <Plug>(qf_loc_previous)
-nmap ]l <Plug>(qf_loc_next)
-" }}}
 " dirvish {{{
 let g:loaded_netrwPlugin = 1
 command! -nargs=? -complete=dir Explore Dirvish <args>
@@ -520,12 +453,6 @@ function! s:dirvish_toggle() abort
     leftabove vsplit | vertical resize 30 | Dirvish
   endif
 endfunction
-" }}}
-" vim-tmux-navigator {{{
-tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
-tnoremap <silent> <c-j> <C-\><C-n>:TmuxNavigateDown<cr>
-tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
-tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
 " }}}
 " vim-fugitive {{{
 nnoremap <silent><leader>g :vertical Gstatus<CR>
