@@ -35,6 +35,7 @@ xnoremap < <gv
 xnoremap > >gv
 
 nnoremap <leader>S :source <c-r>%<CR>
+nnoremap <leader>q :q<cr>
 nnoremap <BS> <C-^>
 
 " Saving
@@ -316,7 +317,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'cideM/yui'
+Plug 'eemed/yui'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -460,27 +461,8 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 runtime macros/sandwich/keymap/surround.vim
 " }}}
 " colorscheme {{{
-let g:python_highlight_all = 1
 set background=light
 let g:yui_comments = 'emphasize'
-
-autocmd MyAutocmds ColorScheme * highlight Folded guifg=#888888 guibg=#ebe8dd
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsError             ErrorMsg
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsErrorSign         ErrorMsg
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsErrorSignFloating ErrorMsg
-
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsWarning             WarningMsg
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsWarningSign         WarningMsg
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsWarningSignFloating WarningMsg
-
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsHint             Search
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsHintSign         Search
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsHintSignFloating Search
-
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsInformation             Search
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsInformationSign         Search
-autocmd MyAutocmds ColorScheme * highlight! link LspDiagnosticsInformationSignFloating Search
-
 colorscheme yui
 " }}}
 " }}}
