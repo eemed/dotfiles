@@ -35,7 +35,6 @@ xnoremap < <gv
 xnoremap > >gv
 
 nnoremap <leader>S :source <c-r>%<CR>
-nnoremap <leader>q :q<CR>
 nnoremap <BS> <C-^>
 
 " Saving
