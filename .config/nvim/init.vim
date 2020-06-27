@@ -343,69 +343,61 @@ Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
 
-" nvim-0.5
-Plug 'neovim/nvim-lsp'
-Plug 'haorenW1025/completion-nvim'
-Plug 'haorenW1025/diagnostic-nvim'
+if executable('node')
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+endif
 call plug#end()
 
 packadd cfilter
 " }}}
 " Plugin configuration {{{
-" nvim-lsp {{{
-lua << EOF
-  local nvim_lsp = require('nvim_lsp')
+" coc {{{
+nnoremap <localleader>s :CocCommand snippets.editSnippets<cr>
+call coc#add_extension('coc-json', 'coc-snippets')
+if executable('node')
+  set signcolumn=no
 
-  local on_attach = function(_, bufnr)
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-    require'diagnostic'.on_attach()
-    require'completion'.on_attach()
+  inoremap <silent><expr> <TAB>
+        \ pumvisible() ? "\<C-y>" :
+        \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+        \ <SID>check_back_space() ? "\<TAB>" :
+        \ coc#refresh()
 
-    -- Mappings.
-    local opts = { noremap=true, silent=true }
-    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gD'        , '<Cmd>lua vim.lsp.buf.declaration()<CR>'            , opts)
-    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gd'        , '<Cmd>lua vim.lsp.buf.definition()<CR>'             , opts)
-    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'K'         , '<Cmd>lua vim.lsp.buf.hover()<CR>'                  , opts)
-    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gi'        , '<cmd>lua vim.lsp.buf.implementation()<CR>'         , opts)
-    -- vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<C-k>'     , '<cmd>lua vim.lsp.buf.signature_help()<CR>'         , opts)
-    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>D' , '<cmd>lua vim.lsp.buf.type_definition()<CR>'        , opts)
-    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
-    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
-    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<leader>F' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
-    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
-  end
+  function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
+  endfunction
 
-  local servers = {'bashls', 'diagnosticls', 'tsserver', 'pyls', 'rls'}
-  for _, lsp in ipairs(servers) do
-    nvim_lsp[lsp].setup {
-      on_attach = on_attach,
-    }
-  end
-EOF
+  let g:coc_snippet_next = '<tab>'
+  let g:coc_snippet_prev = '<s-tab>'
 
-" <c-w>p to jump to floating window
-let g:completion_chain_complete_list = {
-      \ 'default': [
-      \     {'complete_items': ['lsp']},
-      \     {'complete_items': ['path'], 'triggered_only': ['/']},
-      \     {'mode': '<c-p>'},
-      \     {'mode': '<c-n>'}
-      \ ],
-      \ 'comment': []
-      \ }
+  " Use `[g` and `]g` to navigate diagnostics
+  nmap <silent> [g <Plug>(coc-diagnostic-prev)
+  nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
-" let g:completion_enable_snippet = 'UltiSnips'
-let g:completion_auto_change_source = 1
-let g:completion_trigger_character = ['.', '::', '/']
-let g:completion_enable_auto_hover = 0
-let g:completion_enable_fuzzy_match = 1
-let g:diagnostic_enable_virtual_text = 0
-let g:completion_trigger_keyword_length = 3
+  " GoTo code navigation.
+  nmap <silent> gd <Plug>(coc-definition)
+  nmap <silent> gy <Plug>(coc-type-definition)
+  nmap <silent> gi <Plug>(coc-implementation)
+  nmap <silent> gr <Plug>(coc-references)
+  nmap <silent> gR <Plug>(coc-rename)
+  nmap <silent> <leader>a <Plug>(coc-codeaction)
 
-call sign_define("LspDiagnosticsErrorSign", {"text" : "!", "texthl" : "LspDiagnosticsError"})
-call sign_define("LspDiagnosticsWarningSign", {"text" : "!", "texthl" : "LspDiagnosticsWarning"})
-call sign_define("LspDiagnosticsInformationSign", {"text" : "-", "texthl" : "LspDiagnosticsInformation"})
-call sign_define("LspDiagnosticsHintSign", {"text" : "-", "texthl" : "LspDiagnosticsHint"})
+  " Use K to show documentation in preview window.
+  nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+  function! s:show_documentation()
+    if (index(['vim','help'], &filetype) >= 0)
+      execute 'h '.expand('<cword>')
+    else
+      call CocAction('doHover')
+    endif
+  endfunction
+
+  " Add `:Format` command to format current buffer.
+  command! -nargs=0 FormatCoc :call CocAction('format')
+  nnoremap <leader>F  :FormatCoc<cr>
+endif
 " }}}
 " fzf.vim {{{
 function! Browse() abort
