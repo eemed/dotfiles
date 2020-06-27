@@ -7,10 +7,6 @@ if empty(glob(g:vimdir . '/autoload/plug.vim'))
   execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
-
-augroup MyAutocmds
-  autocmd!
-augroup end
 " }}}
 " Key mappings {{{
 let mapleader = " "
@@ -104,7 +100,10 @@ function! s:RestoreKeys() abort
   endif
 endfunction
 inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
-autocmd MyAutocmds InsertLeave * call <sid>RestoreKeys()
+augroup FinKeys
+  autocmd!
+  autocmd InsertLeave * call <sid>RestoreKeys()
+augroup end
 " }}}
 " }}}
 " Settings {{{
@@ -154,8 +153,6 @@ set viminfo='20
 set updatetime=300
 set foldmethod=marker
 
-autocmd MyAutocmds FocusLost,BufLeave * silent! update
-
 set scrolloff=5
 set sidescrolloff=10
 
@@ -166,7 +163,6 @@ function! s:create_and_save_directory()
     call mkdir(l:directory, 'p')
   endif
 endfunction
-autocmd MyAutocmds BufWritePre,FileWritePre * call <sid>create_and_save_directory()
 " }}}
 " Sane path {{{
 function SetSanePath() abort
@@ -204,11 +200,20 @@ endfunction
 command! -nargs=? -complete=dir CD :call s:CD(<q-args>)
 cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
 " }}}
-" Quickfix {{{
-autocmd MyAutocmds WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
-autocmd MyAutocmds QuickFixCmdPost [^l]* nested cwindow
-autocmd MyAutocmds QuickFixCmdPost    l* nested lwindow
-" }}}
+" Autocmd {{{
+augroup Settings
+  autocmd!
+  " Quickfix settings
+  autocmd WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
+  autocmd QuickFixCmdPost [^l]* nested cwindow
+  autocmd QuickFixCmdPost    l* nested lwindow
+
+  " Autocreate dirs
+  autocmd BufWritePre,FileWritePre * call <sid>create_and_save_directory()
+
+  " Autosave
+  autocmd FocusLost,BufLeave * silent! update
+augroup end " }}}
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -289,7 +294,10 @@ function! s:MakeOnSaveFT() abort
   endif
 endfunction
 
-autocmd MyAutocmds BufWritePost * call <sid>MakeOnSaveFT()
+augroup MakeOnSave
+  autocmd!
+  autocmd BufWritePost * call <sid>MakeOnSaveFT()
+augroup end
 command! -nargs=0 ToggleMakeOnSaveFT call <sid>ToggleMakeOnSaveFT()
 nnoremap yom :<c-u>call <sid>ToggleMakeOnSaveFT()<cr>
 " }}}
@@ -300,9 +308,12 @@ set synmaxcol=200
 set termguicolors
 set t_Co=256
 
-" Toggle cursor line on inactive window
-autocmd MyAutocmds WinEnter * set cursorline
-autocmd MyAutocmds WinLeave * set nocursorline
+augroup Appearance
+  autocmd!
+  " Toggle cursor line on inactive window
+  autocmd WinEnter * set cursorline
+  autocmd WinLeave * set nocursorline
+augroup end
 
 function! GitStatus() abort
   return get(g:, 'loaded_fugitive', 0) ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
@@ -336,7 +347,10 @@ Plug 'godlygeek/tabular'                  " Align stuff
 Plug 'neovim/nvim-lsp'
 Plug 'haorenW1025/completion-nvim'
 Plug 'haorenW1025/diagnostic-nvim'
-call plug#end() " }}}
+call plug#end()
+
+packadd cfilter
+" }}}
 " Plugin configuration {{{
 " nvim-lsp {{{
 lua << EOF
@@ -358,10 +372,10 @@ lua << EOF
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<leader>F' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
   end
 
-  local servers = {'bashls', 'diagnosticls', 'tsserver', 'pyls', 'rls', 'vimls'}
+  local servers = {'bashls', 'diagnosticls', 'tsserver', 'pyls', 'rls'}
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
       on_attach = on_attach,
