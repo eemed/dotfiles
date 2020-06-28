@@ -19,8 +19,8 @@ nnoremap <c-j> :wincmd j<cr>
 nnoremap <c-k> :wincmd k<cr>
 nnoremap <c-l> :wincmd l<cr>
 
-imap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
-nmap <c-f> mm[s1z=`m
+" imap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
+" nmap <c-f> mm[s1z=`m
 
 nnoremap Y y$
 tnoremap <esc> <c-\><c-n>
@@ -74,8 +74,11 @@ onoremap in :<C-u>normal vin<CR>
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
 
-nnoremap <silent> [[ m':call search(&define, 'bW')<cr>
-nnoremap <silent> ]] m':call search(&define, "W")<CR>
+nnoremap <silent> [m m':call search(&define, 'bW')<cr>
+nnoremap <silent> ]m m':call search(&define, "W")<CR>
+
+inoremap <expr> ; pumvisible() ? "\<c-n>" : ";"
+inoremap <expr> , pumvisible() ? "\<c-p>" : ","
 
 set pastetoggle=<F2>
 
@@ -301,17 +304,9 @@ nnoremap yom :<c-u>call <sid>ToggleMakeOnSaveFT()<cr>
 " }}}
 " }}}
 " Appearance {{{
-set cursorline
 set synmaxcol=200
 set termguicolors
 set t_Co=256
-
-augroup Appearance
-  autocmd!
-  " Toggle cursor line on inactive window
-  autocmd WinEnter * set cursorline
-  autocmd WinLeave * set nocursorline
-augroup end
 
 function! GitStatus() abort
   return get(g:, 'loaded_fugitive', 0) ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
@@ -368,14 +363,14 @@ lua << EOF
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'K'         , '<Cmd>lua vim.lsp.buf.hover()<CR>'                  , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gi'        , '<cmd>lua vim.lsp.buf.implementation()<CR>'         , opts)
     -- vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<C-k>'     , '<cmd>lua vim.lsp.buf.signature_help()<CR>'         , opts)
-    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>D' , '<cmd>lua vim.lsp.buf.type_definition()<CR>'        , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gy' , '<cmd>lua vim.lsp.buf.type_definition()<CR>'        , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<leader>F' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
     -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
   end
 
-  local servers = {'bashls', 'diagnosticls', 'tsserver', 'pyls', 'rls'}
+  local servers = {'bashls', 'diagnosticls', 'tsserver', 'pyls'}
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
       on_attach = on_attach,
