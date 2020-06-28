@@ -10,7 +10,6 @@ endif
 " }}}
 " Key mappings {{{
 let mapleader = " "
-let maplocalleader = "\\"
 
 nnoremap k gk
 nnoremap j gj
@@ -139,7 +138,7 @@ set omnifunc=syntaxcomplete#Complete
 
 set smartindent
 set hlsearch
-nnoremap <esc> :nohl<cr><esc>
+nnoremap <esc> :let @/ = ""<cr><esc>
 
 " Use undo files
 set undofile
@@ -222,7 +221,6 @@ nnoremap <leader>c :Config<CR>
 command! -nargs=? -complete=filetype EditFileTypePlugin
       \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
-nnoremap <localleader>c :EditFileTypePlugin<cr>
 
 " Scratch buffer {{{
 function! s:Scratch()
@@ -328,7 +326,9 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'eemed/yui'
+" Plug 'cideM/yui', {'branch': 'folds'}
+Plug '~/repos/yui'
+Plug 'lifepillar/vim-colortemplate'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -343,62 +343,64 @@ Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
 
-if executable('node')
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
-endif
+" if executable('node')
+"   Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" endif
 call plug#end()
 
 packadd cfilter
 " }}}
 " Plugin configuration {{{
-" coc {{{
-nnoremap <localleader>s :CocCommand snippets.editSnippets<cr>
-call coc#add_extension('coc-json', 'coc-snippets')
-if executable('node')
-  set signcolumn=no
+" " coc {{{
+" command! -nargs=0 SnippetsCoc :CocCommand snippets.editSnippets<cr>
+" call coc#add_extension('coc-json', 'coc-snippets')
+" if executable('node')
+"   set signcolumn=no
 
-  inoremap <silent><expr> <TAB>
-        \ pumvisible() ? "\<C-y>" :
-        \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-        \ <SID>check_back_space() ? "\<TAB>" :
-        \ coc#refresh()
+"   function! s:check_back_space() abort
+"     let col = col('.') - 1
+"     return !col || getline('.')[col - 1]  =~# '\s'
+"   endfunction
 
-  function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-  endfunction
+"   let g:coc_snippet_next = '<tab>'
+"   let g:coc_snippet_prev = '<s-tab>'
 
-  let g:coc_snippet_next = '<tab>'
-  let g:coc_snippet_prev = '<s-tab>'
+"   function! s:show_documentation()
+"     if (index(['vim','help'], &filetype) >= 0)
+"       execute 'h '.expand('<cword>')
+"     else
+"       call CocAction('doHover')
+"     endif
+"   endfunction
 
-  " Use `[g` and `]g` to navigate diagnostics
-  nmap <silent> [g <Plug>(coc-diagnostic-prev)
-  nmap <silent> ]g <Plug>(coc-diagnostic-next)
+"   " Add `:Format` command to format current buffer.
+"   command! -nargs=0 FormatCoc :call CocAction('format')
 
-  " GoTo code navigation.
-  nmap <silent> gd <Plug>(coc-definition)
-  nmap <silent> gy <Plug>(coc-type-definition)
-  nmap <silent> gi <Plug>(coc-implementation)
-  nmap <silent> gr <Plug>(coc-references)
-  nmap <silent> gR <Plug>(coc-rename)
-  nmap <silent> <leader>a <Plug>(coc-codeaction)
+"   function! CocMappings() abort
+"     inoremap <silent><expr> <TAB>
+"           \ pumvisible() ? "\<C-y>" :
+"           \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+"           \ <SID>check_back_space() ? "\<TAB>" :
+"           \ coc#refresh()
 
-  " Use K to show documentation in preview window.
-  nnoremap <silent> K :call <SID>show_documentation()<CR>
+"     " Use `[g` and `]g` to navigate diagnostics
+"     nmap <silent> [g <Plug>(coc-diagnostic-prev)
+"     nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
-  function! s:show_documentation()
-    if (index(['vim','help'], &filetype) >= 0)
-      execute 'h '.expand('<cword>')
-    else
-      call CocAction('doHover')
-    endif
-  endfunction
+"     " GoTo code navigation.
+"     nmap <silent> gd <Plug>(coc-definition)
+"     nmap <silent> gy <Plug>(coc-type-definition)
+"     nmap <silent> gi <Plug>(coc-implementation)
+"     nmap <silent> gr <Plug>(coc-references)
+"     nmap <silent> gR <Plug>(coc-rename)
+"     nmap <silent> <leader>a <Plug>(coc-codeaction)
 
-  " Add `:Format` command to format current buffer.
-  command! -nargs=0 FormatCoc :call CocAction('format')
-  nnoremap <leader>F  :FormatCoc<cr>
-endif
-" }}}
+"     " Use K to show documentation in preview window.
+"     nnoremap <silent> K :call <SID>show_documentation()<CR>
+"     nnoremap <leader>F  :FormatCoc<cr>
+"   endfunction
+" endif
+" " }}}
 " fzf.vim {{{
 function! Browse() abort
   if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
@@ -469,6 +471,7 @@ runtime macros/sandwich/keymap/surround.vim
 " colorscheme {{{
 set background=light
 let g:yui_comments = 'emphasize'
+let g:yui_folds = 'emphasize'
 colorscheme yui
 " }}}
 " }}}
