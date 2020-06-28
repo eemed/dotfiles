@@ -10,7 +10,6 @@ endif
 " }}}
 " Key mappings {{{
 let mapleader = " "
-let maplocalleader = "\\"
 
 nnoremap k gk
 nnoremap j gj
@@ -139,7 +138,7 @@ set omnifunc=syntaxcomplete#Complete
 
 set smartindent
 set hlsearch
-nnoremap <esc> :nohl<cr><esc>
+nnoremap <esc> :let @/ = ""<cr><esc>
 
 " Use undo files
 set undofile
@@ -222,7 +221,6 @@ nnoremap <leader>c :Config<CR>
 command! -nargs=? -complete=filetype EditFileTypePlugin
       \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
-nnoremap <localleader>c :EditFileTypePlugin<cr>
 
 " Scratch buffer {{{
 function! s:Scratch()
@@ -328,7 +326,9 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'eemed/yui'
+Plug 'cideM/yui', {'branch': 'folds'}
+" Plug '~/repos/yui'
+" Plug 'lifepillar/vim-colortemplate'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -477,6 +477,7 @@ runtime macros/sandwich/keymap/surround.vim
 " colorscheme {{{
 set background=light
 let g:yui_comments = 'emphasize'
+let g:yui_folds = 'emphasize'
 colorscheme yui
 " }}}
 " }}}
