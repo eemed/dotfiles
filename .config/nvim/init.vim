@@ -220,27 +220,30 @@ tnoremap <esc> <c-\><c-n>
 tnoremap <c-v> <c-\><c-n>pi
 
 let g:terminal_last_cmd = ""
-function! s:TerminalRun(split, cmd, ... ) abort
+function! s:TerminalRun(split, ... ) abort
+  let cmd = join(a:000, "")
+
+  if cmd == ""
+    let cmd = g:terminal_last_cmd
+  endif
+
+  if cmd == ""
+    echo '[Term] No command to run.'
+    return
+  endif
+
   execute a:split
-  execute 'terminal ' . a:cmd
-  let g:terminal_last_cmd = a:cmd
+  execute 'terminal ' . cmd
+  let g:terminal_last_cmd = cmd
   wincmd p
 endfunction
 
-function! s:TerminalRunLast(split) abort
-  if get(g:, 'terminal_last_cmd', "") != ""
-    call s:TerminalRun(a:split, g:terminal_last_cmd)
-  endif
-endfunction
-
 command! -nargs=0 TermMake call <sid>TerminalRun('split', &makeprg)
-command! -nargs=1 Term call <sid>TerminalRun('split', <q-args>)
-command! -nargs=1 VTerm call <sid>TerminalRun('vsplit', <q-args>)
-command! -nargs=1 TTerm call <sid>TerminalRun('tabnew', <q-args>)
-command! -nargs=0 TermLast call <sid>TerminalRunLast('split')
-command! -nargs=0 VTermLast call <sid>TerminalRunLast('vsplit')
+command! -nargs=? Term call <sid>TerminalRun('split', <q-args>)
+command! -nargs=? VTerm call <sid>TerminalRun('vsplit', <q-args>)
+command! -nargs=? TTerm call <sid>TerminalRun('tabnew', <q-args>)
 nnoremap `<space> :Term<space>
-nnoremap `<cr> :TermLast<cr>
+nnoremap `<cr> :Term<cr>
 " }}}
 " Completion {{{
 set pumheight=10
