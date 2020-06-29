@@ -14,16 +14,16 @@ let mapleader = " "
 nnoremap k gk
 nnoremap j gj
 
+" Window navigation
 nnoremap <c-h> :wincmd h<cr>
 nnoremap <c-j> :wincmd j<cr>
 nnoremap <c-k> :wincmd k<cr>
 nnoremap <c-l> :wincmd l<cr>
 
-" imap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
-" nmap <c-f> mm[s1z=`m
+imap <c-h> <c-g>u<Esc>[s1z=`]a<c-g>u
+" nmap <c-h> mm[s1z=`m
 
 nnoremap Y y$
-tnoremap <esc> <c-\><c-n>
 
 " Move text
 xnoremap < <gv
@@ -80,6 +80,9 @@ nnoremap <silent> ]m m':call search(&define, "W")<CR>
 inoremap <expr> ; pumvisible() ? "\<c-n>" : ";"
 inoremap <expr> , pumvisible() ? "\<c-p>" : ","
 
+cnoremap <expr> ; pumvisible() ? "\<c-n>" : ";"
+cnoremap <expr> , pumvisible() ? "\<c-p>" : ","
+
 set pastetoggle=<F2>
 
 " I need some finnish letters occasionally {{{
@@ -101,7 +104,7 @@ function! s:RestoreKeys() abort
     let g:fix_keys_enabled = 0
   endif
 endfunction
-inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
+inoremap <silent> <c-b> <c-o>:call <sid>FixKeys()<cr>
 augroup FinKeys
   autocmd!
   autocmd InsertLeave * call <sid>RestoreKeys()
@@ -134,11 +137,6 @@ set ignorecase smartcase
 set inccommand=split
 set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*,*.pdf
 
-" Completion
-set pumheight=10
-set completeopt=noselect,menuone,menu
-set omnifunc=syntaxcomplete#Complete
-
 set smartindent
 set hlsearch
 nnoremap <esc> :let @/ = ""<cr><esc>
@@ -166,7 +164,7 @@ function! s:create_and_save_directory()
   endif
 endfunction
 " }}}
-" Sane path {{{
+" Sane path with git{{{
 function SetSanePath() abort
   " Set a basic &path
   set path=.,,
@@ -202,7 +200,7 @@ endfunction
 command! -nargs=? -complete=dir CD :call s:CD(<q-args>)
 cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
 " }}}
-" Autocmd {{{
+" Settings autocmds {{{
 augroup Settings
   autocmd!
   " Quickfix settings
@@ -216,6 +214,44 @@ augroup Settings
   " Autosave
   autocmd FocusLost,BufLeave * silent! update
 augroup end " }}}
+" }}}
+" Terminal {{{
+tnoremap <esc> <c-\><c-n>
+tnoremap <c-v> <c-\><c-n>pi
+
+let g:terminal_last_cmd = ""
+function! s:TerminalRun(split, cmd, ... ) abort
+  execute a:split
+  execute 'terminal ' . a:cmd
+  let g:terminal_last_cmd = a:cmd
+  wincmd p
+endfunction
+
+function! s:TerminalRunLast(split) abort
+  if get(g:, 'terminal_last_cmd', "") != ""
+    call s:TerminalRun(a:split, g:terminal_last_cmd)
+  endif
+endfunction
+
+command! -nargs=0 TermMake call <sid>TerminalRun('split', &makeprg)
+command! -nargs=1 Term call <sid>TerminalRun('split', <q-args>)
+command! -nargs=1 VTerm call <sid>TerminalRun('vsplit', <q-args>)
+command! -nargs=1 TTerm call <sid>TerminalRun('tabnew', <q-args>)
+command! -nargs=0 TermLast call <sid>TerminalRunLast('split')
+command! -nargs=0 VTermLast call <sid>TerminalRunLast('vsplit')
+nnoremap `<space> :Term<space>
+nnoremap `<cr> :TermLast<cr>
+" }}}
+" Completion {{{
+set pumheight=10
+set completeopt=noselect,menuone,menu
+set omnifunc=syntaxcomplete#Complete
+
+inoremap <c-l> <c-x><c-l>
+inoremap <c-f> <c-x><c-f>
+inoremap <c-space> <c-x><c-o>
+inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
+inoremap  . .<c-x><c-o>
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -272,7 +308,7 @@ function! Grep(...) abort
 endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
-nnoremap <leader>f :Grep<space>
+nnoremap <leader>G :Grep<space>
 " }}}
 " Make on save {{{
 " Run &makeprg on filesave
@@ -321,9 +357,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'cideM/yui', {'branch': 'folds'}
-" Plug '~/repos/yui'
-" Plug 'lifepillar/vim-colortemplate'
+Plug 'cideM/yui'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -340,7 +374,7 @@ Plug 'godlygeek/tabular'                  " Align stuff
 
 " nvim-0.5
 Plug 'neovim/nvim-lsp'
-Plug 'haorenW1025/completion-nvim'
+" Plug 'haorenW1025/completion-nvim'
 Plug 'haorenW1025/diagnostic-nvim'
 call plug#end()
 
@@ -354,7 +388,7 @@ lua << EOF
   local on_attach = function(_, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     require'diagnostic'.on_attach()
-    require'completion'.on_attach()
+    -- require'completion'.on_attach()
 
     -- Mappings.
     local opts = { noremap=true, silent=true }
@@ -366,7 +400,7 @@ lua << EOF
     -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gy' , '<cmd>lua vim.lsp.buf.type_definition()<CR>'        , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
-    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<leader>F' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<leader>f' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
     -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
   end
 
