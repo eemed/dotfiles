@@ -77,12 +77,6 @@ nnoremap m? :set makeprg<cr>
 nnoremap <silent> [m m':call search(&define, 'bW')<cr>
 nnoremap <silent> ]m m':call search(&define, "W")<CR>
 
-inoremap <expr> ; pumvisible() ? "\<c-n>" : ";"
-inoremap <expr> , pumvisible() ? "\<c-p>" : ","
-
-cnoremap <expr> ; pumvisible() ? "\<c-n>" : ";"
-cnoremap <expr> , pumvisible() ? "\<c-p>" : ","
-
 set pastetoggle=<F2>
 
 " I need some finnish letters occasionally {{{
@@ -219,12 +213,17 @@ augroup end " }}}
 tnoremap <esc> <c-\><c-n>
 tnoremap <c-v> <c-\><c-n>pi
 
-let g:terminal_last_cmd = ""
+let g:terminal_info = {
+      \ 'last_cmd': "",
+      \ 'focus': v:false,
+      \ 'completion': []
+      \ }
+let g:terminal_complete_commands_keep = 3
 function! s:TerminalRun(split, ... ) abort
-  let cmd = join(a:000, "")
+  let cmd = a:1
 
   if cmd == ""
-    let cmd = g:terminal_last_cmd
+    let cmd = g:terminal_info.last_cmd
   endif
 
   if cmd == ""
@@ -234,16 +233,39 @@ function! s:TerminalRun(split, ... ) abort
 
   execute a:split
   execute 'terminal ' . cmd
-  let g:terminal_last_cmd = cmd
+
+  if g:terminal_info.focus == v:false
+    let g:terminal_info.last_cmd = cmd
+  endif
+
+  if index(g:terminal_info.completion, cmd) == -1
+    if len(g:terminal_info.completion) == g:terminal_complete_commands_keep
+      let g:terminal_info.completion = g:terminal_info.completion[1:]
+    endif
+    call add(g:terminal_info.completion, cmd)
+  endif
+
   wincmd p
 endfunction
 
+function! s:TermComplete(ArgLead, CmdLine, CursorPos) abort
+  return filter(g:terminal_info.completion, 'match(v:val, a:ArgLead) == 0')
+endfunction
+
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
 command! -nargs=0 TermMake call <sid>TerminalRun('split', &makeprg)
-command! -nargs=? Term call <sid>TerminalRun('split', <q-args>)
+command! -nargs=1 TermFocus let g:terminal_info.focus = v:true
+      \ | let g:terminal_info.last_cmd = <q-args>
+      \ | call <sid>TerminalRun('split', g:terminal_info.last_cmd)
+command! -nargs=0 TermReset let g:terminal_info.focus = v:false
+command! -nargs=? -complete=customlist,<sid>TermComplete Term
+      \ call <sid>TerminalRun('split', <q-args>)
 command! -nargs=? VTerm call <sid>TerminalRun('vsplit', <q-args>)
 command! -nargs=? TTerm call <sid>TerminalRun('tabnew', <q-args>)
 nnoremap `<space> :Term<space>
 nnoremap `<cr> :Term<cr>
+nnoremap `? :echo '[Term] Last command: "' . g:terminal_info.last_cmd .
+      \ '", Focus: ' . g:terminal_info.focus<cr>
 " }}}
 " Completion {{{
 set pumheight=10
@@ -252,9 +274,23 @@ set omnifunc=syntaxcomplete#Complete
 
 inoremap <c-l> <c-x><c-l>
 inoremap <c-f> <c-x><c-f>
-inoremap <c-space> <c-x><c-o>
+" inoremap <c-space> <c-x><c-o>
 inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
 inoremap  . .<c-x><c-o>
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ "\<c-x>\<c-o>"
+
+inoremap <silent><expr> <S-TAB>
+      \ pumvisible() ? "\<C-p>" : "\<S-TAB>"
+
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -385,6 +421,11 @@ packadd cfilter
 " }}}
 " Plugin configuration {{{
 " nvim-lsp {{{
+" augroup nvim-lsp
+"   autocmd!
+"   autocmd BufEnter * lua require'completion'.on_attach()
+" augroup end
+
 lua << EOF
   local nvim_lsp = require('nvim_lsp')
 
@@ -407,7 +448,7 @@ lua << EOF
     -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
   end
 
-  local servers = {'bashls', 'diagnosticls', 'tsserver', 'pyls'}
+  local servers = {'bashls', 'tsserver', 'pyls'}
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
       on_attach = on_attach,
@@ -418,21 +459,39 @@ EOF
 " <c-w>p to jump to floating window
 let g:completion_chain_complete_list = {
       \ 'default': [
-      \     {'complete_items': ['lsp']},
       \     {'complete_items': ['path'], 'triggered_only': ['/']},
+      \     {'complete_items': ['lsp']},
       \     {'mode': '<c-p>'},
       \     {'mode': '<c-n>'}
       \ ],
       \ 'comment': []
       \ }
 
+" function! s:check_back_space() abort
+"   let col = col('.') - 1
+"   return !col || getline('.')[col - 1]  =~ '\s'
+" endfunction
+
+" inoremap <silent><expr> <TAB>
+"       \ pumvisible() ? "\<C-n>" :
+"       \ <SID>check_back_space() ? "\<TAB>" :
+"       \ completion#trigger_completion()
+
+" inoremap <silent><expr> <S-TAB>
+"       \ pumvisible() ? "\<C-p>" : "\<S-TAB>"
+
+" imap  <c-j> <Plug>(completion_next_source)
+" imap  <c-k> <Plug>(completion_prev_source)
+
 " let g:completion_enable_snippet = 'UltiSnips'
+let g:completion_enable_auto_paren = 1
+let g:completion_enable_auto_popup = 0
 let g:completion_auto_change_source = 1
 let g:completion_trigger_character = ['.', '::', '/']
 let g:completion_enable_auto_hover = 0
 let g:completion_enable_fuzzy_match = 1
 let g:diagnostic_enable_virtual_text = 0
-let g:completion_trigger_keyword_length = 3
+" let g:completion_trigger_keyword_length = 3
 
 call sign_define("LspDiagnosticsErrorSign", {"text" : "!", "texthl" : "LspDiagnosticsError"})
 call sign_define("LspDiagnosticsWarningSign", {"text" : "!", "texthl" : "LspDiagnosticsWarning"})
@@ -454,12 +513,44 @@ nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 
+let $FZF_DEFAULT_OPTS='--layout=reverse'
+let g:fzf_layout = { 'window': 'call CreateCenteredFloatingWindow()' }
+
+" floating fzf window with borders
+function! CreateCenteredFloatingWindow()
+    let width = min([&columns - 4, max([80, &columns - 20])])
+    let height = min([&lines - 4, max([20, &lines - 10])])
+    let top = ((&lines - height) / 2) - 1
+    let left = (&columns - width) / 2
+    let opts = {'relative': 'editor', 'row': top, 'col': left, 'width': width, 'height': height, 'style': 'minimal'}
+
+    let top = "╭" . repeat("─", width - 2) . "╮"
+    let mid = "│" . repeat(" ", width - 2) . "│"
+    let bot = "╰" . repeat("─", width - 2) . "╯"
+
+    " let top = "+" . repeat("-", width - 2) . "+"
+    " let mid = "|" . repeat(" ", width - 2) . "|"
+    " let bot = "+" . repeat("-", width - 2) . "+"
+
+    let lines = [top] + repeat([mid], height - 2) + [bot]
+    let s:buf = nvim_create_buf(v:false, v:true)
+    call nvim_buf_set_lines(s:buf, 0, -1, v:true, lines)
+    call nvim_open_win(s:buf, v:true, opts)
+    set winhl=Normal:Floating
+    let opts.row += 1
+    let opts.height -= 2
+    let opts.col += 2
+    let opts.width -= 4
+    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
+    au BufWipeout <buffer> exe 'bw '.s:buf
+endfunction
+
 let g:fzf_colors = {
       \ 'fg':      ['fg', 'Normal'],
       \ 'bg':      ['bg', 'Normal'],
       \ 'hl':      ['fg', 'Comment'],
-      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'fg+':     ['fg', 'Normal', 'CursorColumn', 'String'],
+      \ 'bg+':     ['bg', 'Normal', 'CursorColumn'],
       \ 'hl+':     ['fg', 'Comment'],
       \ 'info':    ['fg', 'PreProc'],
       \ 'border':  ['fg', 'Ignore'],
