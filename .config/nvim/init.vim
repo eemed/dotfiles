@@ -204,6 +204,9 @@ augroup Settings
 
   " Autocreate dirs
   autocmd BufWritePre,FileWritePre * call <sid>create_and_save_directory()
+
+  " Autosave
+  autocmd FocusLost,BufLeave * silent! update
 augroup end " }}}
 " }}}
 " Terminal {{{
