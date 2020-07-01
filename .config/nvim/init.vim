@@ -218,7 +218,7 @@ let g:terminal_info = {
       \ 'focus': v:false,
       \ 'completion': []
       \ }
-let g:terminal_complete_commands_keep = 3
+let g:terminal_complete_commands_keep = 20
 function! s:TerminalRun(split, ... ) abort
   let cmd = a:1
 
@@ -485,7 +485,7 @@ let g:completion_chain_complete_list = {
 
 " let g:completion_enable_snippet = 'UltiSnips'
 let g:completion_enable_auto_paren = 1
-let g:completion_enable_auto_popup = 0
+" let g:completion_enable_auto_popup = 0
 let g:completion_auto_change_source = 1
 let g:completion_trigger_character = ['.', '::', '/']
 let g:completion_enable_auto_hover = 0
