@@ -240,9 +240,9 @@ function! s:TerminalRun(split, ... ) abort
 
   if index(g:terminal_info.completion, cmd) == -1
     if len(g:terminal_info.completion) == g:terminal_complete_commands_keep
-      let g:terminal_info.completion = g:terminal_info.completion[1:]
+      let g:terminal_info.completion = g:terminal_info.completion[:-2]
     endif
-    call add(g:terminal_info.completion, cmd)
+    let g:terminal_info.completion = [cmd] + g:terminal_info.completion
   endif
 
   wincmd p
@@ -276,7 +276,7 @@ inoremap <c-l> <c-x><c-l>
 inoremap <c-f> <c-x><c-f>
 " inoremap <c-space> <c-x><c-o>
 inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
-inoremap  . .<c-x><c-o>
+" inoremap  . .<c-x><c-o>
 
 function! s:check_back_space() abort
   let col = col('.') - 1
