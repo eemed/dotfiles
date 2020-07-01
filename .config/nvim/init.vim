@@ -238,10 +238,14 @@ function! s:TerminalRun(split, ... ) abort
     let g:terminal_info.last_cmd = cmd
   endif
 
+  if len(g:terminal_info.completion) == g:terminal_complete_commands_keep
+    let g:terminal_info.completion = g:terminal_info.completion[:-2]
+  endif
+
   if index(g:terminal_info.completion, cmd) == -1
-    if len(g:terminal_info.completion) == g:terminal_complete_commands_keep
-      let g:terminal_info.completion = g:terminal_info.completion[:-2]
-    endif
+    let g:terminal_info.completion = [cmd] + g:terminal_info.completion
+  else
+    call filter(g:terminal_info.completion, 'v:val !~ cmd')
     let g:terminal_info.completion = [cmd] + g:terminal_info.completion
   endif
 
@@ -249,7 +253,7 @@ function! s:TerminalRun(split, ... ) abort
 endfunction
 
 function! s:TermComplete(ArgLead, CmdLine, CursorPos) abort
-  return filter(g:terminal_info.completion, 'match(v:val, a:ArgLead) == 0')
+  return filter(copy(g:terminal_info.completion), 'match(v:val, a:ArgLead) == 0')
 endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
