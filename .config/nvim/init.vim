@@ -277,24 +277,7 @@ set completeopt=noselect,menuone,menu
 set omnifunc=syntaxcomplete#Complete
 
 inoremap <c-l> <c-x><c-l>
-inoremap <c-f> <c-x><c-f>
-" inoremap <c-space> <c-x><c-o>
 inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
-" inoremap  . .<c-x><c-o>
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ "\<c-x>\<c-o>"
-
-inoremap <silent><expr> <S-TAB>
-      \ pumvisible() ? "\<C-p>" : "\<S-TAB>"
-
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -414,6 +397,7 @@ Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
+Plug 'ervandew/supertab'                  " Completion
 
 " nvim-0.5
 Plug 'neovim/nvim-lsp'
@@ -501,6 +485,12 @@ call sign_define("LspDiagnosticsErrorSign", {"text" : "!", "texthl" : "LspDiagno
 call sign_define("LspDiagnosticsWarningSign", {"text" : "!", "texthl" : "LspDiagnosticsWarning"})
 call sign_define("LspDiagnosticsInformationSign", {"text" : "-", "texthl" : "LspDiagnosticsInformation"})
 call sign_define("LspDiagnosticsHintSign", {"text" : "-", "texthl" : "LspDiagnosticsHint"})
+" }}}
+" supertab {{{
+let g:SuperTabDefaultCompletionType = "context"
+let g:SuperTabContextDefaultCompletionType = ""
+let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
+let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:"]
 " }}}
 " fzf.vim {{{
 function! Browse() abort
