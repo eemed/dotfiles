@@ -79,6 +79,15 @@ nnoremap <silent> ]m m':call search(&define, "W")<CR>
 
 set pastetoggle=<F2>
 
+nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
+
+" Terminal
+tnoremap <esc> <c-\><c-n>
+tnoremap <c-v> <c-\><c-n>pi
+
+nnoremap `<space> :Term<space>
+nnoremap `<cr> :Term<cr>
+nnoremap `? :TermInfo<cr>
 " I need some finnish letters occasionally {{{
 let g:fix_keys_enabled = 0
 function! s:FixKeys() abort
@@ -209,68 +218,6 @@ augroup Settings
   autocmd FocusLost,BufLeave * silent! update
 augroup end " }}}
 " }}}
-" Terminal {{{
-tnoremap <esc> <c-\><c-n>
-tnoremap <c-v> <c-\><c-n>pi
-
-let g:terminal_info = {
-      \ 'last_cmd': "",
-      \ 'focus': v:false,
-      \ 'completion': []
-      \ }
-let g:terminal_complete_commands_keep = 20
-function! s:TerminalRun(split, ... ) abort
-  let cmd = a:1
-
-  if cmd == ""
-    let cmd = g:terminal_info.last_cmd
-  endif
-
-  if cmd == ""
-    echo '[Term] No command to run.'
-    return
-  endif
-
-  execute a:split
-  execute 'terminal ' . cmd
-
-  if g:terminal_info.focus == v:false
-    let g:terminal_info.last_cmd = cmd
-  endif
-
-  if len(g:terminal_info.completion) == g:terminal_complete_commands_keep
-    let g:terminal_info.completion = g:terminal_info.completion[:-2]
-  endif
-
-  if index(g:terminal_info.completion, cmd) == -1
-    let g:terminal_info.completion = [cmd] + g:terminal_info.completion
-  else
-    call filter(g:terminal_info.completion, 'v:val !~ cmd')
-    let g:terminal_info.completion = [cmd] + g:terminal_info.completion
-  endif
-
-  wincmd p
-endfunction
-
-function! s:TermComplete(ArgLead, CmdLine, CursorPos) abort
-  return filter(copy(g:terminal_info.completion), 'match(v:val, a:ArgLead) == 0')
-endfunction
-
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
-command! -nargs=0 TermMake call <sid>TerminalRun('split', &makeprg)
-command! -nargs=1 TermFocus let g:terminal_info.focus = v:true
-      \ | let g:terminal_info.last_cmd = <q-args>
-      \ | call <sid>TerminalRun('split', g:terminal_info.last_cmd)
-command! -nargs=0 TermReset let g:terminal_info.focus = v:false
-command! -nargs=? -complete=customlist,<sid>TermComplete Term
-      \ call <sid>TerminalRun('split', <q-args>)
-command! -nargs=? VTerm call <sid>TerminalRun('vsplit', <q-args>)
-command! -nargs=? TTerm call <sid>TerminalRun('tabnew', <q-args>)
-nnoremap `<space> :Term<space>
-nnoremap `<cr> :Term<cr>
-nnoremap `? :echo '[Term] Last command: "' . g:terminal_info.last_cmd .
-      \ '", Focus: ' . g:terminal_info.focus<cr>
-" }}}
 " Completion {{{
 set pumheight=10
 set completeopt=noselect,menuone,menu
@@ -287,38 +234,7 @@ command! -nargs=? -complete=filetype EditFileTypePlugin
       \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 
-" Scratch buffer {{{
-function! s:Scratch()
-    noswapfile hide enew
-    setlocal buftype=nofile
-    setlocal bufhidden=hide
-    file scratch
-endfunction
-command! -nargs=0 Scratch call <sid>Scratch()
-" }}}
-" Format {{{
-function! s:FormatFile() abort
-  write
-  if get(b:, 'formatcmd', '') == ''
-    echo '[Format] no command set'
-  else
-    let l:view = winsaveview()
-    let l:cmd = '%! ' . b:formatcmd
-    silent execute l:cmd
-    if v:shell_error > 0
-      silent undo
-      redraw
-      echohl ErrorMsg
-      echo '[Format] command "' . b:formatcmd . '" failed.'
-      echohl None
-      return v:shell_error
-    endif
-    call winrestview(l:view)
-    echo '[Format] file formatted'
-  endif
-endfunction
-command! -nargs=0 Format call <sid>FormatFile()
-" }}}
+command! -nargs=0 Scratch call Scratch()
 " Grep {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
@@ -335,34 +251,6 @@ endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
 nnoremap <leader>G :Grep<space>
-" }}}
-" Make on save {{{
-" Run &makeprg on filesave
-let g:makeonsave = []
-function! s:ToggleMakeOnSaveFT() abort
-  if get(g:makeonsave, &ft, '') == &ft
-    call remove(g:makeonsave, &ft)
-    echom '[MakeOnSave] off'
-  else
-    call add(g:makeonsave, &ft)
-    echom '[MakeOnSave] on'
-  endif
-endfunction
-
-function! s:MakeOnSaveFT() abort
-  if get(g:makeonsave, &ft, '') == &ft && &ft != ''
-    normal! mm
-    silent make
-    normal! `m
-  endif
-endfunction
-
-augroup MakeOnSave
-  autocmd!
-  autocmd BufWritePost * call <sid>MakeOnSaveFT()
-augroup end
-command! -nargs=0 ToggleMakeOnSaveFT call <sid>ToggleMakeOnSaveFT()
-nnoremap yom :<c-u>call <sid>ToggleMakeOnSaveFT()<cr>
 " }}}
 " }}}
 " Appearance {{{
@@ -433,7 +321,7 @@ lua << EOF
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
     vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<leader>f' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
-    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
+     vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
   end
 
   local servers = {'bashls', 'tsserver', 'pyls'}
