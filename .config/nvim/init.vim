@@ -11,7 +11,7 @@ endif
 " Key mappings {{{
 let mapleader = " "
 
-nnoremap k gk
+onoremap k gk
 nnoremap j gj
 
 " Window navigation
@@ -20,8 +20,8 @@ nnoremap <c-j> :wincmd j<cr>
 nnoremap <c-k> :wincmd k<cr>
 nnoremap <c-l> :wincmd l<cr>
 
-imap <c-h> <c-g>u<Esc>[s1z=`]a<c-g>u
-" nmap <c-h> mm[s1z=`m
+imap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
+nmap <c-f> mm[s1z=`m
 
 nnoremap Y y$
 
@@ -70,6 +70,8 @@ function! VisualNumber() abort
 endfunction
 xnoremap in :<C-u>call VisualNumber()<CR>
 onoremap in :<C-u>normal vin<CR>
+
+inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
 
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
@@ -133,6 +135,9 @@ set nrformats+=alpha
 
 set clipboard=unnamed,unnamedplus
 
+set pumheight=10
+set completeopt=noselect,menuone,menu
+
 " Commands without remembering case. Useful for plugin commands
 set ignorecase smartcase
 
@@ -167,7 +172,7 @@ function! s:create_and_save_directory()
   endif
 endfunction
 " }}}
-" Sane path with git{{{
+" Sane path with git {{{
 function SetSanePath() abort
   " Set a basic &path
   set path=.,,
@@ -219,12 +224,6 @@ augroup Settings
 augroup end " }}}
 " }}}
 " Completion {{{
-set pumheight=10
-set completeopt=noselect,menuone,menu
-set omnifunc=syntaxcomplete#Complete
-
-inoremap <c-l> <c-x><c-l>
-inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
 " }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -289,26 +288,21 @@ Plug 'ervandew/supertab'                  " Completion
 
 " nvim-0.5
 Plug 'neovim/nvim-lsp'
-" Plug 'haorenW1025/completion-nvim'
-Plug 'haorenW1025/diagnostic-nvim'
 call plug#end()
 
 packadd cfilter
 " }}}
 " Plugin configuration {{{
 " nvim-lsp {{{
-" augroup nvim-lsp
-"   autocmd!
-"   autocmd BufEnter * lua require'completion'.on_attach()
-" augroup end
+function LgetexprString(errors) abort
+  lgetexpr a:errors
+endfunction
 
 lua << EOF
   local nvim_lsp = require('nvim_lsp')
 
   local on_attach = function(_, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-    require'diagnostic'.on_attach()
-    -- require'completion'.on_attach()
 
     -- Mappings.
     local opts = { noremap=true, silent=true }
@@ -330,55 +324,37 @@ lua << EOF
       on_attach = on_attach,
     }
   end
+
+  do
+    local method = "textDocument/publishDiagnostics"
+    local default_callback = vim.lsp.callbacks[method]
+    vim.lsp.callbacks[method] = function(err, method, result, client_id)
+      default_callback(err, method, result, client_id)
+      if result and result.diagnostics then
+        result_string = ""
+        for _, v in ipairs(result.diagnostics) do
+          v.bufnr = client_id
+          v.lnum = v.range.start.line + 1
+          v.col = v.range.start.character + 1
+          v.text = v.message
+          v.bufname = vim.api.nvim_buf_get_name(v.bufnr)
+          result_string = result_string .. string.format("%s:%d:%d:%s\n", v.bufname, v.lnum, v.col, v.text)
+        end
+        vim.call('LgetexprString', result_string)
+      end
+    end
+  end
 EOF
 
-" <c-w>p to jump to floating window
-let g:completion_chain_complete_list = {
-      \ 'default': [
-      \     {'complete_items': ['path'], 'triggered_only': ['/']},
-      \     {'complete_items': ['lsp']},
-      \     {'mode': '<c-p>'},
-      \     {'mode': '<c-n>'}
-      \ ],
-      \ 'comment': []
-      \ }
-
-" function! s:check_back_space() abort
-"   let col = col('.') - 1
-"   return !col || getline('.')[col - 1]  =~ '\s'
-" endfunction
-
-" inoremap <silent><expr> <TAB>
-"       \ pumvisible() ? "\<C-n>" :
-"       \ <SID>check_back_space() ? "\<TAB>" :
-"       \ completion#trigger_completion()
-
-" inoremap <silent><expr> <S-TAB>
-"       \ pumvisible() ? "\<C-p>" : "\<S-TAB>"
-
-" imap  <c-j> <Plug>(completion_next_source)
-" imap  <c-k> <Plug>(completion_prev_source)
-
-" let g:completion_enable_snippet = 'UltiSnips'
-let g:completion_enable_auto_paren = 1
-" let g:completion_enable_auto_popup = 0
-let g:completion_auto_change_source = 1
-let g:completion_trigger_character = ['.', '::', '/']
-let g:completion_enable_auto_hover = 0
-let g:completion_enable_fuzzy_match = 1
-let g:diagnostic_enable_virtual_text = 0
-" let g:completion_trigger_keyword_length = 3
-
-call sign_define("LspDiagnosticsErrorSign", {"text" : "!", "texthl" : "LspDiagnosticsError"})
-call sign_define("LspDiagnosticsWarningSign", {"text" : "!", "texthl" : "LspDiagnosticsWarning"})
-call sign_define("LspDiagnosticsInformationSign", {"text" : "-", "texthl" : "LspDiagnosticsInformation"})
-call sign_define("LspDiagnosticsHintSign", {"text" : "-", "texthl" : "LspDiagnosticsHint"})
+call sign_define("LspDiagnosticsErrorSign", {"text" : "!" })
+call sign_define("LspDiagnosticsWarningSign", {"text" : "!" })
+call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
+call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
 " }}}
 " supertab {{{
 let g:SuperTabDefaultCompletionType = "context"
-let g:SuperTabContextDefaultCompletionType = ""
 let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
-let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:"]
+let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-o>"]
 " }}}
 " fzf.vim {{{
 function! Browse() abort
