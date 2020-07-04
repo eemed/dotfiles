@@ -15,13 +15,13 @@ onoremap k gk
 nnoremap j gj
 
 " Window navigation
-nnoremap <c-h> :wincmd h<cr>
-nnoremap <c-j> :wincmd j<cr>
-nnoremap <c-k> :wincmd k<cr>
-nnoremap <c-l> :wincmd l<cr>
+nnoremap <silent><c-h> :wincmd h<cr>
+nnoremap <silent><c-j> :wincmd j<cr>
+nnoremap <silent><c-k> :wincmd k<cr>
+nnoremap <silent><c-l> :wincmd l<cr>
 
-imap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
-nmap <c-f> mm[s1z=`m
+imap <silent><c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
+nmap <silent><c-f> mm[s1z=`m
 
 nnoremap Y y$
 
@@ -149,7 +149,7 @@ set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*,*.pdf
 
 set smartindent
 set hlsearch
-nnoremap <esc> :let @/ = ""<cr><esc>
+nnoremap <silent><esc> :let @/ = ""<cr><esc>
 
 " Use undo files
 set undofile
@@ -213,11 +213,6 @@ cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
 " Settings autocmds {{{
 augroup Settings
   autocmd!
-  " Quickfix settings
-  autocmd WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
-  autocmd QuickFixCmdPost [^l]* nested cwindow
-  autocmd QuickFixCmdPost    l* nested lwindow
-
   " Autocreate dirs
   autocmd BufWritePre,FileWritePre * call <sid>create_and_save_directory()
 
@@ -285,65 +280,15 @@ Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
 Plug 'ervandew/supertab'                  " Completion
+Plug 'romainl/vim-qf'                     " Better quickfix
 
 " nvim-0.5
 Plug 'neovim/nvim-lsp'
-Plug 'haorenW1025/diagnostic-nvim'
 call plug#end()
-
-packadd cfilter
 " }}}
 " Plugin configuration {{{
 " nvim-lsp {{{
-lua << EOF
-  local nvim_lsp = require('nvim_lsp')
-
-  vim.lsp.util.buf_diagnostics_virtual_text = function() return end
-
-  local on_attach = function(_, bufnr)
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-    vim.api.nvim_command('setlocal signcolumn=yes')
-
-    -- Mappings.
-    local opts = { noremap=true, silent=true }
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gD'        , '<cmd>lua vim.lsp.buf.declaration()<CR>'            , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gd'        , '<cmd>lua vim.lsp.buf.definition()<CR>'             , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'K'         , '<cmd>lua vim.lsp.buf.hover()<CR>'                  , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gi'        , '<cmd>lua vim.lsp.buf.implementation()<CR>'         , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gy'        , '<cmd>lua vim.lsp.buf.type_definition()<CR>'        , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>f' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
-    -- vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<C-k>'     , '<cmd>lua vim.lsp.buf.signature_help()<CR>'         , opts)
-  end
-
-  local servers = {'bashls', 'tsserver', 'pyls', 'rls'}
-  for _, lsp in ipairs(servers) do
-    nvim_lsp[lsp].setup {
-      on_attach = on_attach,
-    }
-  end
-
-  do
-    local method = "textDocument/publishDiagnostics"
-    local default_callback = vim.lsp.callbacks[method]
-    vim.lsp.callbacks[method] = function(err, method, result, client_id)
-      default_callback(err, method, result, client_id)
-      if result and result.diagnostics then
-        for _, v in ipairs(result.diagnostics) do
-          v.bufnr = client_id
-          v.lnum = v.range.start.line + 1
-          v.col = v.range.start.character + 1
-          v.text = v.message
-        end
-      end
-      vim.lsp.util.set_loclist(result.diagnostics)
-      vim.api.nvim_command("lwindow")
-    end
-  end
-EOF
-
+lua require('lsp')
 call sign_define("LspDiagnosticsErrorSign", {"text" : "!" })
 call sign_define("LspDiagnosticsWarningSign", {"text" : "!" })
 call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
@@ -353,6 +298,16 @@ call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
 let g:SuperTabDefaultCompletionType = "context"
 let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
 let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-o>"]
+" }}}
+" vim-qf {{{
+nmap ]q <plug>(qf_qf_next)
+nmap [q <plug>(qf_qf_previous)
+
+nmap ]l <plug>(qf_loc_next)
+nmap [l <plug>(qf_loc_previous)
+
+nmap yol <plug>(qf_loc_toggle)
+nmap yoq <plug>(qf_qf_toggle)
 " }}}
 " fzf.vim {{{
 function! Browse() abort
