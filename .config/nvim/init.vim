@@ -72,6 +72,8 @@ xnoremap in :<C-u>call VisualNumber()<CR>
 onoremap in :<C-u>normal vin<CR>
 
 inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
+set wildcharm=<c-z>
+cnoremap <expr> / pumvisible() ? "\<c-y>\<c-z>" : "/"
 
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
@@ -109,7 +111,7 @@ function! s:RestoreKeys() abort
     let g:fix_keys_enabled = 0
   endif
 endfunction
-inoremap <silent> <c-b> <c-o>:call <sid>FixKeys()<cr>
+inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
 augroup FinKeys
   autocmd!
   autocmd InsertLeave * call <sid>RestoreKeys()
