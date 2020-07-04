@@ -294,10 +294,6 @@ packadd cfilter
 " }}}
 " Plugin configuration {{{
 " nvim-lsp {{{
-function LgetexprString(errors) abort
-  lgetexpr a:errors
-endfunction
-
 lua << EOF
   local nvim_lsp = require('nvim_lsp')
 
@@ -337,10 +333,8 @@ lua << EOF
           v.lnum = v.range.start.line + 1
           v.col = v.range.start.character + 1
           v.text = v.message
-          v.bufname = vim.api.nvim_buf_get_name(v.bufnr)
-          result_string = result_string .. string.format("%s:%d:%d:%s\n", v.bufname, v.lnum, v.col, v.text)
         end
-        vim.call('LgetexprString', result_string)
+        vim.lsp.util.set_loclist(result.diagnostics)
       end
     end
   end
