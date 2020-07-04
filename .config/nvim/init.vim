@@ -223,8 +223,6 @@ augroup Settings
   autocmd FocusLost,BufLeave * silent! update
 augroup end " }}}
 " }}}
-" Completion {{{
-" }}}
 " Commands {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
 nnoremap <leader>c :Config<CR>
