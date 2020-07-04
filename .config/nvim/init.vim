@@ -7,30 +7,30 @@ if empty(glob(g:vimdir . '/autoload/plug.vim'))
   execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
-
-augroup MyAutocmds
-  autocmd!
-augroup end
 " }}}
 " Key mappings {{{
 let mapleader = " "
-let maplocalleader = "\\"
 
-nnoremap k gk
+onoremap k gk
 nnoremap j gj
+
+" Window navigation
+nnoremap <c-h> :wincmd h<cr>
+nnoremap <c-j> :wincmd j<cr>
+nnoremap <c-k> :wincmd k<cr>
+nnoremap <c-l> :wincmd l<cr>
 
 imap <c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
 nmap <c-f> mm[s1z=`m
 
 nnoremap Y y$
-tnoremap <esc> <c-\><c-n>
 
 " Move text
 xnoremap < <gv
 xnoremap > >gv
 
 nnoremap <leader>S :source <c-r>%<CR>
-nnoremap <leader>q :q<CR>
+nnoremap <leader>q :q<cr>
 nnoremap <BS> <C-^>
 
 " Saving
@@ -71,13 +71,50 @@ endfunction
 xnoremap in :<C-u>call VisualNumber()<CR>
 onoremap in :<C-u>normal vin<CR>
 
+inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
+
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
 
-nnoremap <silent> [[ m':call search(&define, 'bW')<cr>
-nnoremap <silent> ]] m':call search(&define, "W")<CR>
+nnoremap <silent> [m m':call search(&define, 'bW')<cr>
+nnoremap <silent> ]m m':call search(&define, "W")<CR>
 
 set pastetoggle=<F2>
+
+nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
+
+" Terminal
+tnoremap <esc> <c-\><c-n>
+tnoremap <c-v> <c-\><c-n>pi
+
+nnoremap `<space> :Term<space>
+nnoremap `<cr> :Term<cr>
+nnoremap `? :TermInfo<cr>
+" I need some finnish letters occasionally {{{
+let g:fix_keys_enabled = 0
+function! s:FixKeys() abort
+  inoremap ; ö
+  inoremap : Ö
+  inoremap ' ä
+  inoremap " Ä
+  let g:fix_keys_enabled = 1
+endfunction
+
+function! s:RestoreKeys() abort
+  if g:fix_keys_enabled == 1
+    iunmap ;
+    iunmap :
+    iunmap '
+    iunmap "
+    let g:fix_keys_enabled = 0
+  endif
+endfunction
+inoremap <silent> <c-b> <c-o>:call <sid>FixKeys()<cr>
+augroup FinKeys
+  autocmd!
+  autocmd InsertLeave * call <sid>RestoreKeys()
+augroup end
+" }}}
 " }}}
 " Settings {{{
 filetype plugin indent on
@@ -98,6 +135,9 @@ set nrformats+=alpha
 
 set clipboard=unnamed,unnamedplus
 
+set pumheight=10
+set completeopt=noselect,menuone,menu
+
 " Commands without remembering case. Useful for plugin commands
 set ignorecase smartcase
 
@@ -105,13 +145,9 @@ set ignorecase smartcase
 set inccommand=split
 set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*,*.pdf
 
-" Completion
-set pumheight=10
-set completeopt+=noselect,menuone
-set omnifunc=syntaxcomplete#Complete
-
 set smartindent
-set nohlsearch
+set hlsearch
+nnoremap <esc> :let @/ = ""<cr><esc>
 
 " Use undo files
 set undofile
@@ -125,22 +161,18 @@ set viminfo='20
 set updatetime=300
 set foldmethod=marker
 
-autocmd MyAutocmds FocusLost,BufLeave * silent! update
-
 set scrolloff=5
 set sidescrolloff=10
-autocmd MyAutocmds FileType qf setlocal scrolloff=0 sidescrolloff=0
+
+" Autocreate directories {{{
+function! s:create_and_save_directory()
+  let l:directory = expand('<afile>:p:h')
+  if l:directory !~# '^\w\+:' && !isdirectory(l:directory)
+    call mkdir(l:directory, 'p')
+  endif
+endfunction
 " }}}
-" Commands {{{
-command! -nargs=0 Config execute ':edit ' . $MYVIMRC
-nnoremap <leader>c :Config<CR>
-
-command! -nargs=? -complete=filetype EditFileTypePlugin
-      \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
-      \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
-nnoremap <localleader>c :EditFileTypePlugin<cr>
-
-" Sane path {{{
+" Sane path with git {{{
 function SetSanePath() abort
   " Set a basic &path
   set path=.,,
@@ -176,29 +208,32 @@ endfunction
 command! -nargs=? -complete=dir CD :call s:CD(<q-args>)
 cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
 " }}}
-" Format {{{
-function! s:FormatFile() abort
-  write
-  if get(b:, 'formatcmd', '') == ''
-    echo '[Format] no command set'
-  else
-    let l:view = winsaveview()
-    let l:cmd = '%! ' . b:formatcmd
-    silent execute l:cmd
-    if v:shell_error > 0
-      silent undo
-      redraw
-      echohl ErrorMsg
-      echo '[Format] command "' . b:formatcmd . '" failed.'
-      echohl None
-      return v:shell_error
-    endif
-    call winrestview(l:view)
-    echo '[Format] file formatted'
-  endif
-endfunction
-command! -nargs=0 Format call <sid>FormatFile()
+" Settings autocmds {{{
+augroup Settings
+  autocmd!
+  " Quickfix settings
+  autocmd WinEnter * if winnr('$') == 1 && &buftype == "quickfix"|q|endif
+  autocmd QuickFixCmdPost [^l]* nested cwindow
+  autocmd QuickFixCmdPost    l* nested lwindow
+
+  " Autocreate dirs
+  autocmd BufWritePre,FileWritePre * call <sid>create_and_save_directory()
+
+  " Autosave
+  autocmd FocusLost,BufLeave * silent! update
+augroup end " }}}
 " }}}
+" Completion {{{
+" }}}
+" Commands {{{
+command! -nargs=0 Config execute ':edit ' . $MYVIMRC
+nnoremap <leader>c :Config<CR>
+
+command! -nargs=? -complete=filetype EditFileTypePlugin
+      \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
+      \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
+
+command! -nargs=0 Scratch call Scratch()
 " Grep {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
@@ -214,65 +249,13 @@ function! Grep(...) abort
 endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
-nnoremap <leader>f :Grep<space>
-" }}}
-" Make on save {{{
-" Run &makeprg on filesave
-let g:makeonsave = []
-function! s:ToggleMakeOnSaveFT() abort
-  if get(g:makeonsave, &ft, '') == &ft
-    call remove(g:makeonsave, &ft)
-    echom '[MakeOnSave] off'
-  else
-    call add(g:makeonsave, &ft)
-    echom '[MakeOnSave] on'
-  endif
-endfunction
-
-function! s:MakeOnSaveFT() abort
-  if get(g:makeonsave, &ft, '') == &ft && &ft != ''
-    normal! mm
-    silent make
-    normal! `m
-  endif
-endfunction
-
-autocmd MyAutocmds BufWritePost * call <sid>MakeOnSaveFT()
-command! -nargs=0 ToggleMakeOnSaveFT call <sid>ToggleMakeOnSaveFT()
-nnoremap yom :<c-u>call <sid>ToggleMakeOnSaveFT()<cr>
-" }}}
-" I need some finnish letters occasionally {{{
-let g:fix_keys_enabled = 0
-function! s:FixKeys() abort
-  inoremap ; ö
-  inoremap : Ö
-  inoremap ' ä
-  inoremap " Ä
-  let g:fix_keys_enabled = 1
-endfunction
-
-function! s:RestoreKeys() abort
-  if g:fix_keys_enabled == 1
-    iunmap ;
-    iunmap :
-    iunmap '
-    iunmap "
-    let g:fix_keys_enabled = 0
-  endif
-endfunction
-inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
-autocmd MyAutocmds InsertLeave * call <sid>RestoreKeys()
+nnoremap <leader>G :Grep<space>
 " }}}
 " }}}
 " Appearance {{{
-set cursorline
 set synmaxcol=200
 set termguicolors
 set t_Co=256
-
-" Toggle cursor line on inactive window
-autocmd MyAutocmds WinEnter * set cursorline
-autocmd MyAutocmds WinLeave * set nocursorline
 
 function! GitStatus() abort
   return get(g:, 'loaded_fugitive', 0) ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
@@ -287,10 +270,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'NLKNguyen/papercolor-theme'
-
-Plug 'christoomey/vim-tmux-navigator'     " Move between tmux and vim splits
-Plug 'tmux-plugins/vim-tmux-focus-events' " Fix tmux focus events
+Plug 'cideM/yui'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -300,74 +280,81 @@ Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'tpope/vim-unimpaired'               " Bindings
 Plug 'tpope/vim-sleuth'                   " Wise indent style
-Plug 'tpope/vim-endwise'                  " End structures
-
-Plug '9mm/vim-closer'                     " End brackets
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
-Plug 'romainl/vim-qf'                     " Quickfix window overall improvements
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
-Plug 'duggiefresh/vim-easydir'            " Automatically create directories
+Plug 'ervandew/supertab'                  " Completion
 
-if executable('node')
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
-endif
+" nvim-0.5
+Plug 'neovim/nvim-lsp'
+call plug#end()
 
-" Syntax
-Plug 'pearofducks/ansible-vim'
-Plug 'maxmellon/vim-jsx-pretty'
-Plug 'rust-lang/rust.vim'
-Plug 'vim-python/python-syntax'
-call plug#end() " }}}
+packadd cfilter
+" }}}
 " Plugin configuration {{{
-" coc {{{
-nnoremap <localleader>s :CocCommand snippets.editSnippets<cr>
-call coc#add_extension('coc-json', 'coc-snippets')
-if executable('node')
-  set signcolumn=no
+" nvim-lsp {{{
+function LgetexprString(errors) abort
+  lgetexpr a:errors
+endfunction
 
-  inoremap <silent><expr> <TAB>
-        \ pumvisible() ? "\<C-y>" :
-        \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-        \ <SID>check_back_space() ? "\<TAB>" :
-        \ coc#refresh()
+lua << EOF
+  local nvim_lsp = require('nvim_lsp')
 
-  function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-  endfunction
+  local on_attach = function(_, bufnr)
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-  let g:coc_snippet_next = '<tab>'
-  let g:coc_snippet_prev = '<s-tab>'
+    -- Mappings.
+    local opts = { noremap=true, silent=true }
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gD'        , '<Cmd>lua vim.lsp.buf.declaration()<CR>'            , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gd'        , '<Cmd>lua vim.lsp.buf.definition()<CR>'             , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'K'         , '<Cmd>lua vim.lsp.buf.hover()<CR>'                  , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gi'        , '<cmd>lua vim.lsp.buf.implementation()<CR>'         , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<C-k>'     , '<cmd>lua vim.lsp.buf.signature_help()<CR>'         , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gy' , '<cmd>lua vim.lsp.buf.type_definition()<CR>'        , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
+    vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<leader>f' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
+     vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
+  end
 
-  " Use `[g` and `]g` to navigate diagnostics
-  nmap <silent> [g <Plug>(coc-diagnostic-prev)
-  nmap <silent> ]g <Plug>(coc-diagnostic-next)
+  local servers = {'bashls', 'tsserver', 'pyls'}
+  for _, lsp in ipairs(servers) do
+    nvim_lsp[lsp].setup {
+      on_attach = on_attach,
+    }
+  end
 
-  " GoTo code navigation.
-  nmap <silent> gd <Plug>(coc-definition)
-  nmap <silent> gy <Plug>(coc-type-definition)
-  nmap <silent> gi <Plug>(coc-implementation)
-  nmap <silent> gr <Plug>(coc-references)
-  nmap <silent> gR <Plug>(coc-rename)
-  nmap <silent> <leader>a <Plug>(coc-codeaction)
+  do
+    local method = "textDocument/publishDiagnostics"
+    local default_callback = vim.lsp.callbacks[method]
+    vim.lsp.callbacks[method] = function(err, method, result, client_id)
+      default_callback(err, method, result, client_id)
+      if result and result.diagnostics then
+        result_string = ""
+        for _, v in ipairs(result.diagnostics) do
+          v.bufnr = client_id
+          v.lnum = v.range.start.line + 1
+          v.col = v.range.start.character + 1
+          v.text = v.message
+          v.bufname = vim.api.nvim_buf_get_name(v.bufnr)
+          result_string = result_string .. string.format("%s:%d:%d:%s\n", v.bufname, v.lnum, v.col, v.text)
+        end
+        vim.call('LgetexprString', result_string)
+      end
+    end
+  end
+EOF
 
-  " Use K to show documentation in preview window.
-  nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-  function! s:show_documentation()
-    if (index(['vim','help'], &filetype) >= 0)
-      execute 'h '.expand('<cword>')
-    else
-      call CocAction('doHover')
-    endif
-  endfunction
-
-  " Add `:Format` command to format current buffer.
-  command! -nargs=0 FormatCoc :call CocAction('format')
-  nnoremap <leader>F  :FormatCoc<cr>
-endif
+call sign_define("LspDiagnosticsErrorSign", {"text" : "!" })
+call sign_define("LspDiagnosticsWarningSign", {"text" : "!" })
+call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
+call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
+" }}}
+" supertab {{{
+let g:SuperTabDefaultCompletionType = "context"
+let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
+let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-o>"]
 " }}}
 " fzf.vim {{{
 function! Browse() abort
@@ -383,19 +370,59 @@ nnoremap <silent><c-p> :call Browse()<CR>
 nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
+
+let $FZF_DEFAULT_OPTS='--layout=reverse'
+let g:fzf_layout = { 'window': 'call CreateCenteredFloatingWindow()' }
+
+" floating fzf window with borders
+function! CreateCenteredFloatingWindow()
+    let width = min([&columns - 4, max([80, &columns - 20])])
+    let height = min([&lines - 4, max([20, &lines - 10])])
+    let top = ((&lines - height) / 2) - 1
+    let left = (&columns - width) / 2
+    let opts = {'relative': 'editor', 'row': top, 'col': left, 'width': width, 'height': height, 'style': 'minimal'}
+
+    let top = "╭" . repeat("─", width - 2) . "╮"
+    let mid = "│" . repeat(" ", width - 2) . "│"
+    let bot = "╰" . repeat("─", width - 2) . "╯"
+
+    " let top = "+" . repeat("-", width - 2) . "+"
+    " let mid = "|" . repeat(" ", width - 2) . "|"
+    " let bot = "+" . repeat("-", width - 2) . "+"
+
+    let lines = [top] + repeat([mid], height - 2) + [bot]
+    let s:buf = nvim_create_buf(v:false, v:true)
+    call nvim_buf_set_lines(s:buf, 0, -1, v:true, lines)
+    call nvim_open_win(s:buf, v:true, opts)
+    set winhl=Normal:Floating
+    let opts.row += 1
+    let opts.height -= 2
+    let opts.col += 2
+    let opts.width -= 4
+    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
+    au BufWipeout <buffer> exe 'bw '.s:buf
+endfunction
+
+let g:fzf_colors = {
+      \ 'fg':      ['fg', 'Normal'],
+      \ 'bg':      ['bg', 'Normal'],
+      \ 'hl':      ['fg', 'Comment'],
+      \ 'fg+':     ['fg', 'Normal', 'CursorColumn', 'String'],
+      \ 'bg+':     ['bg', 'Normal', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Comment'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'border':  ['fg', 'Ignore'],
+      \ 'prompt':  ['fg', 'Conditional'],
+      \ 'pointer': ['fg', 'Exception'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
 " }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
 let g:undotree_DiffAutoOpen = 0
 let g:undotree_SetFocusWhenToggle = 1
 nnoremap <leader>u :UndotreeToggle<cr>
-" }}}
-" vim-qf {{{
-nmap [q <Plug>(qf_qf_previous)
-nmap ]q <Plug>(qf_qf_next)
-
-nmap [l <Plug>(qf_loc_previous)
-nmap ]l <Plug>(qf_loc_next)
 " }}}
 " dirvish {{{
 let g:loaded_netrwPlugin = 1
@@ -422,12 +449,6 @@ function! s:dirvish_toggle() abort
   endif
 endfunction
 " }}}
-" vim-tmux-navigator {{{
-tnoremap <silent> <c-h> <C-\><C-n>:TmuxNavigateLeft<cr>
-tnoremap <silent> <c-j> <C-\><C-n>:TmuxNavigateDown<cr>
-tnoremap <silent> <c-k> <C-\><C-n>:TmuxNavigateUp<cr>
-tnoremap <silent> <c-l> <C-\><C-n>:TmuxNavigateRight<cr>
-" }}}
 " vim-fugitive {{{
 nnoremap <silent><leader>g :vertical Gstatus<CR>
 " }}}
@@ -435,9 +456,10 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 runtime macros/sandwich/keymap/surround.vim
 " }}}
 " colorscheme {{{
-let g:python_highlight_all = 1
 set background=light
-colorscheme PaperColor
+let g:yui_comments = 'emphasize'
+let g:yui_folds = 'emphasize'
+colorscheme yui
 " }}}
 " }}}
 " Local settings {{{

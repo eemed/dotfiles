@@ -1,5 +1,4 @@
 setlocal makeprg=pandoc\ %\ -f\ markdown\ -t\ latex\ -o\ %:r.pdf
-nnoremap <leader>o :silent exec "! gio open %:r.pdf"<CR>
+command! -nargs=0 Open execute ':silent ! gio open %:r.pdf'
 setlocal wrap
 " setlocal spell spelllang=en_us
-set colorcolumn&

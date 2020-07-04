@@ -1,1 +1,1 @@
-nnoremap <leader>o :silent exec "! gio open %"<CR>
+command! -nargs=0 Open execute ':silent ! gio open %'
