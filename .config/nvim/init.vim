@@ -84,6 +84,7 @@ nnoremap <silent> ]m m':call search(&define, "W")<CR>
 set pastetoggle=<F2>
 
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
+inoremap <cr> <c-r>=CloseBracket()<cr>
 
 " Terminal
 tnoremap <esc> <c-\><c-n>

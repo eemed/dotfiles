@@ -6,6 +6,24 @@ local on_attach = function(_, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     vim.api.nvim_command('setlocal signcolumn=yes')
 
+    do
+        local method = "textDocument/publishDiagnostics"
+        local default_callback = vim.lsp.callbacks[method]
+        vim.lsp.callbacks[method] = function(err, method, result, client_id)
+            default_callback(err, method, result, client_id)
+            if result and result.diagnostics then
+                for _, v in ipairs(result.diagnostics) do
+                    print(vim.inspect(result))
+                    v.bufnr = vim.uri_to_bufnr(result.uri)
+                    v.lnum = v.range.start.line + 1
+                    v.col = v.range.start.character + 1
+                    v.text = v.message
+                end
+            end
+            vim.lsp.util.set_loclist(result.diagnostics)
+        end
+    end
+
     -- Mappings.
     local opts = { noremap=true, silent=true }
     vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gD'        , '<cmd>lua vim.lsp.buf.declaration()<CR>'            , opts)
@@ -27,19 +45,3 @@ for _, lsp in ipairs(servers) do
     }
 end
 
-do
-    local method = "textDocument/publishDiagnostics"
-    local default_callback = vim.lsp.callbacks[method]
-    vim.lsp.callbacks[method] = function(err, method, result, client_id)
-        default_callback(err, method, result, client_id)
-        if result and result.diagnostics then
-            for _, v in ipairs(result.diagnostics) do
-                v.bufnr = client_id
-                v.lnum = v.range.start.line + 1
-                v.col = v.range.start.character + 1
-                v.text = v.message
-            end
-        end
-        vim.lsp.util.set_loclist(result.diagnostics)
-    end
-end
