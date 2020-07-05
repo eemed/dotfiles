@@ -84,7 +84,7 @@ nnoremap <silent> ]m m':call search(&define, "W")<CR>
 set pastetoggle=<F2>
 
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
-inoremap <cr> <c-r>=CloseBracket()<cr>
+inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CloseBracket()\<cr>"
 
 " Terminal
 tnoremap <esc> <c-\><c-n>
@@ -284,16 +284,20 @@ Plug 'ervandew/supertab'                  " Completion
 Plug 'romainl/vim-qf'                     " Better quickfix
 
 " nvim-0.5
-Plug 'neovim/nvim-lsp'
+if has('nvim-0.5')
+  Plug 'neovim/nvim-lsp'
+endif
 call plug#end()
 " }}}
 " Plugin configuration {{{
 " nvim-lsp {{{
-lua require('lsp')
-call sign_define("LspDiagnosticsErrorSign", {"text" : "!" })
-call sign_define("LspDiagnosticsWarningSign", {"text" : "!" })
-call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
-call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
+if has('nvim-0.5')
+  lua require('lsp')
+  call sign_define("LspDiagnosticsErrorSign", {"text" : "!" })
+  call sign_define("LspDiagnosticsWarningSign", {"text" : "!" })
+  call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
+  call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
+endif
 " }}}
 " supertab {{{
 let g:SuperTabDefaultCompletionType = "context"
