@@ -1,5 +1,5 @@
 function! s:FormatFile() abort
-  write
+  silent write
   if get(b:, 'formatcmd', '') == ''
     echo '[Format] no command set'
   else
