@@ -1,6 +1,6 @@
-compiler cargo
-set makeprg=cargo\ check
+" compiler cargo
+" set makeprg=cargo\ check
 
-" nnoremap <leader>F :RustFmt<cr>
-nnoremap <leader>r :RustRun<cr>
-nnoremap <localleader>t :RustTest<cr>
+" nnoremap <leader>f :RustFmt<cr>
+" nnoremap <leader>r :RustRun<cr>
+" nnoremap <localleader>t :RustTest<cr>
