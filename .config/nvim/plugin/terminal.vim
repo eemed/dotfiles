@@ -18,6 +18,7 @@ function! s:TerminalRun(split, ... ) abort
 
   execute a:split
   execute 'terminal ' . cmd
+  normal! G
 
   if s:terminal_info.focus == v:false
     let s:terminal_info.last_cmd = cmd
