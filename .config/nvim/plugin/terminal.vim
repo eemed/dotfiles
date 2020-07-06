@@ -4,7 +4,22 @@ let s:terminal_info = {
       \ 'completion': []
       \ }
 let s:terminal_complete_commands_keep = 20
+let s:finished_buffers = []
+
+function! TermFinished(job_id, data, event) dict
+  call add(s:finished_buffers, self.buffer)
+endfunction
+
+function! TermClean() abort
+  for buf in s:finished_buffers
+    if bufexists(buf) && bufwinnr(buf) == -1
+      silent execute 'bdelete! ' . buf
+    endif
+  endfor
+endfunction
+
 function! s:TerminalRun(split, ... ) abort
+  call TermClean()
   let cmd = a:1
 
   if cmd == ""
@@ -17,7 +32,9 @@ function! s:TerminalRun(split, ... ) abort
   endif
 
   execute a:split
-  execute 'terminal ' . cmd
+  enew
+  call termopen(cmd, {'on_exit': 'TermFinished', 'buffer': bufnr() })
+
   normal! G
 
   if s:terminal_info.focus == v:false
@@ -39,7 +56,8 @@ function! s:TerminalRun(split, ... ) abort
 endfunction
 
 function! s:TermComplete(ArgLead, CmdLine, CursorPos) abort
-  return filter(copy(s:terminal_info.completion), 'match(v:val, a:ArgLead) == 0')
+  let arg = join(split(a:CmdLine, ' ')[1:], ' ')
+  return filter(copy(s:terminal_info.completion), 'match(v:val, arg) == 0')
 endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
