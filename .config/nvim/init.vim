@@ -266,7 +266,8 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'cideM/yui'
+Plug 'cideM/yui', { 'branch': 'fix-markdown' }
+" Plug '~/repos/yui'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -282,6 +283,7 @@ Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
 Plug 'ervandew/supertab'                  " Completion
 Plug 'romainl/vim-qf'                     " Better quickfix
+Plug 'lifepillar/vim-colortemplate'
 
 " nvim-0.5
 if has('nvim-0.5')
@@ -415,6 +417,7 @@ runtime macros/sandwich/keymap/surround.vim
 " }}}
 " colorscheme {{{
 set background=light
+let g:yui_line_numbers = 'emphasize'
 let g:yui_comments = 'emphasize'
 let g:yui_folds = 'emphasize'
 colorscheme yui

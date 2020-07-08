@@ -45,12 +45,10 @@ function! s:TerminalRun(split, ... ) abort
     let s:terminal_info.completion = s:terminal_info.completion[:-2]
   endif
 
-  if index(s:terminal_info.completion, cmd) == -1
-    let s:terminal_info.completion = [cmd] + s:terminal_info.completion
-  else
-    call filter(s:terminal_info.completion, 'v:val !~ cmd')
-    let s:terminal_info.completion = [cmd] + s:terminal_info.completion
+  if index(s:terminal_info.completion, cmd) != -1
+    call filter(s:terminal_info.completion, 'v:val !=# cmd')
   endif
+  let s:terminal_info.completion = [cmd] + s:terminal_info.completion
 
   wincmd p
 endfunction
