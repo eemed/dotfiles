@@ -54,8 +54,18 @@ function! s:TerminalRun(split, ... ) abort
 endfunction
 
 function! s:TermComplete(ArgLead, CmdLine, CursorPos) abort
-  let arg = join(split(a:CmdLine, ' ')[1:], ' ')
-  return filter(copy(s:terminal_info.completion), 'match(v:val, arg) == 0')
+  let splits = split(a:CmdLine, ' ')
+  let arg = join(splits[1:], ' ')
+
+  let result = copy(s:terminal_info.completion)
+  call filter(result, 'match(v:val, arg) == 0')
+
+  let cmd_cur_pos = a:CursorPos - len(splits[0]) - 1
+  call map(result, {idx, val -> val[cmd_cur_pos:] })
+
+  call filter(result, 'v:val != ""')
+
+  return result
 endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
