@@ -266,8 +266,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'cideM/yui', { 'branch': 'fix-markdown' }
-" Plug '~/repos/yui'
+Plug 'cideM/yui'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
