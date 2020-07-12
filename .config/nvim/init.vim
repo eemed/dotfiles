@@ -84,7 +84,7 @@ nnoremap <silent> ]m m':call search(&define, "W")<CR>
 set pastetoggle=<F2>
 
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
-inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CloseBracket()\<cr>"
+inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CustomCR()\<cr>"
 
 " Terminal
 tnoremap <esc> <c-\><c-n>
@@ -139,7 +139,7 @@ set nrformats+=alpha
 set clipboard=unnamed,unnamedplus
 
 set pumheight=10
-set completeopt=noselect,menuone,menu
+set completeopt=menu,menuone
 
 " Commands without remembering case. Useful for plugin commands
 set ignorecase smartcase

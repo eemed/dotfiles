@@ -4,10 +4,8 @@ let s:pairs = {
             \ '(': ')',
             \ }
 
-function! CloseBracket() abort
-    if &buftype ==# "quickfix" || 
-                \ &buftype ==# "nofile" ||
-                \ len(getline('.')) != col('.') - 1
+function! s:CloseBracket() abort
+    if len(getline('.')) != col('.') - 1
         return "\<CR>"
     endif
 
@@ -24,7 +22,7 @@ function! CloseBracket() abort
         let start = matched[0]
         let matchpos = matched[1]
 
-        if has_key(s:pairs, start)
+        if has_key(s:pairs, start) && searchpair(start, '', s:pairs[start], 'n') == 0
             let result = s:pairs[start] . result
         elseif index(values(s:pairs), start) != -1
             let result = result[1:]
@@ -35,4 +33,28 @@ function! CloseBracket() abort
         return "\<CR>" . result . "\<c-o>O"
     endif
     return "\<CR>"
+endfunction
+
+function! s:TagCR() abort
+    let col = col('.')
+    let next_two = getline(".")[col - 1 : col]
+    if next_two ==# "</"
+        return "\<CR>\<c-o>O"
+    endif
+    return "\<CR>"
+endfunction
+
+function! CustomCR() abort
+    if &buftype ==# "quickfix" || 
+                \ &buftype ==# "nofile"
+        return "\<CR>"
+    endif
+
+    let previous = getline(".")[col('.') - 2]
+
+    if previous == '>'
+        return <sid>TagCR()
+    endif
+
+    return <sid>CloseBracket()
 endfunction
