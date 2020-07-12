@@ -225,6 +225,10 @@ augroup end " }}}
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
 nnoremap <leader>c :Config<CR>
 
+" Notes uses autocreate directories
+let g:note_dir = '~/.vim_notes'
+command! -nargs=0 Notes execute ':edit ' . g:note_dir . '/index.md'
+
 command! -nargs=? -complete=filetype EditFileTypePlugin
       \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
