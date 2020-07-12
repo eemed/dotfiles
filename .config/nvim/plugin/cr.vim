@@ -37,15 +37,16 @@ endfunction
 
 function! s:TagCR() abort
     let col = col('.')
-    let next_two = getline(".")[col - 1 : col]
-    if next_two ==# "</"
+    let line = getline('.')
+    let next_two = line[col - 1 : col]
+    if next_two ==# "</" && line =~ '^\s*<\(.*\)\+><\/\1>$'
         return "\<CR>\<c-o>O"
     endif
     return "\<CR>"
 endfunction
 
 function! CustomCR() abort
-    if &buftype ==# "quickfix" || 
+    if &buftype ==# "quickfix" ||
                 \ &buftype ==# "nofile"
         return "\<CR>"
     endif
