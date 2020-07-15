@@ -18,6 +18,24 @@ function! TermClean() abort
   endfor
 endfunction
 
+let s:lines = ['']
+func! On_event(job_id, data, event) dict
+  let eof = (a:data == [''])
+  " Complete the previous line.
+  let s:lines[-1] .= a:data[0]
+  " Append (last item may be a partial line, until EOF).
+  call extend(s:lines, a:data[1:])
+  if !eof
+    let lines = map(s:lines, "substitute(v:val, '\r$', '', 'g')")
+    caddexpr lines
+  endif
+  let s:lines = s:lines[-1:]
+endf
+
+function! s:StringStrip(text)
+  return substitute(a:text, '^\s*\(.\{-}\)\s*$', '\1', '')
+endfunc
+
 function! s:TerminalRun(split, ... ) abort
   call TermClean()
   let cmd = a:1
@@ -33,9 +51,13 @@ function! s:TerminalRun(split, ... ) abort
 
   execute a:split
   enew
-  call termopen(cmd, {'on_exit': 'TermFinished', 'buffer': bufnr() })
+  call termopen(cmd, {
+        \ 'on_exit': 'TermFinished',
+        \ 'buffer': bufnr()
+        \ })
 
   normal! G
+  wincmd p
 
   if s:terminal_info.focus == v:false
     let s:terminal_info.last_cmd = cmd
@@ -49,8 +71,6 @@ function! s:TerminalRun(split, ... ) abort
     call filter(s:terminal_info.completion, 'v:val !=# cmd')
   endif
   let s:terminal_info.completion = [cmd] + s:terminal_info.completion
-
-  wincmd p
 endfunction
 
 function! s:TermComplete(ArgLead, CmdLine, CursorPos) abort
@@ -68,12 +88,18 @@ function! s:TermComplete(ArgLead, CmdLine, CursorPos) abort
   return result
 endfunction
 
-command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
+function! s:Focus(bang, ...) abort
+  if a:bang
+    let s:terminal_info.focus = v:false
+  else
+    let s:terminal_info.focus = v:true
+    let s:terminal_info.last_cmd = a:1
+    call <sid>TerminalRun('split', s:terminal_info.last_cmd)
+  endif
+endfunction
+
 command! -nargs=0 TermMake call <sid>TerminalRun('split', &makeprg)
-command! -nargs=1 TermFocus let s:terminal_info.focus = v:true
-      \ | let s:terminal_info.last_cmd = <q-args>
-      \ | call <sid>TerminalRun('split', s:terminal_info.last_cmd)
-command! -nargs=0 TermReset let s:terminal_info.focus = v:false
+command! -nargs=? -bang TermFocus call <sid>Focus(<bang>0, <q-args>)
 command! -nargs=? -complete=customlist,<sid>TermComplete Term
       \ call <sid>TerminalRun('split', <q-args>)
 command! -nargs=? VTerm call <sid>TerminalRun('vsplit', <q-args>)
