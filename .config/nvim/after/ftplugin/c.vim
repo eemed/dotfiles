@@ -1,2 +1,2 @@
-set makeprg=make\ -C\ build
+setlocal makeprg=make\ -C\ build
 let c_no_curly_error=1
