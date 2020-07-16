@@ -18,24 +18,6 @@ function! TermClean() abort
   endfor
 endfunction
 
-let s:lines = ['']
-func! On_event(job_id, data, event) dict
-  let eof = (a:data == [''])
-  " Complete the previous line.
-  let s:lines[-1] .= a:data[0]
-  " Append (last item may be a partial line, until EOF).
-  call extend(s:lines, a:data[1:])
-  if !eof
-    let lines = map(s:lines, "substitute(v:val, '\r$', '', 'g')")
-    caddexpr lines
-  endif
-  let s:lines = s:lines[-1:]
-endf
-
-function! s:StringStrip(text)
-  return substitute(a:text, '^\s*\(.\{-}\)\s*$', '\1', '')
-endfunc
-
 function! s:TerminalRun(split, ... ) abort
   call TermClean()
   let cmd = a:1
