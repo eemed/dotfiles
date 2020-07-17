@@ -159,7 +159,6 @@ set nowritebackup
 set noswapfile
 let &undodir = g:vimdir . '/undo'
 let &dir = g:vimdir . '/swap'
-set viminfo='20
 
 set updatetime=300
 set foldmethod=marker
@@ -233,7 +232,6 @@ command! -nargs=? -complete=filetype EditFileTypePlugin
       \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 
-command! -nargs=0 Scratch call Scratch()
 " Grep {{{
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
@@ -257,20 +255,18 @@ set synmaxcol=200
 set termguicolors
 set t_Co=256
 
-function! GitStatus() abort
-  return get(g:, 'loaded_fugitive', 0) ? fugitive#head() == '' ? '' : fugitive#head() . ' |' : ''
-endfunction
-
 function! PasteForStatusline() abort
   return &paste == 1 ? '[PASTE]' : ""
 endfunction
 
 set laststatus=2
-set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{GitStatus()}\ %{&ft}\ \|\ %l/%L\ :\ %c\ %*
+
+set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ %c\ %<%*
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 Plug 'cideM/yui'
+Plug 'NLKNguyen/papercolor-theme'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -334,7 +330,7 @@ nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 
-let $FZF_DEFAULT_OPTS='--layout=reverse'
+let $FZF_DEFAULT_OPTS='--layout=reverse --exact'
 let g:fzf_layout = { 'window': 'call CreateCenteredFloatingWindow()' }
 
 " floating fzf window with borders

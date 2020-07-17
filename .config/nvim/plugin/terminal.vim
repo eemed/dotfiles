@@ -6,11 +6,11 @@ let s:terminal_info = {
 let s:terminal_complete_commands_keep = 20
 let s:finished_buffers = []
 
-function! TermFinished(job_id, data, event) dict
+function! s:TermFinished(job_id, data, event) dict
   call add(s:finished_buffers, self.buffer)
 endfunction
 
-function! TermClean() abort
+function! s:TermClean() abort
   for buf in s:finished_buffers
     if bufexists(buf) && bufwinnr(buf) == -1
       silent execute 'bdelete! ' . buf
@@ -19,7 +19,7 @@ function! TermClean() abort
 endfunction
 
 function! s:TerminalRun(split, ... ) abort
-  call TermClean()
+  call s:TermClean()
   let cmd = a:1
 
   if cmd == ""
@@ -34,7 +34,7 @@ function! s:TerminalRun(split, ... ) abort
   execute a:split
   enew
   call termopen(cmd, {
-        \ 'on_exit': 'TermFinished',
+        \ 'on_exit': function('s:TermFinished'),
         \ 'buffer': bufnr()
         \ })
 
