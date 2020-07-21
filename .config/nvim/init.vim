@@ -266,7 +266,6 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 Plug 'cideM/yui'
-Plug 'arzg/vim-corvine'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -420,17 +419,16 @@ let g:yui_line_numbers = 'emphasize'
 let g:yui_comments = 'emphasize'
 let g:yui_folds = 'emphasize'
 
-function! CorvineHL() abort
-  highlight! Search guifg=#5438DC guibg=#DCD7F9
-  highlight! IncSearch guibg=#5438DC guifg=#DCD7F9
-  highlight! link LspDiagnosticsErrorSign Error
-endfunction
+function! YuiHL() abort
+  highlight! Statement gui=bold
+  highlight! Title gui=bold
+endfunction!
 
-augroup Corvine
+augroup Colors
   autocmd!
-  autocmd ColorScheme corvine,corvine_light call CorvineHL()
+  autocmd ColorScheme yui call YuiHL()
 augroup end
-colorscheme corvine_light
+colorscheme yui
 " }}}
 " }}}
 " Local settings {{{
