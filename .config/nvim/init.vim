@@ -260,12 +260,11 @@ function! PasteForStatusline() abort
 endfunction
 
 set laststatus=2
-
 set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ %c\ %<%*
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'cideM/yui'
+Plug 'chriskempson/base16-vim'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -344,10 +343,6 @@ function! CreateCenteredFloatingWindow()
     let mid = "│" . repeat(" ", width - 2) . "│"
     let bot = "╰" . repeat("─", width - 2) . "╯"
 
-    " let top = "+" . repeat("-", width - 2) . "+"
-    " let mid = "|" . repeat(" ", width - 2) . "|"
-    " let bot = "+" . repeat("-", width - 2) . "+"
-
     let lines = [top] + repeat([mid], height - 2) + [bot]
     let s:buf = nvim_create_buf(v:false, v:true)
     call nvim_buf_set_lines(s:buf, 0, -1, v:true, lines)
@@ -361,13 +356,13 @@ function! CreateCenteredFloatingWindow()
     au BufWipeout <buffer> exe 'bw '.s:buf
 endfunction
 
-let g:fzf_colors = {
-      \ 'fg':      ['fg', 'Normal'],
+let g:fzf_colors =
+      \ { 'fg':      ['fg', 'Normal'],
       \ 'bg':      ['bg', 'Normal'],
       \ 'hl':      ['fg', 'Comment'],
-      \ 'fg+':     ['fg', 'Normal', 'CursorColumn', 'String'],
-      \ 'bg+':     ['bg', 'Normal', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Comment'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Statement'],
       \ 'info':    ['fg', 'PreProc'],
       \ 'border':  ['fg', 'Ignore'],
       \ 'prompt':  ['fg', 'Conditional'],
@@ -375,6 +370,7 @@ let g:fzf_colors = {
       \ 'marker':  ['fg', 'Keyword'],
       \ 'spinner': ['fg', 'Label'],
       \ 'header':  ['fg', 'Comment'] }
+
 " }}}
 " undotree {{{
 let g:undotree_SplitWidth = 35
@@ -415,20 +411,26 @@ runtime macros/sandwich/keymap/surround.vim
 " }}}
 " colorscheme {{{
 set background=light
-let g:yui_line_numbers = 'emphasize'
-let g:yui_comments = 'emphasize'
-let g:yui_folds = 'emphasize'
 
-function! YuiHL() abort
-  highlight! Statement gui=bold
-  highlight! Title gui=bold
+function! Base16HL() abort
+  " Add nvim 0.5 highlighting
+  highlight! link LspDiagnosticsErrorSign Error
+  highlight! link LspDiagnosticsWarningSign WarningMsg
+  highlight! link LspDiagnosticsInformationSign Function
+  highlight! link LspDiagnosticsHintSign Function
 endfunction!
+
+function! SolarizedLightHL() abort
+  highlight! Statusline guifg=#f1f1f1
+  highlight! VertSplit guibg=none guifg=#888888
+endfunction
 
 augroup Colors
   autocmd!
-  autocmd ColorScheme yui call YuiHL()
+  autocmd ColorScheme base16* call Base16HL()
+  autocmd ColorScheme base16-solarized-light call SolarizedLightHL()
 augroup end
-colorscheme yui
+colorscheme base16-solarized-light
 " }}}
 " }}}
 " Local settings {{{

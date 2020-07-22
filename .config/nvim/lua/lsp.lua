@@ -5,6 +5,7 @@ vim.lsp.util.buf_diagnostics_virtual_text = function() return end
 local on_attach = function(_, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     vim.api.nvim_command('setlocal signcolumn=yes')
+    vim.api.nvim_command('autocmd CursorHold <buffer> lua vim.lsp.util.show_line_diagnostics()')
 
     do
         local method = "textDocument/publishDiagnostics"
