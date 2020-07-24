@@ -22,7 +22,7 @@ function! s:CloseBracket() abort
         let start = matched[0]
         let matchpos = matched[1]
 
-        if has_key(s:pairs, start) && searchpair(start, '', s:pairs[start], 'n') == 0
+        if has_key(s:pairs, start)
             let result = s:pairs[start] . result
         elseif index(values(s:pairs), start) != -1
             let result = result[1:]
