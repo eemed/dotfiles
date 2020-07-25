@@ -218,6 +218,9 @@ augroup Settings
 
   " Autosave
   autocmd FocusLost,BufLeave * silent! update
+
+  autocmd! BufLeave * set nocursorline
+  autocmd! BufEnter * set cursorline
 augroup end " }}}
 " }}}
 " Commands {{{
