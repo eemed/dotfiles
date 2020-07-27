@@ -20,6 +20,11 @@ nnoremap <silent><c-j> :wincmd j<cr>
 nnoremap <silent><c-k> :wincmd k<cr>
 nnoremap <silent><c-l> :wincmd l<cr>
 
+tnoremap <silent><c-h> <c-\><c-n>:wincmd h<cr>
+tnoremap <silent><c-j> <c-\><c-n>:wincmd j<cr>
+tnoremap <silent><c-k> <c-\><c-n>:wincmd k<cr>
+tnoremap <silent><c-l> <c-\><c-n>:wincmd l<cr>
+
 imap <silent><c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
 nmap <silent><c-f> mm[s1z=`m
 
@@ -187,14 +192,6 @@ set sidescrolloff=10
 set shiftwidth=4
 set expandtab
 
-" Autocreate directories {{{
-function! s:create_and_save_directory()
-  let l:directory = expand('<afile>:p:h')
-  if l:directory !~# '^\w\+:' && !isdirectory(l:directory)
-    call mkdir(l:directory, 'p')
-  endif
-endfunction
-" }}}
 " Sane path with git {{{
 function SetSanePath() abort
   " Set a basic &path
@@ -235,7 +232,11 @@ cnoreabbrev <expr> cd getcmdtype() == ":" && getcmdline() == 'cd' ? 'CD' : 'cd'
 augroup Settings
   autocmd!
   " Autocreate dirs
-  autocmd BufWritePre,FileWritePre * call <sid>create_and_save_directory()
+  autocmd BufWritePre,FileWritePre * silent! call mkdir(expand('<afile>:p:h'), 'p')
+
+  " Automatically insert mode in terminal
+  autocmd BufWinEnter,WinEnter term://* startinsert
+  autocmd BufLeave term://* stopinsert
 
   " Autosave
   autocmd FocusLost,BufLeave * silent! update
