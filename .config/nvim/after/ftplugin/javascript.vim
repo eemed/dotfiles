@@ -22,3 +22,5 @@ set includeexpr=LoadMainNodeModule(v:fname)
 
 nnoremap <silent> [[ m':call search('^' . define_pat, 'bW')<cr>
 nnoremap <silent> ]] m':call search('^' . define_pat, "W")<CR>
+
+set shiftwidth=2

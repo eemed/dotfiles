@@ -73,7 +73,7 @@ onoremap in :<C-u>normal vin<CR>
 
 inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
 set wildcharm=<c-z>
-cnoremap <expr> / pumvisible() ? "\<c-e>\<c-z>" : "/"
+cnoremap <expr> / pumvisible() ? "\<c-y>\<c-z>" : "/"
 
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
@@ -83,6 +83,24 @@ nnoremap <silent> ]m m':call search(&define, "W")<CR>
 
 set pastetoggle=<F2>
 
+nnoremap [<space> mmO<esc>`m
+nnoremap ]<space> mmo<esc>`m
+
+nnoremap [t :tabNext<cr>
+nnoremap ]t :tabprevious<cr>
+
+" From unimpaired
+function! JumpToConflictMarker(reverse) abort
+  call search('^\(@@ .* @@\|[<=>|]\{7}[<=>|]\@!\)', a:reverse ? 'bW' : 'W')
+endfunction
+
+nnoremap [n :<c-u>call <sid>JumpToConflictMarker(1)<cr>
+nnoremap ]n :<c-u>call <sid>JumpToConflictMarker(0)<cr>
+
+nnoremap yow :set wrap!<cr>
+nnoremap yos :set spell!<cr>
+nnoremap yod :diffthis<cr>
+nnoremap yon :set number!<cr>
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
 inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CustomCR()\<cr>"
 
@@ -165,6 +183,9 @@ set foldmethod=marker
 
 set scrolloff=5
 set sidescrolloff=10
+
+set shiftwidth=4
+set expandtab
 
 " Autocreate directories {{{
 function! s:create_and_save_directory()
@@ -275,15 +296,12 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
-Plug 'tpope/vim-unimpaired'               " Bindings
-Plug 'tpope/vim-sleuth'                   " Wise indent style
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
 Plug 'ervandew/supertab'                  " Completion
 Plug 'romainl/vim-qf'                     " Better quickfix
-Plug 'lifepillar/vim-colortemplate'
 
 " nvim-0.5
 if has('nvim-0.5')
