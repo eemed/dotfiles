@@ -78,7 +78,7 @@ onoremap in :<C-u>normal vin<CR>
 
 inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
 set wildcharm=<c-z>
-cnoremap <expr> / pumvisible() ? "\<c-y>\<c-z>" : "/"
+cnoremap <expr> / pumvisible() ? "\<c-e>\<c-z>" : "/"
 
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
