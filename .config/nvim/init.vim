@@ -242,8 +242,8 @@ augroup Settings
   " Autosave
   autocmd FocusLost,BufLeave * silent! update
 
-  autocmd! BufLeave * set nocursorline
-  autocmd! BufEnter * set cursorline
+  autocmd! BufLeave,InsertEnter * set nocursorline
+  autocmd! BufEnter,InsertLeave * set cursorline
 augroup end " }}}
 " }}}
 " Commands {{{
@@ -309,6 +309,9 @@ Plug 'romainl/vim-qf'                     " Better quickfix
 if has('nvim-0.5')
   Plug 'neovim/nvim-lsp'
 endif
+
+" Syntax
+Plug 'pearofducks/ansible-vim'
 call plug#end()
 " }}}
 " Plugin configuration {{{
