@@ -190,6 +190,7 @@ set scrolloff=5
 set sidescrolloff=10
 
 set shiftwidth=4
+set softtabstop=-1
 set expandtab
 
 " Sane path with git {{{
@@ -456,7 +457,7 @@ colorscheme base16-solarized-light
 " }}}
 " }}}
 " Local settings {{{
-let s:vimrc_local = fnamemodify(resolve(expand('<sfile>:p')), ':h').'/vimrc_local'
+let s:vimrc_local = fnamemodify(resolve(expand('<sfile>:p')), ':h').'/init.vim.local'
 if filereadable(s:vimrc_local)
   execute 'source' s:vimrc_local
 endif
