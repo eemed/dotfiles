@@ -187,7 +187,6 @@ set updatetime=300
 set foldmethod=marker
 
 set scrolloff=5
-set sidescrolloff=10
 
 set shiftwidth=4
 set softtabstop=-1
@@ -236,7 +235,7 @@ augroup Settings
   autocmd BufWritePre,FileWritePre * silent! call mkdir(expand('<afile>:p:h'), 'p')
 
   " Automatically insert mode in terminal
-  autocmd BufWinEnter,WinEnter term://* startinsert
+  autocmd BufWinEnter,WinEnter term://* setlocal scrolloff=0 | startinsert
   autocmd BufLeave term://* stopinsert
 
   " Autosave
