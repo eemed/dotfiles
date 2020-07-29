@@ -105,6 +105,15 @@ nnoremap yos :set spell!<cr>
 nnoremap yod :diffthis<cr>
 nnoremap yon :set number!<cr>
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
+
+function! ToggleBG()
+    if &background == 'light'
+        set background=dark
+    else
+        set background=light
+    endif
+endfunction
+nnoremap yob :call ToggleBG()<cr>
 inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CustomCR()\<cr>"
 
 " Terminal
@@ -290,17 +299,13 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " }}}
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'chriskempson/base16-vim'
-
-" Tmux
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'benmills/vimux'
-" Plug 'tmux-plugins/vim-tmux-focus-events'
+Plug 'NLKNguyen/papercolor-theme'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
+Plug 'christoomey/vim-tmux-navigator'     " Tmux navigation
 Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
@@ -443,7 +448,7 @@ runtime macros/sandwich/keymap/surround.vim
 " colorscheme {{{
 set background=light
 
-function! Base16HL() abort
+function! Nvim5HL() abort
   " Add nvim 0.5 highlighting
   highlight! link LspDiagnosticsErrorSign Error
   highlight! link LspDiagnosticsWarningSign WarningMsg
@@ -451,17 +456,11 @@ function! Base16HL() abort
   highlight! link LspDiagnosticsHintSign Function
 endfunction!
 
-function! SolarizedLightHL() abort
-  highlight! Statusline guifg=#f1f1f1
-  highlight! VertSplit guibg=none guifg=#888888
-endfunction
-
 augroup Colors
   autocmd!
-  autocmd ColorScheme base16* call Base16HL()
-  autocmd ColorScheme base16-solarized-light call SolarizedLightHL()
+  autocmd ColorScheme * call Nvim5HL()
 augroup end
-colorscheme base16-solarized-light
+colorscheme PaperColor
 " }}}
 " }}}
 " Local settings {{{
