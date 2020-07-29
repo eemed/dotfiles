@@ -1,5 +1,5 @@
 command! -nargs=? -bang -complete=shellcmd Tmux call s:TmuxRun(<bang>0, <q-args>)
-command! -nargs=1 -bang -complete=shellcmd TmuxFocus call s:TmuxFocus(<bang>0, <q-args>)
+command! -nargs=? -bang -complete=shellcmd TmuxFocus call s:TmuxFocus(<bang>0, <q-args>)
 command! -nargs=0 TmuxStatus echo '[Tmux] Last command: "' . s:tmux_last_cmd .
             \ '", Focus: ' . s:tmux_focus
 noremap <unique> <script> <silent> <Plug>TmuxMotionSend :<c-u>set opfunc=TmuxOp<cr>g@
