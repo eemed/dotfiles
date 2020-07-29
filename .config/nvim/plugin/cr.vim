@@ -12,7 +12,6 @@ function! s:CloseBracket() abort
     let result = ""
 
     let pattern = escape(join(keys(s:pairs) + values(s:pairs), '|'), '|[]')
-    echomsg pattern
     let line = getline(".")
 
     while !exists("matchpos") || matchpos != -1

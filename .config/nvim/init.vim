@@ -77,8 +77,6 @@ xnoremap in :<C-u>call VisualNumber()<CR>
 onoremap in :<C-u>normal vin<CR>
 
 inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
-set wildcharm=<c-z>
-cnoremap <expr> / pumvisible() ? "\<c-e>\<c-z>" : "/"
 
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
@@ -113,9 +111,12 @@ inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CustomCR()\<cr>"
 tnoremap <esc> <c-\><c-n>
 tnoremap <c-v> <c-\><c-n>pi
 
-nnoremap `<space> :Term<space>
-nnoremap `<cr> :Term<cr>
-nnoremap `? :TermInfo<cr>
+nnoremap `<space> :Tmux<space>
+nnoremap `<cr> :Tmux<cr>
+nnoremap `! :Tmux!<space>
+nnoremap `? :TmuxStatus<cr>
+nmap gx <Plug>TmuxMotionSend
+xmap gx <Plug>TmuxVisualSend
 " I need some finnish letters occasionally {{{
 let g:fix_keys_enabled = 0
 function! s:FixKeys() abort
@@ -235,8 +236,8 @@ augroup Settings
   autocmd BufWritePre,FileWritePre * silent! call mkdir(expand('<afile>:p:h'), 'p')
 
   " Automatically insert mode in terminal
-  autocmd BufWinEnter,WinEnter term://* setlocal scrolloff=0 | startinsert
-  autocmd BufLeave term://* stopinsert
+  " autocmd BufWinEnter,WinEnter term://* setlocal scrolloff=0 | startinsert
+  " autocmd BufLeave term://* stopinsert
 
   " Autosave
   autocmd FocusLost,BufLeave * silent! update
@@ -290,6 +291,11 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 Plug 'chriskempson/base16-vim'
+
+" Tmux
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'benmills/vimux'
+" Plug 'tmux-plugins/vim-tmux-focus-events'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
