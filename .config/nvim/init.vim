@@ -118,14 +118,19 @@ inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CustomCR()\<cr>"
 
 " Terminal
 tnoremap <esc> <c-\><c-n>
-tnoremap <c-v> <c-\><c-n>pi
 
-nnoremap `<space> :Tmux<space>
-nnoremap `<cr> :Tmux<cr>
-nnoremap `! :Tmux!<space>
-nnoremap `? :TmuxStatus<cr>
-nmap gx <Plug>TmuxMotionSend
-xmap gx <Plug>TmuxVisualSend
+if !empty($TMUX)
+    nnoremap `<space> :Tmux<space>
+    nnoremap `<cr> :Tmux<cr>
+    nnoremap `! :Tmux!<space>
+    nnoremap `? :TmuxStatus<cr>
+    nmap gx <Plug>TmuxMotionSend
+    xmap gx <Plug>TmuxVisualSend
+else
+    nnoremap `<space> :Term<space>
+    nnoremap `<cr> :Term<cr>
+    nnoremap `? :TermStatus<cr>
+endif
 " I need some finnish letters occasionally {{{
 let g:fix_keys_enabled = 0
 function! s:FixKeys() abort

@@ -1,3 +1,7 @@
+if empty($TMUX)
+    finish
+endif
+
 command! -nargs=? -bang -complete=shellcmd Tmux call s:TmuxRun(<bang>0, <q-args>)
 command! -nargs=? -bang -complete=shellcmd TmuxFocus call s:TmuxFocus(<bang>0, <q-args>)
 command! -nargs=0 TmuxStatus echo '[Tmux] Last command: "' . s:tmux_last_cmd .

@@ -61,5 +61,5 @@ command! -nargs=? -complete=shellcmd Term
 command! -nargs=? -complete=shellcmd VTerm call <sid>TerminalRun('vsplit', <q-args>)
 command! -nargs=? -complete=shellcmd TTerm call <sid>TerminalRun('tabnew', <q-args>)
 
-command! -nargs=0 TermInfo :echo '[Term] Last command: "' . s:terminal_info.last_cmd .
+command! -nargs=0 TermStatus :echo '[Term] Last command: "' . s:terminal_info.last_cmd .
       \ '", Focus: ' . s:terminal_info.focus
