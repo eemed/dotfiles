@@ -131,6 +131,12 @@ else
     nnoremap `<cr> :Term<cr>
     nnoremap `? :TermStatus<cr>
 endif
+
+xnoremap <expr> I (mode() =~# '[vV]' ? '<c-v>^o^I' : 'I')
+xnoremap <expr> A (mode() =~# '[vV]' ? '<c-v>0o$A' : 'A')
+
+nnoremap gj i<c-j><esc>k$
+
 " I need some finnish letters occasionally {{{
 let g:fix_keys_enabled = 0
 function! s:FixKeys() abort
@@ -312,6 +318,7 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'christoomey/vim-tmux-navigator'     " Tmux navigation
 Plug 'tpope/vim-commentary'               " Commenting
+Plug 'tpope/vim-rsi'
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'machakann/vim-sandwich'             " Surround objects
