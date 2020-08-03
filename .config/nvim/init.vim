@@ -311,6 +311,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'chriskempson/base16-vim'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -458,8 +459,6 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 runtime macros/sandwich/keymap/surround.vim
 " }}}
 " colorscheme {{{
-set background=light
-
 function! Nvim5HL() abort
   " Add nvim 0.5 highlighting
   highlight! link LspDiagnosticsErrorSign Error
@@ -472,7 +471,9 @@ augroup Colors
   autocmd!
   autocmd ColorScheme * call Nvim5HL()
 augroup end
-colorscheme PaperColor
+
+set background=dark
+colorscheme base16-eighties
 " }}}
 " }}}
 " Local settings {{{

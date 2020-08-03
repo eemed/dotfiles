@@ -1,4 +1,8 @@
 #!/bin/bash
+
+mkdir build
+cd build
+
 if [ ! -d ~/.fonts ]; then
     mkdir ~/.fonts
 fi
@@ -17,3 +21,6 @@ rm JetBrainsMono-1.0.0.zip
 # rm -rf hack.tar.gz ttf
 
 fc-cache -fv
+
+cd ..
+rm -rf build
