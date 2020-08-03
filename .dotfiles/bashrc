@@ -34,22 +34,13 @@ alias ll="ls -l"
 alias la="ls -la"
 # alias tmux="env TERM=xterm-256color tmux"
 alias stack-ghcid="ghcid --command 'stack ghci'"
-alias vim="nvim_remote"
+alias vim="nvim"
 alias g="git"
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
 alias hgrep="history | grep --color=auto"
 alias headphones="sudo rmmod btusb ; sudo modprobe btusb"
 alias open="gio open"
 function cdl(){ cd $1; ls -l;}
-
-nvim_remote()
-{
-    if [ -x "$(command -v nvr)" ] && ! [ -z ${NVIM_LISTEN_ADDRESS+x} ]; then
-        nvr $@
-    else
-        nvim $@
-    fi
-}
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 [ -d ~/.fzf ] && \

@@ -119,18 +119,12 @@ inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CustomCR()\<cr>"
 " Terminal
 tnoremap <esc> <c-\><c-n>
 
-if !empty($TMUX)
-    nnoremap `<space> :Tmux<space>
-    nnoremap `<cr> :Tmux<cr>
-    nnoremap `! :Tmux!<space>
-    nnoremap `? :TmuxStatus<cr>
-    nmap gx <Plug>TmuxMotionSend
-    xmap gx <Plug>TmuxVisualSend
-else
-    nnoremap `<space> :Term<space>
-    nnoremap `<cr> :Term<cr>
-    nnoremap `? :TermStatus<cr>
-endif
+nnoremap `<space> :Tmux<space>
+nnoremap `<cr> :Tmux<cr>
+nnoremap `! :Tmux!<space>
+nnoremap `? :TmuxStatus<cr>
+nmap gx <Plug>TmuxMotionSend
+xmap gx <Plug>TmuxVisualSend
 
 xnoremap <expr> I (mode() =~# '[vV]' ? '<c-v>^o^I' : 'I')
 xnoremap <expr> A (mode() =~# '[vV]' ? '<c-v>0o$A' : 'A')
