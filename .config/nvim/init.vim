@@ -209,22 +209,20 @@ set shiftwidth=4
 set softtabstop=-1
 set expandtab
 
-function s:MakeDirsToCurrentFile()
-  let dir = expand('%:p:h')
-
-  if dir =~ '^[a-z]\+:/'
+function s:MakeDirsToCurrentFile(dir)
+  if a:dir =~ '^[a-z]\+:/'
     return
   endif
 
-  if !isdirectory(dir)
-    call mkdir(dir, 'p')
+  if !isdirectory(a:dir)
+    call mkdir(a:dir, 'p')
   endif
 endfunction
 
 augroup Settings
   autocmd!
   " Autocreate dirs
-  autocmd BufWritePre,FileWritePre * call s:MakeDirsToCurrentFile()
+  autocmd BufWritePre,FileWritePre * call s:MakeDirsToCurrentFile(expand('<afile>:p:h'))
 
   " Autosave
   autocmd FocusLost,BufLeave * silent! update
