@@ -57,6 +57,8 @@ function! s:TmuxRun(bang, cmd) abort
         call s:TmuxCommand('clear-history -t ' . s:tmux_runner_index)
     endif
 
+    " Cancel possible copymode
+    call s:TmuxCommand("send-keys -t " . s:tmux_runner_index . " -X cancel")
     call s:TmuxSendText(cmd)
     call s:TmuxSendKeys("Enter")
 
