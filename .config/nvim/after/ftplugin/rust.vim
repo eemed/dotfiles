@@ -1,9 +1,7 @@
-" compiler cargo
-" setlocal makeprg=cargo\ check
+compiler cargo
+setlocal makeprg=cargo\ check
 
-" nnoremap <leader>f :RustFmt<cr>
-" nnoremap <leader>r :RustRun<cr>
-" nnoremap <localleader>t :RustTest<cr>
+setlocal path+=src/**,
 
 let method_pat = '^.*fn \ze\i\+(.*).*{'
 nnoremap <silent> [m m':call search(method_pat, 'bW')<cr>
