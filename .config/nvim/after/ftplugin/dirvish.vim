@@ -7,3 +7,6 @@ nnoremap <buffer> !cp :!cp -r <c-r>=expand('<cWORD>')<cr> <c-r>%
 nnoremap <buffer> !e :e <c-r>%
 
 setlocal signcolumn=no
+
+nnoremap <buffer> u :edit<cr>
+nnoremap <buffer> s :0,$!xargs stat --printf='\%a\t\%U:\%G\t\%.19y\t\%n\n'<cr>

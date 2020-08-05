@@ -209,7 +209,7 @@ set shiftwidth=4
 set softtabstop=-1
 set expandtab
 
-function s:MakeDirsToCurrentFile(dir)
+function s:MakeDirsToFile(dir)
   if a:dir =~ '^[a-z]\+:/'
     return
   endif
@@ -222,7 +222,7 @@ endfunction
 augroup Settings
   autocmd!
   " Autocreate dirs
-  autocmd BufWritePre,FileWritePre * call s:MakeDirsToCurrentFile(expand('<afile>:p:h'))
+  autocmd BufWritePre,FileWritePre * call s:MakeDirsToFile(expand('<afile>:p:h'))
 
   " Autosave
   autocmd FocusLost,BufLeave * silent! update
@@ -284,7 +284,7 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'christoomey/vim-tmux-navigator'     " Tmux navigation
 Plug 'tpope/vim-commentary'               " Commenting
-Plug 'tpope/vim-rsi'
+Plug 'tpope/vim-rsi'                      " Readline insertion
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'machakann/vim-sandwich'             " Surround objects
