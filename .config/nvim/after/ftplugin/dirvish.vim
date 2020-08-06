@@ -8,12 +8,17 @@ nnoremap <buffer> !e :e <c-r>%
 
 setlocal signcolumn=no
 
-nnoremap <buffer> u :edit<cr>
-nnoremap <buffer> s :<c-u>call ShowStats()<cr>
+nnoremap <silent> <buffer> s :<c-u>call DirvishShowStats()<cr>
+nmap <buffer> r R
 
-function! ShowStats()
-  let view = winsaveview()
-  silent 0,$!xargs stat --printf='\%a\t\%U:\%G\t\%.19y\t\%n\n'
-  execute '%s/\V' . escape(expand("%"), '/\') . '//g'
-  call winrestview(view)
-endfunction
+if !exists('*DirvishShowStats')
+  function DirvishShowStats() abort
+    let line = getline('.')
+    if isdirectory(line) || filereadable(line)
+      let view = winsaveview()
+      silent 0,$!xargs stat --printf='\%.19y\t\%a\t\%U:\%G\t\%n\n'
+      execute 'silent %s/\V' . escape(expand("%"), '/\') . '//g'
+      call winrestview(view)
+    endif
+  endfunction
+endif
