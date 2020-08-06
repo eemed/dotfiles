@@ -16,7 +16,9 @@ if !exists('*DirvishShowStats')
     let line = getline('.')
     if isdirectory(line) || filereadable(line)
       let view = winsaveview()
-      silent 0,$!xargs stat --printf='\%.19y\t\%a\t\%U:\%G\t\%n\n'
+      silent %norm! I'
+      silent %norm! A'
+      silent %!xargs stat --printf='\%.19y\t\%a\t\%U:\%G\t\%n\n'
       execute 'silent %s/\V' . escape(expand("%"), '/\') . '//g'
       call winrestview(view)
     endif
