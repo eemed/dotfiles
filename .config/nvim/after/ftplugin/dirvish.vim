@@ -9,4 +9,11 @@ nnoremap <buffer> !e :e <c-r>%
 setlocal signcolumn=no
 
 nnoremap <buffer> u :edit<cr>
-nnoremap <buffer> s :0,$!xargs stat --printf='\%a\t\%U:\%G\t\%.19y\t\%n\n'<cr>
+nnoremap <buffer> s :<c-u>call ShowStats()<cr>
+
+function! ShowStats()
+  let view = winsaveview()
+  silent 0,$!xargs stat --printf='\%a\t\%U:\%G\t\%.19y\t\%n\n'
+  execute '%s/\V' . escape(expand("%"), '/\') . '//g'
+  call winrestview(view)
+endfunction
