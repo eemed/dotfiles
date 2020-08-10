@@ -101,12 +101,6 @@ endfunction
 nnoremap <silent> [n :<c-u>call <sid>JumpToConflictMarker(1)<cr>
 nnoremap <silent> ]n :<c-u>call <sid>JumpToConflictMarker(0)<cr>
 
-function! s:SetShow(cmd)
-    let cmd = 'set ' . a:cmd
-    exe cmd . '!'
-    exe cmd . '?'
-endfunction
-
 nnoremap yow :set wrap!<cr>:set wrap?<cr>
 nnoremap yos :set spell!<cr>:set spell?<cr>
 nnoremap yod :diffthis<cr>
