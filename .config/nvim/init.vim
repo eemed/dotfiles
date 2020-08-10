@@ -32,7 +32,6 @@ nmap <silent><c-f> mm[s1z=`m
 
 nnoremap Y y$
 
-" Move text
 xnoremap < <gv
 xnoremap > >gv
 
@@ -88,34 +87,41 @@ nnoremap <silent> ]m m`:call search(&define, "W")<CR>
 
 set pastetoggle=<F2>
 
-nnoremap [<space> :set paste<cr>m`O<esc>``:set nopaste<cr>
-nnoremap ]<space> :set paste<cr>m`o<esc>``:set nopaste<cr>
+nnoremap <silent> [<space> :set paste<cr>m`O<esc>``:set nopaste<cr>
+nnoremap <silent> ]<space> :set paste<cr>m`o<esc>``:set nopaste<cr>
 
-nnoremap [t :tabNext<cr>
-nnoremap ]t :tabprevious<cr>
+nnoremap <silent> [t :tabNext<cr>
+nnoremap <silent> ]t :tabprevious<cr>
 
 " From unimpaired
-function! JumpToConflictMarker(reverse) abort
+function! s:JumpToConflictMarker(reverse) abort
   call search('^\(@@ .* @@\|[<=>|]\{7}[<=>|]\@!\)', a:reverse ? 'bW' : 'W')
 endfunction
 
-nnoremap [n :<c-u>call <sid>JumpToConflictMarker(1)<cr>
-nnoremap ]n :<c-u>call <sid>JumpToConflictMarker(0)<cr>
+nnoremap <silent> [n :<c-u>call <sid>JumpToConflictMarker(1)<cr>
+nnoremap <silent> ]n :<c-u>call <sid>JumpToConflictMarker(0)<cr>
 
-nnoremap yow :set wrap!<cr>
-nnoremap yos :set spell!<cr>
+function! s:SetShow(cmd)
+    let cmd = 'set ' . a:cmd
+    exe cmd . '!'
+    exe cmd . '?'
+endfunction
+
 nnoremap yod :diffthis<cr>
-nnoremap yon :set number!<cr>
+nnoremap yow :<c-u>call <sid>SetShow('wrap')<cr>
+nnoremap yos :<c-u>call <sid>SetShow('spell')<cr>
+nnoremap yon :<c-u>call <sid>SetShow('number')<cr>
+nnoremap yor :<c-u>call <sid>SetShow('relativenumber')<cr>
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
 
-function! ToggleBG()
+function! s:ToggleBG()
     if &background == 'light'
         set background=dark
     else
         set background=light
     endif
 endfunction
-nnoremap <silent> yob :call ToggleBG()<cr>
+nnoremap <silent> yob :call <sid>ToggleBG()<cr>
 inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CustomCR()\<cr>"
 
 tnoremap <esc> <c-\><c-n>
