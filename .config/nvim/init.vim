@@ -107,11 +107,11 @@ function! s:SetShow(cmd)
     exe cmd . '?'
 endfunction
 
+nnoremap yow :set wrap!<cr>:set wrap?<cr>
+nnoremap yos :set spell!<cr>:set spell?<cr>
 nnoremap yod :diffthis<cr>
-nnoremap yow :<c-u>call <sid>SetShow('wrap')<cr>
-nnoremap yos :<c-u>call <sid>SetShow('spell')<cr>
-nnoremap yon :<c-u>call <sid>SetShow('number')<cr>
-nnoremap yor :<c-u>call <sid>SetShow('relativenumber')<cr>
+nnoremap yon :set number!<cr>
+nnoremap yor :set relativenumber!<cr>
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
 
 function! s:ToggleBG()
