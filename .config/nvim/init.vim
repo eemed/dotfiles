@@ -16,17 +16,6 @@ let mapleader = " "
 nnoremap k gk
 nnoremap j gj
 
-" Window navigation
-nnoremap <silent><c-h> :wincmd h<cr>
-nnoremap <silent><c-j> :wincmd j<cr>
-nnoremap <silent><c-k> :wincmd k<cr>
-nnoremap <silent><c-l> :wincmd l<cr>
-
-tnoremap <silent><c-h> <c-\><c-n>:wincmd h<cr>
-tnoremap <silent><c-j> <c-\><c-n>:wincmd j<cr>
-tnoremap <silent><c-k> <c-\><c-n>:wincmd k<cr>
-tnoremap <silent><c-l> <c-\><c-n>:wincmd l<cr>
-
 imap <silent><c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
 nmap <silent><c-f> mm[s1z=`m
 
