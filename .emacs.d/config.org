@@ -27,6 +27,7 @@
     (global-set-key (kbd "C-c a") 'org-agenda)
     (global-set-key (kbd "C-c c") 'org-capture))
 #+END_SRC
+
 ** Which key
 #+BEGIN_SRC emacs-lisp
       (use-package which-key
@@ -34,55 +35,6 @@
       :init
       (which-key-mode))
 #+END_SRC
-** JS - JSX
-#+BEGIN_SRC emacs-lisp
-  (use-package rjsx-mode
-    :ensure t
-    :config
-    (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode)))
-#+END_SRC
-** Modeline
-#+BEGIN_SRC emacs-lisp
-     (use-package doom-modeline
-       :ensure t
-       :hook (after-init . doom-modeline-mode))
-#+END_SRC
-** Ivy, Swiper and Counsel
-*** Ivy
-Searching for everything
-#+BEGIN_SRC emacs-lisp
-          (use-package ivy
-            :ensure t
-            :init
-            (ivy-mode 1)
-            :config
-            (setq ivy-re-builders-alist
-               '((swiper . ivy--regex-plus)
-               (t . ivy--regex-fuzzy)))
-            (setq ivy-use-virtual-buffers t)
-            (setq ivy-count-format "%d/%d "))
-#+END_SRC
-*** Counsel-projectile
-#+BEGIN_SRC emacs-lisp
-  (use-package counsel
-    :ensure t
-    :after ivy
-    :config)
-
-  (use-package counsel-projectile
-    :ensure t
-    :init
-    (counsel-projectile-mode)
-    :config
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
-#+END_SRC
-*** Swiper
-Search in files
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package swiper
-  ;;   :ensure t)
-#+END_SRC
-
 ** Company
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -124,12 +76,6 @@ Search in files
 
 #   (add-hook 'rjsx-mode-hook #'lsp)
 # #+END_SRC
-** Windows
-#+BEGIN_SRC emacs-lisp
-  (use-package ace-window
-    :ensure t
-    :bind ("C-." . ace-window))
-#+END_SRC
 ** Expand regions
 #+BEGIN_SRC emacs-lisp
   (use-package expand-region
@@ -144,16 +90,19 @@ Search in files
     :config
     (global-set-key (kbd "C-x g") 'magit-status))
 #+END_SRC
-** Markdown
-#+BEGIN_SRC emacs-lisp
-  (use-package markdown-mode
-    :ensure t
-    :mode (("README\\.md\\'" . gfm-mode)
-           ("\\.md\\'" . markdown-mode)
-           ("\\.markdown\\'" . markdown-mode))
-    :init (setq markdown-command "multimarkdown"))
-#+END_SRC
 * General
+** Icomplete mode
+#+BEGIN_SRC emacs-lisp
+  (icomplete-mode 1)
+  (progn
+    ;; minibuffer enhanced completion
+    (require 'icomplete)
+    (icomplete-mode 1)
+    ;; show choices vertically
+    (setq icomplete-separator "\n")
+    (setq icomplete-hide-common-prefix nil)
+    (setq icomplete-in-buffer t))
+#+END_SRC
 ** Scroll
 #+BEGIN_SRC emacs-lisp
   ;; the defaults C-v and M-v scroll a full page, which is too much.
@@ -246,6 +195,7 @@ Search in files
         (delete-window)))
   (global-set-key (kbd "C-c x") 'close-and-kill-this-pane)
 #+END_SRC
+
 ** Backup directory
 #+BEGIN_SRC emacs-lisp
      (setq backup-directory-alist '(("" . "~/.emacs.d/backups")))
