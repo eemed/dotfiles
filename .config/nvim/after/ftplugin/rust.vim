@@ -1,5 +1,5 @@
 compiler cargo
-setlocal makeprg=cargo\ check
+setlocal makeprg=cargo\ clippy
 
 setlocal path+=src/**,
 

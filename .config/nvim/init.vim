@@ -240,6 +240,7 @@ endif
 
 if executable('rg')
   set grepprg=rg\ --vimgrep\ --smart-case
+  set grepformat^=%f:%l:%c:%m
 endif
 
 function! Grep(...) abort
@@ -273,7 +274,6 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'christoomey/vim-tmux-navigator'     " Tmux navigation
 Plug 'tpope/vim-commentary'               " Commenting
-Plug 'tpope/vim-rsi'                      " Readline insertion
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'machakann/vim-sandwich'             " Surround objects
