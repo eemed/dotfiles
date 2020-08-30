@@ -42,6 +42,7 @@ alias headphones="sudo rmmod btusb ; sudo modprobe btusb"
 alias open="gio open"
 function cdl(){ cd $1; ls -l;}
 
+export FZF_DEFAULT_OPTS="--bind 'tab:down' --bind 'btab:up' --exact --reverse"
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 [ -d ~/.fzf ] && \
   PATH=$PATH:~/.fzf/bin ;\

@@ -3,6 +3,7 @@
 	name = eemed
 	signingkey = EB856804
 [alias]
+	cof = "!git branch | fzf --header Checkout | xargs git checkout"
 	co = checkout
 	br = branch
 	st = status

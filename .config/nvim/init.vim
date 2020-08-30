@@ -330,7 +330,7 @@ nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 
-let $FZF_DEFAULT_OPTS='--layout=reverse --exact'
+let $FZF_DEFAULT_OPTS="--bind 'tab:down' --bind 'btab:up' --exact --reverse"
 let g:fzf_layout = { 'window': 'call CreateCenteredFloatingWindow()' }
 
 " floating fzf window with borders
