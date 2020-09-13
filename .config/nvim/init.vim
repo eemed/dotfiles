@@ -284,7 +284,7 @@ Plug 'romainl/vim-qf'                     " Better quickfix
 
 " nvim-0.5
 if has('nvim-0.5')
-  Plug 'neovim/nvim-lsp'
+  Plug 'neovim/nvim-lspconfig'
 endif
 
 " Syntax

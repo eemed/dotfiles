@@ -38,7 +38,7 @@ local on_attach = function(_, bufnr)
     -- vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<C-k>'     , '<cmd>lua vim.lsp.buf.signature_help()<CR>'         , opts)
 end
 
-local servers = {'bashls', 'tsserver', 'pyls', 'rls'}
+local servers = {'bashls', 'tsserver', 'pyls', 'rust_analyzer'}
 for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
         on_attach = on_attach,
