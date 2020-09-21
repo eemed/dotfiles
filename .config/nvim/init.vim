@@ -318,7 +318,6 @@ nmap yoq <plug>(qf_qf_toggle)
 " Plugin: fzf.vim
 function! Browse() abort
   if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
-    " Use this because Gfiles doesn't work with cached files
     call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
   else
     exe "Files"
