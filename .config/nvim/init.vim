@@ -272,23 +272,24 @@ Plug 'chriskempson/base16-vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
-Plug 'christoomey/vim-tmux-navigator'     " Tmux navigation
-Plug 'tpope/vim-commentary'               " Commenting
-Plug 'tpope/vim-fugitive'                 " Git integration
-Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
-Plug 'machakann/vim-sandwich'             " Surround objects
-Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
-Plug 'godlygeek/tabular'                  " Align stuff
-Plug 'ervandew/supertab'                  " Completion
-Plug 'romainl/vim-qf'                     " Better quickfix
+" Plug 'christoomey/vim-tmux-navigator'     " Tmux navigation
+" Plug 'tpope/vim-commentary'               " Commenting
+" Plug 'tpope/vim-fugitive'                 " Git integration
+" Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
+" Plug 'machakann/vim-sandwich'             " Surround objects
+" Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
+" Plug 'godlygeek/tabular'                  " Align stuff
+" Plug 'ervandew/supertab'                  " Completion
+" Plug 'romainl/vim-qf'                     " Better quickfix
 
 " Snippets
-Plug 'hrsh7th/vim-vsnip'
-Plug 'hrsh7th/vim-vsnip-integ'
+" Plug 'hrsh7th/vim-vsnip'
+" Plug 'hrsh7th/vim-vsnip-integ'
 
 " nvim-0.5
 if has('nvim-0.5')
   Plug 'neovim/nvim-lspconfig'
+  Plug 'nvim-lua/diagnostic-nvim'
 endif
 
 " Syntax
@@ -336,6 +337,9 @@ if has('nvim-0.5')
   call sign_define("LspDiagnosticsWarningSign", {"text" : "!" })
   call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
   call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
+
+  " Plugin: diagnostic-nvim
+  let g:diagnostic_insert_delay = 1
 endif
 
 " Plugin: supertab
