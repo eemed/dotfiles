@@ -289,7 +289,6 @@ Plug 'hrsh7th/vim-vsnip-integ'
 " nvim-0.5
 if has('nvim-0.5')
   Plug 'neovim/nvim-lspconfig'
-  Plug 'nvim-lua/diagnostic-nvim'
 endif
 
 " Syntax
@@ -337,9 +336,6 @@ if has('nvim-0.5')
   call sign_define("LspDiagnosticsWarningSign", {"text" : "!" })
   call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
   call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
-
-  " Plugin: diagnostic-nvim
-  let g:diagnostic_insert_delay = 1
 endif
 
 " Plugin: supertab
