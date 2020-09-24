@@ -289,7 +289,6 @@ Plug 'hrsh7th/vim-vsnip-integ'
 " nvim-0.5
 if has('nvim-0.5')
   Plug 'neovim/nvim-lspconfig'
-  Plug 'nvim-lua/diagnostic-nvim'
 endif
 
 " Syntax
@@ -337,9 +336,6 @@ if has('nvim-0.5')
   call sign_define("LspDiagnosticsWarningSign", {"text" : "!" })
   call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
   call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
-
-  " Plugin: diagnostic-nvim
-  let g:diagnostic_insert_delay = 1
 endif
 
 " Plugin: supertab
@@ -348,10 +344,16 @@ let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
 let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-o>"]
 
 " Plugin: vim-qf
-nmap ]q <plug>(qf_qf_next)
-nmap [q <plug>(qf_qf_previous)
-nmap ]l <plug>(qf_loc_next)
-nmap [l <plug>(qf_loc_previous)
+nnoremap <silent> [L :lfirst<cr>
+nnoremap <silent> [l :lprev<cr>
+nnoremap <silent> ]l :lnext<cr>
+nnoremap <silent> ]L :llast<cr>
+
+nnoremap <silent> [Q :cfirst<cr>
+nnoremap <silent> [q :cprev<cr>
+nnoremap <silent> ]q :cnext<cr>
+nnoremap <silent> ]Q :clast<cr>
+
 nmap yol <plug>(qf_loc_toggle)
 nmap yoq <plug>(qf_qf_toggle)
 
