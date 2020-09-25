@@ -437,9 +437,9 @@ runtime macros/sandwich/keymap/surround.vim
 function! Nvim5HL() abort
   " Add nvim 0.5 highlighting
   highlight! link LspDiagnosticsErrorSign Error
-  highlight! link LspDiagnosticsWarningSign WarningMsg
-  highlight! link LspDiagnosticsInformationSign Function
-  highlight! link LspDiagnosticsHintSign Function
+  highlight! LspDiagnosticsInformationSign guifg=#393939 guibg=#6699cc
+  highlight! LspDiagnosticsHintSign guifg=#393939 guibg=#6699cc
+  highlight! LspDiagnosticsWarningSign guifg=#393939 guibg=#ffcc66
 endfunction!
 
 augroup Colors
