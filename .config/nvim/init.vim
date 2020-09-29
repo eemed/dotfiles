@@ -266,7 +266,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins
 
 call plug#begin(g:vimdir . '/plugged')
-Plug 'chriskempson/base16-vim'
+Plug 'jonathanfilip/vim-lucius'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -440,6 +440,13 @@ function! Nvim5HL() abort
   highlight! LspDiagnosticsInformationSign guifg=#393939 guibg=#6699cc
   highlight! LspDiagnosticsHintSign guifg=#393939 guibg=#6699cc
   highlight! LspDiagnosticsWarningSign guifg=#393939 guibg=#ffcc66
+
+  " Modifications
+  highlight! link SignColumn LineNr
+  if &background == "light"
+    highlight! Normal guibg=#dddddd
+    highlight! NormalFloat guibg=#d0d0d0
+  endif
 endfunction!
 
 augroup Colors
@@ -447,8 +454,9 @@ augroup Colors
   autocmd ColorScheme * call Nvim5HL()
 augroup end
 
-set background=dark
-colorscheme base16-eighties
+set background=light
+let g:lucius_contrast = 'low'
+colorscheme lucius
 
 " Section: Local settings
 
