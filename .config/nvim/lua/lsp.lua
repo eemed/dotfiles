@@ -68,7 +68,6 @@ function M.refresh_diagnostics()
     if diagnostics == nil then
         return
     end
-    -- tprint(diagnostics)
     vim.lsp.util.buf_diagnostics_signs(bufnr, diagnostics)
     vim.lsp.util.set_loclist(diagnostics)
 end

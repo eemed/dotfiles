@@ -443,6 +443,7 @@ function! Nvim5HL() abort
 
   " Modifications
   highlight! link SignColumn LineNr
+  highlight! link SpecialKey Identifier
   if &background == "light"
     highlight! NormalFloat guibg=#d0d0d0
   endif
