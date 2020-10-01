@@ -442,7 +442,6 @@ function! Nvim5HL() abort
   highlight! LspDiagnosticsWarningSign guifg=#393939 guibg=#ffcc66
 
   " Modifications
-  " highlight! link SignColumn LineNr
   if &background == "light"
     call one#highlight('LineNr', '999999', 'e3e3e3', 'none')
     highlight! link SignColumn LineNr
