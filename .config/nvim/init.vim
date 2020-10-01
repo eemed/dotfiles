@@ -266,7 +266,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins
 
 call plug#begin(g:vimdir . '/plugged')
-Plug 'jonathanfilip/vim-lucius'
+Plug 'rakr/vim-one'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -442,9 +442,11 @@ function! Nvim5HL() abort
   highlight! LspDiagnosticsWarningSign guifg=#393939 guibg=#ffcc66
 
   " Modifications
-  highlight! link SignColumn LineNr
+  " highlight! link SignColumn LineNr
   if &background == "light"
-    highlight! NormalFloat guibg=#d0d0d0
+    call one#highlight('LineNr', '999999', 'e3e3e3', 'none')
+    highlight! link SignColumn LineNr
+    " highlight! NormalFloat guibg=#d0d0d0
   endif
 endfunction!
 
@@ -454,8 +456,7 @@ augroup Colors
 augroup end
 
 set background=light
-let g:lucius_contrast = 'low'
-colorscheme lucius
+colorscheme one
 
 " Section: Local settings
 
