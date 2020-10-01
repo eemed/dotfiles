@@ -266,7 +266,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins
 
 call plug#begin(g:vimdir . '/plugged')
-Plug 'rakr/vim-one'
+Plug 'NLKNguyen/papercolor-theme'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -436,16 +436,15 @@ runtime macros/sandwich/keymap/surround.vim
 " colorscheme
 function! Nvim5HL() abort
   " Add nvim 0.5 highlighting
-  highlight! link LspDiagnosticsErrorSign Error
+  highlight! LspDiagnosticsErrorSign guifg=#393939 guibg=#ff6969
   highlight! LspDiagnosticsInformationSign guifg=#393939 guibg=#6699cc
   highlight! LspDiagnosticsHintSign guifg=#393939 guibg=#6699cc
   highlight! LspDiagnosticsWarningSign guifg=#393939 guibg=#ffcc66
 
   " Modifications
   if &background == "light"
-    call one#highlight('LineNr', '999999', 'e3e3e3', 'none')
+    highlight! LineNr guibg=#dddddd guifg=#999999
     highlight! link SignColumn LineNr
-    " highlight! NormalFloat guibg=#d0d0d0
   endif
 endfunction!
 
@@ -455,7 +454,7 @@ augroup Colors
 augroup end
 
 set background=light
-colorscheme one
+colorscheme PaperColor
 
 " Section: Local settings
 
