@@ -113,8 +113,8 @@ nnoremap `<space> :Tmux<space>
 nnoremap `<cr> :Tmux<cr>
 nnoremap `! :Tmux!<space>
 nnoremap `? :TmuxStatus<cr>
-nmap gx <Plug>TmuxMotionSend
-xmap gx <Plug>TmuxVisualSend
+" nmap gx <Plug>TmuxMotionSend
+" xmap gx <Plug>TmuxVisualSend
 
 xnoremap <expr> I (mode() =~# '[vV]' ? '<c-v>^o^I' : 'I')
 xnoremap <expr> A (mode() =~# '[vV]' ? '<c-v>0o$A' : 'A')
@@ -275,6 +275,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'christoomey/vim-tmux-navigator'     " Tmux navigation
 Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
+Plug 'tpope/vim-rsi'
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
@@ -426,6 +427,22 @@ let g:loaded_netrwPlugin = 1
 command! -nargs=? -complete=dir Explore Dirvish <args>
 command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
 command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
+
+function! HandleURL()
+    let s:uri = matchstr(getline("."), '[a-z]*:\/\/[^ >,;()]*')
+    if match(s:uri, 'http') != 0
+      return
+    endif
+    let s:uri = shellescape(s:uri, 1)
+    echom s:uri
+    if s:uri != ""
+        silent exec "!gio open '".s:uri."'"
+        redraw!
+    else
+        echo "No URI found in line."
+    endif
+endfunction
+nnoremap <silent> gx :call HandleURL()<CR>
 
 " Plugin: vim-fugitive
 nnoremap <silent><leader>g :vertical Gstatus<CR>
