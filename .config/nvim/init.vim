@@ -233,6 +233,8 @@ command! -nargs=? -complete=filetype EditFileTypePlugin
       \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 
+let &grepprg='grep -Rin --exclude=' . shellescape(&wildignore)
+
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
   set grepprg=ag\ --vimgrep\ --smart-case
@@ -267,6 +269,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 
 call plug#begin(g:vimdir . '/plugged')
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'junegunn/seoul256.vim'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -471,7 +474,7 @@ augroup Colors
 augroup end
 
 set background=light
-colorscheme PaperColor
+colorscheme seoul256-light
 
 " Section: Local settings
 
