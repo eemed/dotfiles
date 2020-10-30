@@ -248,6 +248,7 @@ function! Grep(...) abort
 endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
+cnoreabbrev <expr> grep  (getcmdtype() ==# ':' && getcmdline() ==# 'grep')  ? 'Grep'  : 'grep'
 nnoremap <leader>G :Grep<space>
 
 " Section: Appearance
