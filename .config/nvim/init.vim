@@ -3,6 +3,10 @@
 let g:vimdir = stdpath('config')
 let g:python3_host_prog = '/usr/bin/python3'
 
+augroup vimrc
+  autocmd!
+augroup end
+
 " Install vim-plug
 if empty(glob(g:vimdir . '/autoload/plug.vim'))
   execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
@@ -141,10 +145,7 @@ function! s:RestoreKeys() abort
   endif
 endfunction
 inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
-augroup FinKeys
-  autocmd!
-  autocmd InsertLeave * call <sid>RestoreKeys()
-augroup end
+autocmd vimrc InsertLeave * call <sid>RestoreKeys()
 
 " Section: Settings
 
@@ -208,17 +209,14 @@ function s:MakeDirsToFile(dir)
   endif
 endfunction
 
-augroup Settings
-  autocmd!
-  " Autocreate dirs
-  autocmd BufWritePre,FileWritePre * call s:MakeDirsToFile(expand('<afile>:p:h'))
+" Autocreate dirs
+autocmd vimrc BufWritePre,FileWritePre * call s:MakeDirsToFile(expand('<afile>:p:h'))
 
-  " Autosave
-  autocmd FocusLost,BufLeave * silent! update
+" Autosave
+autocmd vimrc FocusLost,BufLeave * silent! update
 
-  autocmd! BufLeave,InsertEnter * set nocursorline
-  autocmd! BufEnter,InsertLeave * set cursorline
-augroup end
+autocmd vimrc BufLeave,InsertEnter * set nocursorline
+autocmd vimrc BufEnter,InsertLeave * set cursorline
 
 " Section: Commands
 
@@ -463,15 +461,12 @@ function! Nvim5HL() abort
 
   " Modifications
   if &background == "light"
-    highlight! LineNr guibg=#dddddd guifg=#999999
+    highlight! LineNr guibg=#cfcfcf guifg=#999999
     highlight! link SignColumn LineNr
   endif
 endfunction!
 
-augroup Colors
-  autocmd!
-  autocmd ColorScheme * call Nvim5HL()
-augroup end
+autocmd vimrc ColorScheme * call Nvim5HL()
 
 set background=light
 colorscheme seoul256-light
