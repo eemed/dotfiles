@@ -18,10 +18,9 @@ gpg --import <key>
 ```
 
 Log into github to add ssh key.
-Initialize pass and add remote
+Initialize pass
 ```
-pass git init
-pass git remote add origin <url>
+git clone <repo> ~/.password-store
 ```
 
 Passwords should now be usable.

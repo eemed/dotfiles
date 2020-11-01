@@ -267,7 +267,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins
 
 call plug#begin(g:vimdir . '/plugged')
-Plug 'NLKNguyen/papercolor-theme'
+Plug 'cideM/yui'
 Plug 'junegunn/seoul256.vim'
 
 " Fuzzy find
@@ -408,7 +408,7 @@ let g:fzf_colors = {
       \ 'hl':      ['fg', 'Comment'],
       \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
       \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Statement'],
+      \ 'hl+':     ['fg', 'Comment'],
       \ 'info':    ['fg', 'PreProc'],
       \ 'border':  ['fg', 'Ignore'],
       \ 'prompt':  ['fg', 'Conditional'],
@@ -468,6 +468,11 @@ function! Nvim5HL() abort
 endfunction!
 
 autocmd vimrc ColorScheme * call Nvim5HL()
+
+
+let yui_folds = "emphasize"
+let yui_comments = "emphasize"
+let yui_line_numbers = "emphasize"
 
 set background=light
 colorscheme seoul256-light
