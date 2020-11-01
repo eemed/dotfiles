@@ -268,7 +268,6 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 
 call plug#begin(g:vimdir . '/plugged')
 Plug 'NLKNguyen/papercolor-theme'
-Plug 'junegunn/seoul256.vim'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -470,7 +469,7 @@ endfunction!
 autocmd vimrc ColorScheme * call Nvim5HL()
 
 set background=light
-colorscheme seoul256-light
+colorscheme PaperColor
 
 " Section: Local settings
 
