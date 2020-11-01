@@ -459,19 +459,18 @@ function! Nvim5HL() abort
   highlight! LspDiagnosticsInformationSign guifg=#393939 guibg=#6699cc
   highlight! LspDiagnosticsHintSign guifg=#393939 guibg=#6699cc
   highlight! LspDiagnosticsWarningSign guifg=#393939 guibg=#ffcc66
-
-  " Modifications
-  if &background == "light"
-    highlight! LineNr guibg=#edede1 guifg=#999999
-    highlight! link SignColumn LineNr
-  endif
 endfunction!
 
 function! Toast() abort
-    highlight! StatuslineNC gui=reverse
-    highlight! Statusline guifg=#777771
-    highlight! Search guifg=#ffcc66
-    highlight! IncSearch guifg=#B6aa66
+  highlight! StatuslineNC gui=reverse
+
+  if &background == "light"
+    highlight! LineNr guibg=#edede1 guifg=#999999
+    highlight! link SignColumn LineNr
+
+    highlight! Search gui=none guibg=#ffc233 guifg=#323434
+    highlight! IncSearch guifg=#dfa213
+  endif
 endfunction
 
 autocmd vimrc ColorScheme * call Nvim5HL()
