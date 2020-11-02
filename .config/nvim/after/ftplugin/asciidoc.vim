@@ -4,4 +4,4 @@ setlocal wrap
 setlocal synmaxcol=0
 setlocal commentstring=//\ %s
 let &l:define='^=\+'
-set textwidth=100
+set textwidth=0
