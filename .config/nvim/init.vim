@@ -267,8 +267,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins
 
 call plug#begin(g:vimdir . '/plugged')
-Plug 'NLKNguyen/papercolor-theme'
-Plug 'jsit/toast.vim'
+Plug 'rakr/vim-one'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -461,23 +460,20 @@ function! Nvim5HL() abort
   highlight! LspDiagnosticsWarningSign guifg=#393939 guibg=#ffcc66
 endfunction!
 
-function! Toast() abort
-  highlight! StatuslineNC gui=reverse
-
+function! One() abort
   if &background == "light"
-    highlight! LineNr guibg=#edede1 guifg=#999999
-    highlight! link SignColumn LineNr
-
-    highlight! Search gui=none guibg=#ffc233 guifg=#323434
-    highlight! IncSearch guifg=#dfa213
+      highlight! LineNr guibg=#eeeeee
+  else
+      highlight! LineNr guibg=#353546 guifg=#555555
   endif
+  highlight! link SignColumn LineNr
 endfunction
 
 autocmd vimrc ColorScheme * call Nvim5HL()
-autocmd vimrc ColorScheme toast call Toast()
+autocmd vimrc ColorScheme one call One()
 
 set background=light
-colorscheme toast
+colorscheme one
 
 " Section: Local settings
 
