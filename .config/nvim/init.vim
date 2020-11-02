@@ -295,6 +295,7 @@ endif
 
 " Syntax
 Plug 'pearofducks/ansible-vim'
+Plug 'MaxMEllon/vim-jsx-pretty'
 call plug#end()
 
 " Section: Plugin configuration
