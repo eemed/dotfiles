@@ -220,6 +220,14 @@ autocmd vimrc BufEnter,InsertLeave * set cursorline
 
 " Section: Commands
 
+function! <SID>SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
+" nmap <leader>sp :call <SID>SynStack()<CR>
+
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
 nnoremap <leader>c :Config<CR>
 
@@ -268,6 +276,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 
 call plug#begin(g:vimdir . '/plugged')
 Plug 'rakr/vim-one'
+Plug 'eemed/oldschool.vim'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -393,7 +402,7 @@ function! CreateCenteredFloatingWindow()
     let s:buf = nvim_create_buf(v:false, v:true)
     call nvim_buf_set_lines(s:buf, 0, -1, v:true, lines)
     call nvim_open_win(s:buf, v:true, opts)
-    set winhl=Normal:Floating
+    set winhl=Normal:Normal
     let opts.row += 1
     let opts.height -= 2
     let opts.col += 2
@@ -470,11 +479,11 @@ function! One() abort
   highlight! link SignColumn LineNr
 endfunction
 
-autocmd vimrc ColorScheme * call Nvim5HL()
+" autocmd vimrc ColorScheme * call Nvim5HL()
 autocmd vimrc ColorScheme one call One()
 
 set background=light
-colorscheme one
+colorscheme oldschool
 
 " Section: Local settings
 
