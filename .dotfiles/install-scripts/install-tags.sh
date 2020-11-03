@@ -21,7 +21,7 @@ if [ ! -x "$(command -v ctags)" ] || [ $1 = "-f" ]; then
 
     git clone https://github.com/universal-ctags/ctags.git
     cd ctags
-    ./autogen.sh 
+    ./autogen.sh
     ./configure --prefix ~/.local
     make
     make install
