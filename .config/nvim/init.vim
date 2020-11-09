@@ -1,4 +1,4 @@
-" Section: Setup
+" Section: Setup {{{
 
 let g:vimdir = stdpath('config')
 let g:python3_host_prog = '/usr/bin/python3'
@@ -12,13 +12,30 @@ if empty(glob(g:vimdir . '/autoload/plug.vim'))
   execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
-
-" Section: Key mappings
+" }}}
+" Section: Key mappings {{{
 
 let mapleader = " "
 
 nnoremap k gk
 nnoremap j gj
+
+nnoremap <c-h> <c-w>h
+nnoremap <c-j> <c-w>j
+nnoremap <c-k> <c-w>k
+nnoremap <c-l> <c-w>l
+
+tnoremap <c-h> <c-\><c-w>h
+tnoremap <c-j> <c-\><c-w>j
+tnoremap <c-k> <c-\><c-w>k
+tnoremap <c-l> <c-\><c-w>l
+
+nnoremap `<cr> :Term<cr>
+nnoremap `<space> :Term<space>
+nnoremap `! :TermFocus<space>
+nnoremap `? :TermInfo<cr>
+
+autocmd vimrc BufWinEnter,WinEnter term://* setlocal scrolloff=0 | nnoremap <buffer> <cr> :q<cr>
 
 imap <silent><c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
 nmap <silent><c-f> mm[s1z=`m
@@ -113,13 +130,6 @@ inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CustomCR()\<cr>"
 
 tnoremap <esc> <c-\><c-n>
 
-nnoremap `<space> :Tmux<space>
-nnoremap `<cr> :Tmux<cr>
-nnoremap `! :Tmux!<space>
-nnoremap `? :TmuxStatus<cr>
-" nmap gx <Plug>TmuxMotionSend
-" xmap gx <Plug>TmuxVisualSend
-
 xnoremap <expr> I (mode() =~# '[vV]' ? '<c-v>^o^I' : 'I')
 xnoremap <expr> A (mode() =~# '[vV]' ? '<c-v>0o$A' : 'A')
 
@@ -146,8 +156,8 @@ function! s:RestoreKeys() abort
 endfunction
 inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
 autocmd vimrc InsertLeave * call <sid>RestoreKeys()
-
-" Section: Settings
+" }}}
+" Section: Settings {{{
 
 filetype plugin indent on
 set hidden
@@ -217,9 +227,9 @@ autocmd vimrc FocusLost,BufLeave * silent! update
 
 autocmd vimrc BufLeave,InsertEnter * set nocursorline
 autocmd vimrc BufEnter,InsertLeave * set cursorline
-
-" Section: Commands
-
+" }}}
+" Section: Commands {{{
+" Syn stack {{{
 function! <SID>SynStack()
   if !exists("*synstack")
     return
@@ -227,7 +237,8 @@ function! <SID>SynStack()
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 " nmap <leader>sp :call <SID>SynStack()<CR>
-
+" }}}
+" Config, notes and filetypeplugin {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
 nnoremap <leader>c :Config<CR>
 
@@ -238,7 +249,8 @@ command! -nargs=0 Notes execute ':edit ' . g:note_dir . '/index.md'
 command! -nargs=? -complete=filetype EditFileTypePlugin
       \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
       \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
-
+" }}}
+" Grep {{{
 let &grepprg='grep -Rin --exclude=' . shellescape(&wildignore)
 
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
@@ -258,8 +270,26 @@ endfunction
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
 cnoreabbrev <expr> grep  (getcmdtype() ==# ':' && getcmdline() ==# 'grep')  ? 'Grep'  : 'grep'
 nnoremap <leader>G :Grep<space>
-
-" Section: Appearance
+" }}}
+" Open urls {{{
+function! HandleURL()
+    let s:uri = matchstr(getline("."), '[a-z]*:\/\/[^ >,;()]*')
+    if match(s:uri, 'http') != 0
+      return
+    endif
+    let s:uri = shellescape(s:uri, 1)
+    echom s:uri
+    if s:uri != ""
+        silent exec "!gio open '".s:uri."'"
+        redraw!
+    else
+        echo "No URI found in line."
+    endif
+endfunction
+nnoremap <silent> gx :call HandleURL()<CR>
+" }}}
+" }}}
+" Section: Appearance {{{
 
 set synmaxcol=200
 set termguicolors
@@ -271,8 +301,8 @@ endfunction
 
 set laststatus=2
 set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ %c\ %<%*
-
-" Section: Plugins
+" }}}
+" Section: Plugins {{{
 
 call plug#begin(g:vimdir . '/plugged')
 Plug 'rakr/vim-one'
@@ -306,10 +336,9 @@ endif
 Plug 'pearofducks/ansible-vim'
 Plug 'MaxMEllon/vim-jsx-pretty'
 call plug#end()
-
-" Section: Plugin configuration
-
-" Plugin: vim-vsnip
+" }}}
+" Section: Plugin configuration {{{
+" Plugin: vim-vsnip {{{
 imap <C-j> <Plug>(vsnip-expand-or-jump)
 smap <C-j> <Plug>(vsnip-expand-or-jump)
 
@@ -340,8 +369,8 @@ function! SnipComplete() abort
 endfunction
 
 inoremap <c-x><c-s> <c-r>=SnipComplete()<cr>
-
-" Plugin: nvim-lsp
+" }}}
+" Plugin: nvim-lsp {{{
 if has('nvim-0.5')
   lua require('lsp')
   call sign_define("LspDiagnosticsErrorSign", {"text" : "!" })
@@ -349,13 +378,13 @@ if has('nvim-0.5')
   call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
   call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
 endif
-
-" Plugin: supertab
+" }}}
+" Plugin: supertab {{{
 let g:SuperTabDefaultCompletionType = "context"
 let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
 let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-o>"]
-
-" Plugin: vim-qf
+" }}}
+" Plugin: vim-qf {{{
 nnoremap <silent> [L :lfirst<cr>
 nnoremap <silent> [l :lprev<cr>
 nnoremap <silent> ]l :lnext<cr>
@@ -368,8 +397,8 @@ nnoremap <silent> ]Q :clast<cr>
 
 nmap yol <plug>(qf_loc_toggle)
 nmap yoq <plug>(qf_qf_toggle)
-
-" Plugin: fzf.vim
+" }}}
+" Plugin: fzf.vim {{{
 function! Browse() abort
   if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
     call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
@@ -426,45 +455,30 @@ let g:fzf_colors = {
       \ 'spinner': ['fg', 'Label'],
       \ 'header':  ['fg', 'Comment']
       \ }
-
-" Plugin: undotree
+" }}}
+" Plugin: undotree {{{
 let g:undotree_SplitWidth = 35
 let g:undotree_DiffAutoOpen = 0
 let g:undotree_SetFocusWhenToggle = 1
 nnoremap <leader>u :UndotreeToggle<cr>
-
-" Plugin: dirvish
+" }}}
+" Plugin: dirvish {{{
 let g:loaded_netrwPlugin = 1
 command! -nargs=? -complete=dir Explore Dirvish <args>
 command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args>
 command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
-
-function! HandleURL()
-    let s:uri = matchstr(getline("."), '[a-z]*:\/\/[^ >,;()]*')
-    if match(s:uri, 'http') != 0
-      return
-    endif
-    let s:uri = shellescape(s:uri, 1)
-    echom s:uri
-    if s:uri != ""
-        silent exec "!gio open '".s:uri."'"
-        redraw!
-    else
-        echo "No URI found in line."
-    endif
-endfunction
-nnoremap <silent> gx :call HandleURL()<CR>
-
-" Plugin: vim-fugitive
+" }}}
+" Plugin: vim-fugitive {{{
 nnoremap <silent><leader>g :vertical Gstatus<CR>
-
-" Plugin: vim-sandwich
+" }}}
+" Plugin: vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
-
-" colorscheme
+" }}}
+" }}}
+" Colorscheme {{{
 set background=light
 colorscheme oldschool
-
-" Section: Local settings
-
+" }}}
+" Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
+" }}}
