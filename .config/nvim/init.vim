@@ -282,7 +282,7 @@ Plug 'eemed/oldschool.vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
-Plug 'christoomey/vim-tmux-navigator'     " Tmux navigation
+" Plug 'christoomey/vim-tmux-navigator'     " Tmux navigation
 Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'tpope/vim-rsi'
@@ -414,10 +414,10 @@ endfunction
 let g:fzf_colors = {
       \ 'fg':      ['fg', 'Normal'],
       \ 'bg':      ['bg', 'Normal'],
-      \ 'hl':      ['fg', 'Comment'],
-      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Statement'],
+      \ 'hl':      ['fg', 'Special'],
+      \ 'fg+':     ['fg', 'Normal'],
+      \ 'bg+':     ['bg', 'Pmenu'],
+      \ 'hl+':     ['fg', 'Special'],
       \ 'info':    ['fg', 'PreProc'],
       \ 'border':  ['fg', 'Ignore'],
       \ 'prompt':  ['fg', 'Conditional'],
@@ -462,26 +462,6 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 runtime macros/sandwich/keymap/surround.vim
 
 " colorscheme
-function! Nvim5HL() abort
-  " Add nvim 0.5 highlighting
-  highlight! LspDiagnosticsErrorSign guifg=#393939 guibg=#ff6969
-  highlight! LspDiagnosticsInformationSign guifg=#393939 guibg=#6699cc
-  highlight! LspDiagnosticsHintSign guifg=#393939 guibg=#6699cc
-  highlight! LspDiagnosticsWarningSign guifg=#393939 guibg=#ffcc66
-endfunction!
-
-function! One() abort
-  if &background == "light"
-      highlight! LineNr guibg=#eeeeee
-  else
-      highlight! LineNr guibg=#353546 guifg=#555555
-  endif
-  highlight! link SignColumn LineNr
-endfunction
-
-" autocmd vimrc ColorScheme * call Nvim5HL()
-autocmd vimrc ColorScheme one call One()
-
 set background=light
 colorscheme oldschool
 
