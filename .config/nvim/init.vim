@@ -30,7 +30,7 @@ tnoremap <A-j> <c-\><c-n><c-w>j
 tnoremap <A-k> <c-\><c-n><c-w>k
 tnoremap <A-l> <c-\><c-n><c-w>l
 
-autocmd vimrc BufEnter,BufWinEnter,WinEnter term://* setlocal scrolloff=0
+autocmd vimrc BufEnter,BufWinEnter,WinEnter term://* setlocal scrolloff=0 | startinsert!
 autocmd vimrc BufLeave term://* stopinsert!
 
 imap <silent><c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
