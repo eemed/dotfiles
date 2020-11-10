@@ -167,7 +167,7 @@ set nowrap
 set list listchars=tab:→\ ,nbsp:•,trail:•
 set breakindent
 let &showbreak='↳ '
-set path=
+set path=.
 set include=
 set keywordprg=
 set nrformats+=alpha
@@ -299,7 +299,6 @@ set laststatus=2
 set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ %c\ %<%*
 " }}}
 " Section: Plugins {{{
-
 call plug#begin(g:vimdir . '/plugged')
 Plug 'eemed/oldschool.vim'
 
