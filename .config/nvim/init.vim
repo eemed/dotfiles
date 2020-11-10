@@ -20,22 +20,18 @@ let mapleader = " "
 nnoremap k gk
 nnoremap j gj
 
-nnoremap <c-h> <c-w>h
-nnoremap <c-j> <c-w>j
-nnoremap <c-k> <c-w>k
-nnoremap <c-l> <c-w>l
+nnoremap <A-h> <c-w>h
+nnoremap <A-j> <c-w>j
+nnoremap <A-k> <c-w>k
+nnoremap <A-l> <c-w>l
 
-tnoremap <c-h> <c-\><c-w>h
-tnoremap <c-j> <c-\><c-w>j
-tnoremap <c-k> <c-\><c-w>k
-tnoremap <c-l> <c-\><c-w>l
+tnoremap <A-h> <c-\><c-n><c-w>h
+tnoremap <A-j> <c-\><c-n><c-w>j
+tnoremap <A-k> <c-\><c-n><c-w>k
+tnoremap <A-l> <c-\><c-n><c-w>l
 
-nnoremap `<cr> :Term<cr>
-nnoremap `<space> :Term<space>
-nnoremap `! :TermFocus<space>
-nnoremap `? :TermInfo<cr>
-
-autocmd vimrc BufWinEnter,WinEnter term://* setlocal scrolloff=0 | nnoremap <buffer> <cr> :q<cr>
+autocmd vimrc BufEnter,BufWinEnter,WinEnter term://* setlocal scrolloff=0
+autocmd vimrc BufLeave term://* stopinsert!
 
 imap <silent><c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
 nmap <silent><c-f> mm[s1z=`m
@@ -305,7 +301,6 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 
 call plug#begin(g:vimdir . '/plugged')
-Plug 'rakr/vim-one'
 Plug 'eemed/oldschool.vim'
 
 " Fuzzy find
