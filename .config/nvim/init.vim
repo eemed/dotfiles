@@ -301,6 +301,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 Plug 'eemed/oldschool.vim'
+Plug 'cideM/yui'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -433,22 +434,6 @@ function! CreateCenteredFloatingWindow()
     call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
     au BufWipeout <buffer> exe 'bw '.s:buf
 endfunction
-
-let g:fzf_colors = {
-      \ 'fg':      ['fg', 'Normal'],
-      \ 'bg':      ['bg', 'Normal'],
-      \ 'hl':      ['fg', 'Special'],
-      \ 'fg+':     ['fg', 'Normal'],
-      \ 'bg+':     ['bg', 'Pmenu'],
-      \ 'hl+':     ['fg', 'Special'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'border':  ['fg', 'Ignore'],
-      \ 'prompt':  ['fg', 'Conditional'],
-      \ 'pointer': ['fg', 'Exception'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment']
-      \ }
 " }}}
 " Plugin: undotree {{{
 let g:undotree_SplitWidth = 35
@@ -471,6 +456,48 @@ runtime macros/sandwich/keymap/surround.vim
 " }}}
 " Colorscheme {{{
 set background=light
+let g:yui_comments = 'emphasize'
+let g:yui_line_numbers = 'emphasize'
+let g:yui_comments = 'emphasize'
+
+function! Yui()
+    let g:fzf_colors = {
+                \ 'fg':      ['fg', 'Normal'],
+                \ 'bg':      ['bg', 'Normal'],
+                \ 'hl':      ['fg', 'Comment'],
+                \ 'fg+':     ['fg', 'Normal'],
+                \ 'bg+':     ['bg', 'Normal'],
+                \ 'hl+':     ['fg', 'Comment'],
+                \ 'info':    ['fg', 'PreProc'],
+                \ 'border':  ['fg', 'Ignore'],
+                \ 'prompt':  ['fg', 'Conditional'],
+                \ 'pointer': ['fg', 'Exception'],
+                \ 'marker':  ['fg', 'Keyword'],
+                \ 'spinner': ['fg', 'Label'],
+                \ 'header':  ['fg', 'Comment']
+                \ }
+endfunction
+autocmd vimrc ColorScheme yui call Yui()
+
+function! OldSchool()
+    let g:fzf_colors = {
+                \ 'fg':      ['fg', 'Normal'],
+                \ 'bg':      ['bg', 'Normal'],
+                \ 'hl':      ['fg', 'Special'],
+                \ 'fg+':     ['fg', 'Normal'],
+                \ 'bg+':     ['bg', 'Normal'],
+                \ 'hl+':     ['fg', 'Special'],
+                \ 'info':    ['fg', 'PreProc'],
+                \ 'border':  ['fg', 'Ignore'],
+                \ 'prompt':  ['fg', 'Conditional'],
+                \ 'pointer': ['fg', 'Exception'],
+                \ 'marker':  ['fg', 'Keyword'],
+                \ 'spinner': ['fg', 'Label'],
+                \ 'header':  ['fg', 'Comment']
+                \ }
+endfunction
+autocmd vimrc ColorScheme oldschool call OldSchool()
+
 colorscheme oldschool
 " }}}
 " Section: Local settings {{{

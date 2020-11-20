@@ -36,7 +36,7 @@ end
 ----------------------
 local M = {}
 
-local nvim_lsp = require('nvim_lsp')
+local lspconfig = require('lspconfig')
 
 vim.lsp.util.buf_diagnostics_virtual_text = function() return end
 M.default_publish_diagnostics = vim.lsp.callbacks["textDocument/publishDiagnostics"]
@@ -105,7 +105,7 @@ end
 
 local servers = {'bashls', 'tsserver', 'pyls', 'rust_analyzer'}
 for _, lsp in ipairs(servers) do
-    nvim_lsp[lsp].setup {
+    lspconfig[lsp].setup {
         on_attach = on_attach,
     }
 end
