@@ -286,8 +286,18 @@ nnoremap <silent> gx :call HandleURL()<CR>
 " }}}
 " }}}
 " Section: Templates {{{
-autocmd vimrc BufNewFile *.sh execute '0r ' . g:vimdir . '/templates/skeleton.sh'
-autocmd vimrc BufNewFile *.py execute '0r ' . g:vimdir . '/templates/skeleton.py'
+function! s:load_skeleton()
+  filetype detect
+  if empty(&filetype)
+    return
+  endif
+
+  let skeleton_path = g:vimdir . '/templates/' . &filetype
+  if filereadable(skeleton_path)
+    execute '0read ' . skeleton_path
+  endif
+endfunction
+autocmd vimrc BufNewFile * call s:load_skeleton()
 " }}}
 " Section: Appearance {{{
 
