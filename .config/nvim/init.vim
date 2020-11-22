@@ -285,6 +285,10 @@ endfunction
 nnoremap <silent> gx :call HandleURL()<CR>
 " }}}
 " }}}
+" Section: Templates {{{
+autocmd vimrc BufNewFile *.sh execute '0r ' . g:vimdir . '/templates/skeleton.sh'
+autocmd vimrc BufNewFile *.py execute '0r ' . g:vimdir . '/templates/skeleton.py'
+" }}}
 " Section: Appearance {{{
 
 set synmaxcol=200
