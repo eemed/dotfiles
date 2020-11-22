@@ -318,10 +318,6 @@ Plug 'godlygeek/tabular'                  " Align stuff
 Plug 'ervandew/supertab'                  " Completion
 Plug 'romainl/vim-qf'                     " Better quickfix
 
-" Snippets
-Plug 'hrsh7th/vim-vsnip'
-Plug 'hrsh7th/vim-vsnip-integ'
-
 " nvim-0.5
 if has('nvim-0.5')
   Plug 'neovim/nvim-lspconfig'
@@ -333,38 +329,6 @@ Plug 'MaxMEllon/vim-jsx-pretty'
 call plug#end()
 " }}}
 " Section: Plugin configuration {{{
-" Plugin: vim-vsnip {{{
-imap <C-j> <Plug>(vsnip-expand-or-jump)
-smap <C-j> <Plug>(vsnip-expand-or-jump)
-
-imap <C-k> <Plug>(vsnip-jump-prev)
-smap <C-k> <Plug>(vsnip-jump-prev)
-
-let g:vsnip_snippet_dir = g:vimdir . '/vsnip'
-
-function! SnipComplete() abort
-  let l:before_line = getline('.')
-  let l:idx = min([strlen(l:before_line), col('.') - 2])
-  let l:idx = max([l:idx, 0])
-  let l:before_line =  l:before_line[0 : l:idx]
-  let l:keyword = matchstr(l:before_line, '\k\+$')
-
-  if l:keyword == ''
-    return ''
-  endif
-
-  let l:candidates = vsnip#get_complete_items(bufnr('%'))
-
-  if !empty(l:candidates)
-    call filter(l:candidates, {idx, val -> match(val['abbr'], l:keyword) == 0})
-    call complete(col('.') - strlen(l:keyword), l:candidates)
-  endif
-
-  return ''
-endfunction
-
-inoremap <c-x><c-s> <c-r>=SnipComplete()<cr>
-" }}}
 " Plugin: nvim-lsp {{{
 if has('nvim-0.5')
   lua require('lsp')
