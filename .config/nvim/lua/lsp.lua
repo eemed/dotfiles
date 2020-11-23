@@ -72,7 +72,7 @@ function M.refresh_diagnostics()
     vim.lsp.util.set_loclist(diagnostics)
 end
 
-local on_attach = function(client, bufnr)
+function M.on_attach(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     vim.api.nvim_command('setlocal signcolumn=yes')
     vim.lsp.callbacks["textDocument/publishDiagnostics"] = M.publish_diagnostics
@@ -106,7 +106,7 @@ end
 local servers = {'bashls', 'tsserver', 'pyls', 'rust_analyzer'}
 for _, lsp in ipairs(servers) do
     lspconfig[lsp].setup {
-        on_attach = on_attach,
+        on_attach = M.on_attach,
     }
 end
 

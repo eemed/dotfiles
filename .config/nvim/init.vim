@@ -295,6 +295,7 @@ function! s:load_skeleton()
   let skeleton_path = g:vimdir . '/templates/' . &filetype
   if filereadable(skeleton_path)
     execute '0read ' . skeleton_path
+    $d
   endif
 endfunction
 autocmd vimrc BufNewFile * call s:load_skeleton()
@@ -346,6 +347,7 @@ call plug#end()
 " Plugin: nvim-lsp {{{
 if has('nvim-0.5')
   lua require('lsp')
+
   call sign_define("LspDiagnosticsErrorSign", {"text" : "!" })
   call sign_define("LspDiagnosticsWarningSign", {"text" : "!" })
   call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })

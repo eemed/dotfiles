@@ -1,6 +1,5 @@
 # Remove ctrl+s freeze
 stty -ixon
-stty susp undef
 
 alias cp="cp -i"                          # confirm before overwriting something
 alias df='df -h'                          # human-readable sizes
