@@ -329,8 +329,8 @@ Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
-Plug 'ervandew/supertab'                  " Completion
 Plug 'romainl/vim-qf'                     " Better quickfix
+Plug 'ajh17/VimCompletesMe'               " Completion
 
 " nvim-0.5
 if has('nvim-0.5')
@@ -353,14 +353,6 @@ if has('nvim-0.5')
   call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
   call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
 endif
-" }}}
-" Plugin: supertab {{{
-let g:SuperTabDefaultCompletionType = "context"
-let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
-let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-o>"]
-
-let g:SuperTabCompletionContexts =
-      \ ['MyTagContext', 's:ContextText', 's:ContextDiscover']
 " }}}
 " Plugin: vim-qf {{{
 nnoremap <silent> [L :lfirst<cr>
