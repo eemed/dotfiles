@@ -32,7 +32,6 @@ function! s:CloseBracket() abort
     if result != ""
         return "\<CR>" . result . "\<c-o>O"
     endif
-    return "\<CR>"
 endfunction
 
 function! s:TagCR() abort
@@ -42,20 +41,22 @@ function! s:TagCR() abort
     if next_two ==# "</" && line =~ '^\s*<\(.*\)\+><\/\1>$'
         return "\<CR>\<c-o>O"
     endif
-    return "\<CR>"
 endfunction
 
 function! CustomCR() abort
-    if &buftype ==# "quickfix" ||
-                \ &buftype ==# "nofile"
+    if &buftype ==# "quickfix" || &buftype ==# "nofile"
         return "\<CR>"
     endif
 
-    let previous = getline(".")[col('.') - 2]
-
-    if previous == '>'
-        return <sid>TagCR()
+    let ret = <sid>TagCR()
+    if ret != ""
+      return ret
     endif
 
-    return <sid>CloseBracket()
+    let ret = <sid>CloseBracket()
+    if ret != ""
+      return ret
+    endif
+
+    return "\<CR>"
 endfunction
