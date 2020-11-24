@@ -43,9 +43,28 @@ function! s:TagCR() abort
     endif
 endfunction
 
+let g:blocks = {
+      \   'begin': { 
+      \     'start': '^\s*\\begin{\zs.*\ze}'
+      \     'end': '\end{}'
+      \   }
+      \ }
+
+function! s:CompleteBlock() abort
+  let matched = matchstr(getline('.'), '^\s*\\begin{\zs.*\ze}')
+  if matched != ""
+    return "\<CR>\\end{" . matched . "}\<c-o>O"
+  endif
+endfunction
+
 function! CustomCR() abort
     if &buftype ==# "quickfix" || &buftype ==# "nofile"
         return "\<CR>"
+    endif
+
+    let ret = <sid>CompleteBlock()
+    if ret != ""
+      return ret
     endif
 
     let ret = <sid>TagCR()
