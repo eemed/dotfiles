@@ -322,7 +322,6 @@ Plug 'AlessandroYorba/Alduin', { 'branch': 'nightly' }
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
-" Plug 'christoomey/vim-tmux-navigator'     " Tmux navigation
 Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'tpope/vim-rsi'
@@ -341,6 +340,7 @@ endif
 " Syntax
 Plug 'pearofducks/ansible-vim'
 Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'lervag/vimtex'
 call plug#end()
 " }}}
 " Section: Plugin configuration {{{
@@ -358,6 +358,9 @@ endif
 let g:SuperTabDefaultCompletionType = "context"
 let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
 let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-o>"]
+
+let g:SuperTabCompletionContexts =
+      \ ['MyTagContext', 's:ContextText', 's:ContextDiscover']
 " }}}
 " Plugin: vim-qf {{{
 nnoremap <silent> [L :lfirst<cr>
@@ -433,8 +436,12 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 " Plugin: vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
+" Plugin: vimtex {{{
+let g:tex_flavor='latex'
+let g:vimtex_view_method='mupdf'
 " }}}
-" Colorscheme {{{
+" }}}
+" Section: Colorscheme {{{
 set background=light
 
 function! OldSchool()
