@@ -316,7 +316,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 Plug 'eemed/oldschool.vim'
-Plug 'cideM/yui'
+Plug 'AlessandroYorba/Alduin', { 'branch': 'nightly' }
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -436,28 +436,6 @@ runtime macros/sandwich/keymap/surround.vim
 " }}}
 " Colorscheme {{{
 set background=light
-let g:yui_comments = 'emphasize'
-let g:yui_line_numbers = 'emphasize'
-let g:yui_comments = 'emphasize'
-
-function! Yui()
-    let g:fzf_colors = {
-                \ 'fg':      ['fg', 'Normal'],
-                \ 'bg':      ['bg', 'Normal'],
-                \ 'hl':      ['fg', 'Comment'],
-                \ 'fg+':     ['fg', 'Normal'],
-                \ 'bg+':     ['bg', 'Normal'],
-                \ 'hl+':     ['fg', 'Comment'],
-                \ 'info':    ['fg', 'PreProc'],
-                \ 'border':  ['fg', 'Ignore'],
-                \ 'prompt':  ['fg', 'Conditional'],
-                \ 'pointer': ['fg', 'Exception'],
-                \ 'marker':  ['fg', 'Keyword'],
-                \ 'spinner': ['fg', 'Label'],
-                \ 'header':  ['fg', 'Comment']
-                \ }
-endfunction
-autocmd vimrc ColorScheme yui call Yui()
 
 function! OldSchool()
     let g:fzf_colors = {
@@ -478,7 +456,28 @@ function! OldSchool()
 endfunction
 autocmd vimrc ColorScheme oldschool call OldSchool()
 
-colorscheme oldschool
+function! Alduin()
+    let g:fzf_colors = {
+                \ 'fg':      ['fg', 'Normal'],
+                \ 'bg':      ['bg', 'Normal'],
+                \ 'hl':      ['fg', 'Special'],
+                \ 'fg+':     ['fg', 'Normal'],
+                \ 'bg+':     ['bg', 'Normal'],
+                \ 'hl+':     ['fg', 'Special'],
+                \ 'info':    ['fg', 'PreProc'],
+                \ 'border':  ['fg', 'Ignore'],
+                \ 'prompt':  ['fg', 'Conditional'],
+                \ 'pointer': ['fg', 'Exception'],
+                \ 'marker':  ['fg', 'Keyword'],
+                \ 'spinner': ['fg', 'Label'],
+                \ 'header':  ['fg', 'Comment']
+                \ }
+
+    highlight! link SignColumn LineNr
+endfunction
+autocmd vimrc ColorScheme alduin call Alduin()
+
+colorscheme alduin
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
