@@ -122,7 +122,7 @@ function! s:ToggleBG()
     endif
 endfunction
 nnoremap <silent> yob :call <sid>ToggleBG()<cr>
-inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CustomCR()\<cr>"
+" inoremap <expr> <cr> pumvisible() ? "\<c-y>" : "\<c-r>=CustomCR()\<cr>"
 
 tnoremap <esc> <c-\><c-n>
 
