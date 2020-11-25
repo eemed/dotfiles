@@ -45,6 +45,21 @@ augroup SmartCR
         \ }
         \ ]
 
+  autocmd FileType sh let b:smart_cr_chain = [
+        \ {
+        \   'regex': '^\s*\zs\(if\ze.*;\s*then$\|then$\)',
+        \   'callback': { m -> "fi" }
+        \ },
+        \ {
+        \   'regex': '^\s*\zs\(do$\|while.*;\s*do$\|for.*;\s*do$\|until.*;\s*do$\)\ze',
+        \   'callback': { m -> "done" }
+        \ }
+        \ {
+        \   'regex': '^\s*\zs\(case\ze.*in$\)',
+        \   'callback': { m -> "esac" }
+        \ },
+        \ ]
+
   autocmd FileType javascript let b:smart_cr_chain = [
         \ s:smart_tags
         \ ]
