@@ -1,7 +1,8 @@
 set expandtab
 set shiftwidth=4
 
-let b:formatcmd = "XMLLINT_INDENT='    ' xmllint --format " . shellescape(expand('%'))
-nnoremap <buffer> <leader>f :Format<cr>
+if executable('xmllint')
+  set formatprg=xmllint\ --format\ --recover\ -\ 2>/dev/null
+endif
 
 let b:vcm_omni_pattern = "></"

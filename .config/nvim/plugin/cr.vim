@@ -42,37 +42,37 @@ augroup SmartCR
         \ {
         \   'regex': '^\s*\zs\(augroup\|augrou\|augro\|augr\|aug\)\ze',
         \   'callback': { m -> m." end" }
-        \ }
+        \ },
         \ ]
 
   autocmd FileType sh let b:smart_cr_chain = [
         \ {
-        \   'regex': '^\s*\zs\(if\ze.*;\s*then$\|then$\)',
+        \   'regex': '^\s*\(if.*;\s*then$\|then$\)',
         \   'callback': { m -> "fi" }
         \ },
         \ {
-        \   'regex': '^\s*\zs\(do$\|while.*;\s*do$\|for.*;\s*do$\|until.*;\s*do$\)\ze',
+        \   'regex': '^\s*\(do$\|while.*;\s*do$\|for.*;\s*do$\|until.*;\s*do$\)',
         \   'callback': { m -> "done" }
-        \ }
+        \ },
         \ {
-        \   'regex': '^\s*\zs\(case\ze.*in$\)',
+        \   'regex': '^\s*\(case.*in$\)',
         \   'callback': { m -> "esac" }
         \ },
         \ ]
 
-  autocmd FileType javascript let b:smart_cr_chain = [
-        \ s:smart_tags
+  autocmd FileType javascript,javascriptreact let b:smart_cr_chain = [
+        \ s:smart_tags,
         \ ]
 
   autocmd FileType xml let b:smart_cr_chain = [
-        \ s:smart_tags
+        \ s:smart_tags,
         \ ]
 
   autocmd FileType tex let b:smart_cr_chain = [
         \ {
         \   'regex': '^\s*\\begin{\zs.*\ze}',
         \   'callback': { m -> "\\end{" . m . "}" }
-        \ }
+        \ },
         \ ]
 augroup end
 
@@ -84,7 +84,9 @@ let g:smart_cr_chain = [
       \ ]
 
 function! SmartCR() abort
-    if &buftype ==# "quickfix" || &buftype ==# "nofile"
+    let line = getline('.')
+
+    if &buftype ==# "quickfix" || &buftype ==# "nofile" || col('.') != len(line) + 1
         return "\<CR>"
     endif
 
@@ -94,7 +96,6 @@ function! SmartCR() abort
       let chain = g:smart_cr_chain
     endif
 
-    let line = getline('.')
     for item in chain
       let match_str = matchstr(line, item.regex)
       if match_str != ""
