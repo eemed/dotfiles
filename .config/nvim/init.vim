@@ -431,7 +431,6 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 runtime macros/sandwich/keymap/surround.vim
 " }}}
 " Plugin: vimtex {{{
-let g:tex_flavor='latex'
 let g:vimtex_view_method='mupdf'
 " }}}
 " Plugin: miniSnip {{{
