@@ -331,6 +331,7 @@ Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
 Plug 'romainl/vim-qf'                     " Better quickfix
 Plug 'ajh17/VimCompletesMe'               " Completion
+Plug 'Jorengarenar/miniSnip'              " Snippets
 
 " nvim-0.5
 if has('nvim-0.5')
@@ -431,6 +432,10 @@ runtime macros/sandwich/keymap/surround.vim
 " Plugin: vimtex {{{
 let g:tex_flavor='latex'
 let g:vimtex_view_method='mupdf'
+" }}}
+" Plugin: miniSnip {{{
+let g:miniSnip_dirs = [ g:vimdir . '/miniSnip' ]
+let g:miniSnip_trigger = '<c-j>'
 " }}}
 " }}}
 " Section: Colorscheme {{{
