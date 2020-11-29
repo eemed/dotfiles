@@ -125,6 +125,7 @@ endfunction
 nnoremap <silent> yob :call <sid>ToggleBG()<cr>
 
 tnoremap <esc> <c-\><c-n>
+tnoremap <c-v> <c-\><c-n>pi
 
 xnoremap <expr> I (mode() =~# '[vV]' ? '<c-v>^o^I' : 'I')
 xnoremap <expr> A (mode() =~# '[vV]' ? '<c-v>0o$A' : 'A')
