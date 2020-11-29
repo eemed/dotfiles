@@ -84,6 +84,7 @@ xnoremap in :<C-u>call VisualNumber()<CR>
 onoremap in :<C-u>normal vin<CR>
 
 inoremap <expr> / pumvisible() ? "\<c-y>\<c-x>\<c-f>" : "/"
+inoremap <A-BS> <c-o>diw
 
 nnoremap m<cr> :make<cr>
 nnoremap m? :set makeprg<cr>
@@ -472,6 +473,11 @@ function! Alduin()
                 \ }
 
     highlight! link SignColumn LineNr
+    highlight! link LspDiagnosticsErrorSign Error
+    highlight! LspDiagnosticsWarningSign guibg=#af875f guifg=black
+    highlight! LspDiagnosticsInformationSign guifg=#40ffff
+    highlight! LspDiagnosticsHintSign guifg=#40ffff
+    highlight! NormalFloat guifg=#888888 guibg=#262626
 endfunction
 autocmd vimrc ColorScheme alduin call Alduin()
 
