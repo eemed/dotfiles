@@ -97,7 +97,7 @@ set pastetoggle=<F2>
 nnoremap <silent> [<space> :set paste<cr>m`O<esc>``:set nopaste<cr>
 nnoremap <silent> ]<space> :set paste<cr>m`o<esc>``:set nopaste<cr>
 
-nnoremap <silent> [t :tabNext<cr>
+nnoremap <silent> [t :tabnext<cr>
 nnoremap <silent> ]t :tabprevious<cr>
 
 " From unimpaired
