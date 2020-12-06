@@ -306,8 +306,8 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " }}}
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'eemed/oldschool.vim'
 Plug 'AlessandroYorba/Alduin', { 'branch': 'nightly' }
+Plug 'sainnhe/sonokai'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -445,26 +445,7 @@ autocmd vimrc BufNewFile * call s:load_skeleton()
 " }}}
 " }}}
 " Section: Colorscheme {{{
-set background=light
-
-function! OldSchool()
-    let g:fzf_colors = {
-                \ 'fg':      ['fg', 'Normal'],
-                \ 'bg':      ['bg', 'Normal'],
-                \ 'hl':      ['fg', 'Special'],
-                \ 'fg+':     ['fg', 'Normal'],
-                \ 'bg+':     ['bg', 'Normal'],
-                \ 'hl+':     ['fg', 'Special'],
-                \ 'info':    ['fg', 'PreProc'],
-                \ 'border':  ['fg', 'Ignore'],
-                \ 'prompt':  ['fg', 'Conditional'],
-                \ 'pointer': ['fg', 'Exception'],
-                \ 'marker':  ['fg', 'Keyword'],
-                \ 'spinner': ['fg', 'Label'],
-                \ 'header':  ['fg', 'Comment']
-                \ }
-endfunction
-autocmd vimrc ColorScheme oldschool call OldSchool()
+set background=dark
 
 function! Alduin()
     let g:fzf_colors = {
