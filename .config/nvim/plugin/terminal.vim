@@ -22,11 +22,11 @@ endfunction
 function! s:TerminalClose() abort
   if s:runner_bufnr != -1
     let cur_bufnr = bufnr()
-    execute 'buffer ' . s:runner_bufnr
+    let winnr = bufwinnr(s:runner_bufnr)
+    execute winnr . ' wincmd w'
     close
-    if cur_bufnr != s:runner_bufnr
-      execute 'buffer ' . cur_bufnr
-    endif
+    let cur_winnr = bufwinnr(cur_bufnr)
+    execute cur_winnr . ' wincmd w'
   endif
 endfunction
 
