@@ -291,21 +291,6 @@ endfunction
 nnoremap <silent> gx :call HandleURL()<CR>
 " }}}
 " }}}
-" Section: Templates {{{
-function! s:load_skeleton()
-  filetype detect
-  if empty(&filetype)
-    return
-  endif
-
-  let skeleton_path = g:vimdir . '/templates/' . &filetype
-  if filereadable(skeleton_path)
-    execute '0read ' . skeleton_path
-    $d
-  endif
-endfunction
-autocmd vimrc BufNewFile * call s:load_skeleton()
-" }}}
 " Section: Appearance {{{
 
 set synmaxcol=200
@@ -441,6 +426,22 @@ let g:vimtex_view_method='mupdf'
 " Plugin: miniSnip {{{
 let g:miniSnip_dirs = [ g:vimdir . '/miniSnip' ]
 let g:miniSnip_trigger = '<c-j>'
+
+function! s:load_skeleton()
+  filetype detect
+  if empty(&filetype)
+    return
+  endif
+
+  execute "normal! i" . &filetype . "\<c-r>=miniSnip#trigger()\<cr>"
+  call cursor(1, 1)
+
+  " If the snippet didn't expand, remove everything
+  if getline(1) == &filetype
+    normal! gg"_dG
+  endif
+endfunction
+autocmd vimrc BufNewFile * call s:load_skeleton()
 " }}}
 " }}}
 " Section: Colorscheme {{{
