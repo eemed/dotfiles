@@ -206,6 +206,11 @@ set shiftwidth=4
 set softtabstop=-1
 set expandtab
 
+set matchpairs+=<:>
+set matchpairs+=":"
+set matchpairs+=':'
+set matchpairs+=`:`
+
 function s:MakeDirsToFile(dir)
   if a:dir =~ '^[a-z]\+:/'
     return
