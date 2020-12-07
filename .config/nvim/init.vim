@@ -311,6 +311,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 call plug#begin(g:vimdir . '/plugged')
 Plug 'AlessandroYorba/Alduin', { 'branch': 'nightly' }
 Plug 'sainnhe/sonokai'
+Plug 'chriskempson/base16-vim'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -450,42 +451,17 @@ autocmd vimrc BufNewFile * call s:load_skeleton()
 " Section: Colorscheme {{{
 set background=dark
 
-function! Alduin()
-    let g:fzf_colors = {
-                \ 'fg':      ['fg', 'Normal'],
-                \ 'bg':      ['bg', 'Normal'],
-                \ 'hl':      ['fg', 'Special'],
-                \ 'fg+':     ['fg', 'Normal'],
-                \ 'bg+':     ['bg', 'Normal'],
-                \ 'hl+':     ['fg', 'Special'],
-                \ 'info':    ['fg', 'PreProc'],
-                \ 'border':  ['fg', 'Ignore'],
-                \ 'prompt':  ['fg', 'Conditional'],
-                \ 'pointer': ['fg', 'Exception'],
-                \ 'marker':  ['fg', 'Keyword'],
-                \ 'spinner': ['fg', 'Label'],
-                \ 'header':  ['fg', 'Comment']
-                \ }
-
-    highlight! link SignColumn LineNr
+function! TomorrowNight()
     highlight! link LspDiagnosticsErrorSign Error
-    highlight! LspDiagnosticsWarningSign guibg=#af875f guifg=black
-    highlight! LspDiagnosticsInformationSign guifg=#40ffff
-    highlight! LspDiagnosticsHintSign guifg=#40ffff
-    highlight! NormalFloat guifg=#888888 guibg=#262626
+    highlight! LspDiagnosticsWarningSign ctermfg=10 ctermbg=3 guifg=#393939 guibg=#ffcc66
+    highlight! LspDiagnosticsInformationSign ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
+    highlight! LspDiagnosticsHintSign ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
+    highlight! link QuickFixLine PMenuSel
+    highlight! VertSplit guibg=NONE guifg=#888888
 endfunction
-autocmd vimrc ColorScheme alduin call Alduin()
+autocmd vimrc ColorScheme base16-tomorrow-night* call TomorrowNight()
 
-function! Sonokai()
-    highlight! link LspDiagnosticsErrorSign Error
-    highlight! link LspDiagnosticsWarningSign WarningMsg
-    highlight! LspDiagnosticsInformationSign guifg=#40ffff
-    highlight! LspDiagnosticsHintSign guifg=#40ffff
-    highlight! QuickFixLine cterm=reverse gui=reverse
-endfunction
-autocmd vimrc ColorScheme sonokai call Sonokai()
-
-colorscheme sonokai
+colorscheme base16-tomorrow-night
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
