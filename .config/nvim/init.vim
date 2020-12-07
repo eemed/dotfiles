@@ -473,7 +473,15 @@ function! Alduin()
 endfunction
 autocmd vimrc ColorScheme alduin call Alduin()
 
-colorscheme alduin
+function! Sonokai()
+    highlight! link LspDiagnosticsErrorSign Error
+    highlight! link LspDiagnosticsWarningSign WarningMsg
+    highlight! LspDiagnosticsInformationSign guifg=#40ffff
+    highlight! LspDiagnosticsHintSign guifg=#40ffff
+endfunction
+autocmd vimrc ColorScheme sonokai call Sonokai()
+
+colorscheme sonokai
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
