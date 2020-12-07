@@ -97,6 +97,9 @@ set pastetoggle=<F2>
 nnoremap <silent> [<space> :set paste<cr>m`O<esc>``:set nopaste<cr>
 nnoremap <silent> ]<space> :set paste<cr>m`o<esc>``:set nopaste<cr>
 
+xnoremap <silent> [<space> <esc>`<O<esc>gv
+xnoremap <silent> ]<space> <esc>`>o<esc>gv
+
 nnoremap <silent> [t :tabnext<cr>
 nnoremap <silent> ]t :tabprevious<cr>
 
@@ -478,6 +481,7 @@ function! Sonokai()
     highlight! link LspDiagnosticsWarningSign WarningMsg
     highlight! LspDiagnosticsInformationSign guifg=#40ffff
     highlight! LspDiagnosticsHintSign guifg=#40ffff
+    highlight! QuickFixLine cterm=reverse gui=reverse
 endfunction
 autocmd vimrc ColorScheme sonokai call Sonokai()
 
