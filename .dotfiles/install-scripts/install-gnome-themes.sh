@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Icons, systray, tweaks
-sudo apt install papirus-icon-theme gnome-shell-extension-appindicator gnome-tweaks
+sudo apt install papirus-icon-theme gnome-shell-extension-appindicator gnome-tweaks breeze-cursor-theme
 
 # Juno theme
 wget https://github.com/EliverLara/Juno/archive/master.zip

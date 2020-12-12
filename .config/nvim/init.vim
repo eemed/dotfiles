@@ -344,10 +344,10 @@ call plug#end()
 if has('nvim-0.5')
   lua require('lsp')
 
-  call sign_define("LspDiagnosticsErrorSign", {"text" : "!" })
-  call sign_define("LspDiagnosticsWarningSign", {"text" : "!" })
-  call sign_define("LspDiagnosticsInformationSign", {"text" : "-" })
-  call sign_define("LspDiagnosticsHintSign", {"text" : "-" })
+  sign define LspDiagnosticsSignError text=! texthl=LspDiagnosticsSignError
+  sign define LspDiagnosticsSignWarning text=! texthl=LspDiagnosticsSignWarning
+  sign define LspDiagnosticsSignInformation text=- texthl=LspDiagnosticsSignInformation
+  sign define LspDiagnosticsSignHint text=- texthl=LspDiagnosticsSignHint
 endif
 " }}}
 " Plugin: vim-qf {{{
@@ -452,10 +452,11 @@ autocmd vimrc BufNewFile * call s:load_skeleton()
 set background=dark
 
 function! TomorrowNight()
-    highlight! link LspDiagnosticsErrorSign Error
-    highlight! LspDiagnosticsWarningSign ctermfg=10 ctermbg=3 guifg=#393939 guibg=#ffcc66
-    highlight! LspDiagnosticsInformationSign ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
-    highlight! LspDiagnosticsHintSign ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
+    highlight! link LspDiagnosticsSignError Error
+    highlight! LspDiagnosticsSignWarning ctermfg=10 ctermbg=3 guifg=#393939 guibg=#ffcc66
+    highlight! LspDiagnosticsSignInformation ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
+    highlight! LspDiagnosticsSignHint ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
+
     highlight! link QuickFixLine PMenuSel
     highlight! VertSplit guibg=NONE guifg=#888888
 endfunction

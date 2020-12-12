@@ -38,15 +38,14 @@ local M = {}
 
 local lspconfig = require('lspconfig')
 
-vim.lsp.util.buf_diagnostics_virtual_text = function() return end
-M.default_publish_diagnostics = vim.lsp.callbacks["textDocument/publishDiagnostics"]
+-- vim.lsp.util.buf_diagnostics_virtual_text = function() return end
+M.default_publish_diagnostics = vim.lsp.handlers["textDocument/publishDiagnostics"]
 
-function M.publish_diagnostics(err, method, result, client_id)
+function M.publish_diagnostics(err, method, result, client_id, bufnr, config)
     if result and result.diagnostics then
-        local bufnr = vim.uri_to_bufnr(result.uri)
-        vim.lsp.util.buf_clear_diagnostics(bufnr)
+        vim.lsp.diagnostic.buf_clear_diagnostics(bufnr)
 
-        M.default_publish_diagnostics(err, method, result, client_id)
+        M.default_publish_diagnostics(err, method, result, client_id, bufnr, config)
 
         table.sort(result.diagnostics, position_sort)
         for _, v in ipairs(result.diagnostics) do
@@ -56,7 +55,7 @@ function M.publish_diagnostics(err, method, result, client_id)
             v.text = v.message
         end
 
-        vim.lsp.util.buf_diagnostics_save_positions(bufnr, result.diagnostics)
+        vim.lsp.diagnostic.save(bufnr, result.diagnostics)
 
         M.refresh_diagnostics()
     end
@@ -72,15 +71,28 @@ function M.refresh_diagnostics()
     vim.lsp.util.set_loclist(diagnostics)
 end
 
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, {
+    -- Enable underline, use default values
+    underline = true,
+    virtual_text = false,
+    signs = true,
+
+    -- This is similar to:
+    -- "let g:diagnostic_insert_delay = 1"
+    update_in_insert = false,
+  }
+)
+
 function M.on_attach(client, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
     vim.api.nvim_command('setlocal signcolumn=yes')
-    vim.lsp.callbacks["textDocument/publishDiagnostics"] = M.publish_diagnostics
+    -- vim.lsp.handlers["textDocument/publishDiagnostics"] = M.publish_diagnostics
 
-    vim.api.nvim_command [[augroup DiagnosticRefresh]]
-    vim.api.nvim_command("autocmd! * <buffer>")
-    vim.api.nvim_command [[autocmd BufEnter,BufWinEnter,TabEnter <buffer> lua require('lsp').refresh_diagnostics()]]
-    vim.api.nvim_command [[augroup end]]
+    -- vim.api.nvim_command [[augroup DiagnosticRefresh]]
+    -- vim.api.nvim_command("autocmd! * <buffer>")
+    -- vim.api.nvim_command [[autocmd BufEnter,BufWinEnter,TabEnter <buffer> lua require('lsp').refresh_diagnostics()]]
+    -- vim.api.nvim_command [[augroup end]]
 
     -- Mappings.
     local opts = { noremap=true, silent=true }
@@ -92,15 +104,15 @@ function M.on_attach(client, bufnr)
     vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gR'        , '<cmd>lua vim.lsp.buf.rename()<CR>'                 , opts)
     vim.api.nvim_buf_set_keymap(bufnr , 'n' , 'gr'        , '<cmd>lua vim.lsp.buf.references()<CR>'             , opts)
     vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>f' , '<cmd>lua vim.lsp.buf.formatting()<CR>'             , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>' , opts)
+    vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>e' , '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>' , opts)
     vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<leader>a' , '<cmd>lua vim.lsp.buf.code_action()<CR>' , opts)
     -- vim.api.nvim_buf_set_keymap(bufnr    , 'n' , '<C-k>'     , '<cmd>lua vim.lsp.buf.signature_help()<CR>'         , opts)
     --
     -- hover on location list move
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '[L', '<cmd>lfirst<cr><cmd>lua vim.lsp.util.show_line_diagnostics()<cr>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '[l', '<cmd>lprev<cr><cmd>lua vim.lsp.util.show_line_diagnostics()<cr>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', ']l', '<cmd>lnext<cr><cmd>lua vim.lsp.util.show_line_diagnostics()<cr>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', ']L', '<cmd>llast<cr><cmd>lua vim.lsp.util.show_line_diagnostics()<cr>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '[L', '<cmd>lfirst<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '[l', '<cmd>lprev<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', ']l', '<cmd>lnext<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', ']L', '<cmd>llast<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>', opts)
 end
 
 local servers = {'bashls', 'tsserver', 'pyls', 'rust_analyzer'}
