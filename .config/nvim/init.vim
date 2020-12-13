@@ -111,6 +111,16 @@ endfunction
 nnoremap <silent> [n :<c-u>call <sid>JumpToConflictMarker(1)<cr>
 nnoremap <silent> ]n :<c-u>call <sid>JumpToConflictMarker(0)<cr>
 
+nnoremap <silent> [A :first<cr>
+nnoremap <silent> [a :previous<cr>
+nnoremap <silent> ]a :next<cr>
+nnoremap <silent> ]A :last<cr>
+
+nnoremap <silent> [B :bfirst<cr>
+nnoremap <silent> [b :bprevious<cr>
+nnoremap <silent> ]b :bnext<cr>
+nnoremap <silent> ]B :blast<cr>
+
 nnoremap yow :set wrap!<cr>:set wrap?<cr>
 nnoremap yos :set spell!<cr>:set spell?<cr>
 nnoremap yod :diffthis<cr>
