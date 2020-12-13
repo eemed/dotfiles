@@ -309,8 +309,6 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " }}}
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'AlessandroYorba/Alduin', { 'branch': 'nightly' }
-Plug 'sainnhe/sonokai'
 Plug 'chriskempson/base16-vim'
 
 " Fuzzy find
@@ -343,6 +341,13 @@ call plug#end()
 " Plugin: nvim-lsp {{{
 if has('nvim-0.5')
   lua require('lsp')
+
+  " Save cursor position on format
+  function! LspFormat() abort
+    let view = winsaveview()
+    lua vim.lsp.buf.formatting_sync()
+    call winrestview(view)
+  endfunction
 
   sign define LspDiagnosticsSignError text=! texthl=LspDiagnosticsSignError
   sign define LspDiagnosticsSignWarning text=! texthl=LspDiagnosticsSignWarning
@@ -456,6 +461,11 @@ function! TomorrowNight()
     highlight! LspDiagnosticsSignWarning ctermfg=10 ctermbg=3 guifg=#393939 guibg=#ffcc66
     highlight! LspDiagnosticsSignInformation ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
     highlight! LspDiagnosticsSignHint ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
+
+    highlight! LspDiagnosticsUnderlineError cterm=underline gui=underline
+    highlight! LspDiagnosticsUnderlineWarning cterm=underline gui=underline
+    highlight! LspDiagnosticsUnderlineInformation cterm=underline gui=underline
+    highlight! LspDiagnosticsUnderlineHint cterm=underline gui=underline
 
     highlight! link QuickFixLine PMenuSel
     highlight! VertSplit guibg=NONE guifg=#888888
