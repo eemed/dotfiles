@@ -8,11 +8,11 @@ function! s:TerminalOpen() abort
   if s:runner_bufnr == -1
     botright 15split
     enew
+    let s:runner_bufnr = bufnr()
     call termopen(&shell, {
           \ 'on_exit': function('s:TermFinished'),
-          \ 'buffer': bufnr()
+          \ 'buffer': s:runner_bufnr
           \ })
-    let s:runner_bufnr = bufnr()
   else
     execute 'botright 15split | buffer ' . s:runner_bufnr
   endif
