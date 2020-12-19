@@ -319,7 +319,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " }}}
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'chriskempson/base16-vim'
+Plug 'NLKNguyen/papercolor-theme'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -464,10 +464,10 @@ autocmd vimrc BufNewFile * call s:load_skeleton()
 " }}}
 " }}}
 " Section: Colorscheme {{{
-set background=dark
+set background=light
 
-function! TomorrowNight()
-    highlight! link LspDiagnosticsSignError Error
+function! Nvim()
+    highlight! link LspDiagnosticsSignError ErrorMsg
     highlight! LspDiagnosticsSignWarning ctermfg=10 ctermbg=3 guifg=#393939 guibg=#ffcc66
     highlight! LspDiagnosticsSignInformation ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
     highlight! LspDiagnosticsSignHint ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
@@ -476,13 +476,19 @@ function! TomorrowNight()
     highlight! LspDiagnosticsUnderlineWarning cterm=underline gui=underline
     highlight! LspDiagnosticsUnderlineInformation cterm=underline gui=underline
     highlight! LspDiagnosticsUnderlineHint cterm=underline gui=underline
-
-    highlight! link QuickFixLine PMenuSel
-    highlight! VertSplit guibg=NONE guifg=#888888
 endfunction
-autocmd vimrc ColorScheme base16-tomorrow-night* call TomorrowNight()
+autocmd vimrc ColorScheme * call Nvim()
 
-colorscheme base16-tomorrow-night
+function! PaperColorMod()
+    if &background == 'light'
+        highlight! LineNr guibg=lightgray guifg=gray
+        highlight! CursorLineNr guibg=#e1e1e1
+        highlight! link SignColumn LineNr
+    endif
+endfunction
+autocmd vimrc ColorScheme PaperColor call PaperColorMod()
+
+colorscheme PaperColor
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
