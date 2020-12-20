@@ -181,7 +181,7 @@ set nowrap
 set list listchars=tab:→\ ,nbsp:•,trail:•
 set breakindent
 let &showbreak='↳ '
-set path=.
+set path=.,,
 set include=
 set keywordprg=
 set nrformats+=alpha
@@ -209,6 +209,8 @@ set nowritebackup
 set noswapfile
 let &undodir = g:vimdir . '/undo'
 let &dir = g:vimdir . '/swap'
+
+set shada='40,<1000,s100,:20,/20
 
 set updatetime=300
 set foldmethod=marker
@@ -303,6 +305,55 @@ function! HandleURL()
 endfunction
 nnoremap <silent> gx :call HandleURL()<CR>
 " }}}
+" Smart cr in cmode (romainl gist) {{{
+nnoremap <c-p> :find<space>
+nnoremap <silent><leader>b :ls<cr>
+nnoremap <leader>l :g//#<left><left>
+nnoremap <silent><leader>h :oldfiles<cr>
+
+function! CCR()
+    let cmdline = getcmdline()
+    command! -bar Z silent set more|delcommand Z
+    if getcmdtype() != ':'
+        return "\<CR>"
+    endif
+    if cmdline =~ '\v\C^(ls|files|buffers)'
+        " like :ls but prompts for a buffer command
+        return "\<CR>:b"
+    elseif cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
+        " like :g//# but prompts for a command
+        return "\<CR>:"
+    elseif cmdline =~ '\v\C^(dli|il)'
+        " like :dlist or :ilist but prompts for a count for :djump or :ijump
+        return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
+    elseif cmdline =~ '\v\C^(cli|lli)'
+        " like :clist or :llist but prompts for an error/location number
+        return "\<CR>:sil " . repeat(cmdline[0], 2) . "\<Space>"
+    elseif cmdline =~ '\C^old'
+        " like :oldfiles but prompts for an old file to edit
+        set nomore
+        return "\<CR>:Z|e #<"
+    elseif cmdline =~ '\C^changes'
+        " like :changes but prompts for a change to jump to
+        set nomore
+        return "\<CR>:Z|norm! g;\<S-Left>"
+    elseif cmdline =~ '\C^ju'
+        " like :jumps but prompts for a position to jump to
+        set nomore
+        return "\<CR>:Z|norm! \<C-o>\<S-Left>"
+    elseif cmdline =~ '\C^marks'
+        " like :marks but prompts for a mark to jump to
+        return "\<CR>:norm! `"
+    elseif cmdline =~ '\C^undol'
+        " like :undolist but prompts for a change to undo
+        return "\<CR>:u "
+    else
+        return "\<CR>"
+    endif
+endfunction
+
+cnoremap <expr> <CR> CCR()
+" }}}
 " }}}
 " Section: Appearance {{{
 
@@ -319,12 +370,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " }}}
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
-Plug 'NLKNguyen/papercolor-theme'
-
-" Fuzzy find
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-
+Plug 'eemed/vim-colors-plain'             " Colors
 Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
 Plug 'tpope/vim-rsi'
@@ -378,63 +424,6 @@ nnoremap <silent> ]Q :clast<cr>
 
 nmap yol <plug>(qf_loc_toggle)
 nmap yoq <plug>(qf_qf_toggle)
-" }}}
-" Plugin: fzf.vim {{{
-function! Browse() abort
-  if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
-    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-  else
-    exe "Files"
-  endif
-endfunction
-
-nnoremap <silent><c-p> :call Browse()<CR>
-nnoremap <silent><leader>b :Buffers<CR>
-nnoremap <silent><leader>l :BLines<CR>
-nnoremap <silent><leader>h :History<CR>
-
-let $FZF_DEFAULT_OPTS="--bind 'tab:down' --bind 'btab:up' --exact --reverse"
-let g:fzf_layout = { 'window': 'call CreateCenteredFloatingWindow()' }
-
-let g:fzf_colors = {
-      \ 'fg':      ['fg', 'Normal'],
-      \ 'bg':      ['bg', 'Normal'],
-      \ 'hl':      ['fg', 'Comment'],
-      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Statement'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'border':  ['fg', 'Ignore'],
-      \ 'prompt':  ['fg', 'Conditional'],
-      \ 'pointer': ['fg', 'Exception'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment'] }
-
-" floating fzf window with borders
-function! CreateCenteredFloatingWindow()
-    let width = min([&columns - 4, max([80, &columns - 20])])
-    let height = min([&lines - 4, max([20, &lines - 10])])
-    let top = ((&lines - height) / 2) - 1
-    let left = (&columns - width) / 2
-    let opts = {'relative': 'editor', 'row': top, 'col': left, 'width': width, 'height': height, 'style': 'minimal'}
-
-    let top = "╭" . repeat("─", width - 2) . "╮"
-    let mid = "│" . repeat(" ", width - 2) . "│"
-    let bot = "╰" . repeat("─", width - 2) . "╯"
-
-    let lines = [top] + repeat([mid], height - 2) + [bot]
-    let s:buf = nvim_create_buf(v:false, v:true)
-    call nvim_buf_set_lines(s:buf, 0, -1, v:true, lines)
-    call nvim_open_win(s:buf, v:true, opts)
-    set winhl=Normal:Normal
-    let opts.row += 1
-    let opts.height -= 2
-    let opts.col += 2
-    let opts.width -= 4
-    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
-    au BufWipeout <buffer> exe 'bw '.s:buf
-endfunction
 " }}}
 " Plugin: undotree {{{
 let g:undotree_SplitWidth = 35
@@ -494,16 +483,7 @@ function! Nvim()
 endfunction
 autocmd vimrc ColorScheme * call Nvim()
 
-function! PaperColorMod()
-    if &background == 'light'
-        highlight! LineNr guibg=lightgray guifg=gray
-        highlight! CursorLineNr guibg=#e1e1e1
-        highlight! link SignColumn LineNr
-    endif
-endfunction
-autocmd vimrc ColorScheme PaperColor call PaperColorMod()
-
-colorscheme PaperColor
+colorscheme plain
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
