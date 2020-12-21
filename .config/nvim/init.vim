@@ -33,8 +33,9 @@ tnoremap <A-l> <c-\><c-n><c-w>l
 autocmd vimrc BufEnter,BufWinEnter,WinEnter term://* setlocal scrolloff=0 | startinsert!
 autocmd vimrc BufLeave term://* stopinsert!
 
-imap <silent><c-f> <c-g>u<Esc>[s1z=`]a<c-g>u
-nmap <silent><c-f> mm[s1z=`m
+inoremap <silent><A-f> <c-g>u<Esc>[s1z=`]a<c-g>u
+nnoremap <silent>[F mm[s1z=`m
+nnoremap <silent>]F mm]s1z=`m
 
 nnoremap Y y$
 
@@ -327,7 +328,6 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'tpope/vim-commentary'               " Commenting
 Plug 'tpope/vim-fugitive'                 " Git integration
-Plug 'tpope/vim-rsi'
 Plug 'justinmk/vim-dirvish'               " Managing files (netrw is buggy)
 Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
