@@ -348,7 +348,6 @@ endif
 " Syntax
 Plug 'pearofducks/ansible-vim'
 Plug 'MaxMEllon/vim-jsx-pretty'
-Plug 'lervag/vimtex'
 call plug#end()
 " }}}
 " Section: Plugin configuration {{{
@@ -405,8 +404,8 @@ let g:fzf_colors = {
       \ 'bg':      ['bg', 'Normal'],
       \ 'hl':      ['fg', 'Comment'],
       \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Statement'],
+      \ 'bg+':     ['bg', 'Statusline', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Comment'],
       \ 'info':    ['fg', 'PreProc'],
       \ 'border':  ['fg', 'Ignore'],
       \ 'prompt':  ['fg', 'Conditional'],
@@ -458,9 +457,6 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 " Plugin: vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
 " }}}
-" Plugin: vimtex {{{
-let g:vimtex_view_method='mupdf'
-" }}}
 " Plugin: miniSnip {{{
 let g:miniSnip_dirs = [ g:vimdir . '/miniSnip' ]
 let g:miniSnip_trigger = '<c-j>'
@@ -510,10 +506,22 @@ autocmd vimrc ColorScheme PaperColor call PaperColorMod()
 function! Yui()
   highlight! link Visual Search
   highlight! link SpecialComment Comment
+  highlight! NonText guifg=#aaaa66
+  highlight! link MatchParen Search
+
+  highlight! link texStatement Constant
+  highlight! link texTypeStyle Constant
+  highlight! link texBeginEnd Constant
+  highlight link texBeginEndName NONE
+  highlight! link texSection Constant
+  highlight! link texCmd Constant
+  highlight! link texStyleItal mkdItalic
+
+  highlight! link Todo WarningMsg
 endfunction
 autocmd vimrc ColorScheme yui call Yui()
 
-colorscheme PaperColor
+colorscheme yui
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
