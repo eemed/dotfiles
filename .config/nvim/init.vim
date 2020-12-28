@@ -484,8 +484,8 @@ set background=light
 function! Nvim()
     highlight! link LspDiagnosticsSignError ErrorMsg
     highlight! LspDiagnosticsSignWarning ctermfg=10 ctermbg=3 guifg=#393939 guibg=#ffcc66
-    highlight! LspDiagnosticsSignInformation ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
-    highlight! LspDiagnosticsSignHint ctermfg=6 ctermbg=10 guifg=#66cccc guibg=#393939
+    highlight! LspDiagnosticsSignInformation ctermfg=6 ctermbg=10 guibg=#66cccc guifg=#393939
+    highlight! LspDiagnosticsSignHint ctermfg=6 ctermbg=10 guibg=#66cccc guifg=#393939
 
     highlight! LspDiagnosticsUnderlineError cterm=underline gui=underline
     highlight! LspDiagnosticsUnderlineWarning cterm=underline gui=underline

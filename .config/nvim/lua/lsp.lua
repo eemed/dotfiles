@@ -10,7 +10,8 @@ local on_publish_diags = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics,
 vim.lsp.handlers["textDocument/publishDiagnostics"] = function(a, b, params, client_id, c, config)
     on_publish_diags(a, b, params, client_id, c, config)
     -- Add diagnostics to locationlist
-    vim.lsp.diagnostic.set_loclist({ open_loclist = false })
+    -- Doesnt work at the moment, index out of bounds
+    -- vim.lsp.diagnostic.set_loclist({ open_loclist = false })
 end
 
 function on_attach(client, bufnr)
@@ -32,10 +33,13 @@ function on_attach(client, bufnr)
     -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '<C-k>'     , '<cmd>lua vim.lsp.buf.signature_help()<CR>'                              , opts)
 
     -- hover on location list move
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , '[L'        , '<cmd>lfirst<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>' , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , '[l'        , '<cmd>lprev<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>'  , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , ']l'        , '<cmd>lnext<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>'  , opts)
-    vim.api.nvim_buf_set_keymap(bufnr , 'n' , ']L'        , '<cmd>llast<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>'  , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '[L'        , '<cmd>lfirst<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>' , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , '[l'        , '<cmd>lprev<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>'  , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , ']l'        , '<cmd>lnext<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>'  , opts)
+    -- vim.api.nvim_buf_set_keymap(bufnr , 'n' , ']L'        , '<cmd>llast<cr><cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<cr>'  , opts)
+
+    vim.api.nvim_buf_set_keymap(bufnr , 'n' , '[l'        , '<cmd>lua vim.lsp.diagnostic.goto_prev({ wrap=false })<cr>'  , opts)
+    vim.api.nvim_buf_set_keymap(bufnr , 'n' , ']l'        , '<cmd>lua vim.lsp.diagnostic.goto_next({ wrap=false })<cr>'  , opts)
 end
 
 local servers = {'bashls', 'tsserver', 'pyls', 'rust_analyzer', 'sumneko_lua'}
