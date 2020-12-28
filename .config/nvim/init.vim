@@ -321,6 +321,10 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'cideM/yui'
+let g:yui_folds = 'emphasize'
+let g:yui_line_numbers = 'emphasize'
+let g:yui_comments = 'emphasize'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -502,6 +506,12 @@ function! PaperColorMod()
     endif
 endfunction
 autocmd vimrc ColorScheme PaperColor call PaperColorMod()
+
+function! Yui()
+  highlight! link Visual Search
+  highlight! link SpecialComment Comment
+endfunction
+autocmd vimrc ColorScheme yui call Yui()
 
 colorscheme PaperColor
 " }}}

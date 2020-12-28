@@ -70,8 +70,17 @@ augroup SmartCR
 
   autocmd FileType tex let b:smart_cr_chain = [
         \ {
-        \   'regex': '^\s*\\begin{\zs.*\ze}',
+        \   'regex': '^\s*\\begin{\zs[a-zA-Z0-9]*\ze}',
         \   'callback': { m -> "\\end{" . m . "}" }
+        \ },
+        \ {
+        \   'regex': '^\s*\\[$',
+        \   'callback': { m -> "\\]" }
+        \ },
+        \ {
+        \   'regex': '^\s*\\item',
+        \   'callback': { m -> "\<CR>\\item " },
+        \   'wrap': 0,
         \ },
         \ ]
 augroup end
@@ -99,7 +108,11 @@ function! SmartCR() abort
     for item in chain
       let match_str = matchstr(line, item.regex)
       if match_str != ""
-        return "\<CR>" . item.callback(match_str) . "\<c-o>O"
+        if get(item, 'wrap', 1) == 1
+          return "\<CR>" . item.callback(match_str) . "\<c-o>O"
+        else
+          return item.callback(match_str)
+        endif
       endif
     endfor
     return "\<CR>"
