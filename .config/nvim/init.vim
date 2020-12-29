@@ -321,10 +321,6 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 Plug 'NLKNguyen/papercolor-theme'
-Plug 'cideM/yui'
-let g:yui_folds = 'emphasize'
-let g:yui_line_numbers = 'emphasize'
-let g:yui_comments = 'emphasize'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -482,10 +478,10 @@ autocmd vimrc BufNewFile * call s:load_skeleton()
 set background=light
 
 function! Nvim()
-    highlight! link LspDiagnosticsSignError ErrorMsg
+    highlight! LspDiagnosticsSignError ctermbg=1 ctermfg=10 guibg=#ff3399 guifg=#393939
     highlight! LspDiagnosticsSignWarning ctermfg=10 ctermbg=3 guifg=#393939 guibg=#ffcc66
     highlight! LspDiagnosticsSignInformation ctermfg=6 ctermbg=10 guibg=#66cccc guifg=#393939
-    highlight! LspDiagnosticsSignHint ctermfg=6 ctermbg=10 guibg=#66cccc guifg=#393939
+    highlight! LspDiagnosticsSignHint ctermfg=6 ctermbg=10 guibg=#66ccff guifg=#393939
 
     highlight! LspDiagnosticsUnderlineError cterm=underline gui=underline
     highlight! LspDiagnosticsUnderlineWarning cterm=underline gui=underline
@@ -503,25 +499,7 @@ function! PaperColorMod()
 endfunction
 autocmd vimrc ColorScheme PaperColor call PaperColorMod()
 
-function! Yui()
-  highlight! link Visual Search
-  highlight! link SpecialComment Comment
-  highlight! NonText guifg=#aaaa66
-  highlight! link MatchParen Search
-
-  highlight! link texStatement Constant
-  highlight! link texTypeStyle Constant
-  highlight! link texBeginEnd Constant
-  highlight link texBeginEndName NONE
-  highlight! link texSection Constant
-  highlight! link texCmd Constant
-  highlight! link texStyleItal mkdItalic
-
-  highlight! link Todo WarningMsg
-endfunction
-autocmd vimrc ColorScheme yui call Yui()
-
-colorscheme yui
+colorscheme PaperColor
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'

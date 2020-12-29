@@ -31,7 +31,7 @@ PAGER=less; export PAGER
 # My aliases
 alias ll="ls -l"
 alias la="ls -la"
-# alias tmux="env TERM=xterm-256color tmux"
+alias tmux="tmux -S .tmux-socket"
 alias stack-ghcid="ghcid --command 'stack ghci'"
 alias g="git"
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
