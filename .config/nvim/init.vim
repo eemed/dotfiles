@@ -123,8 +123,8 @@ nnoremap <silent> ]B :blast<cr>
 nnoremap yow :set wrap!<cr>:set wrap?<cr>
 nnoremap yos :set spell!<cr>:set spell?<cr>
 nnoremap yod :diffthis<cr>
-nnoremap yon :set number!<cr>
-nnoremap yor :set relativenumber!<cr>
+nnoremap yon :set number!<cr>:set number?<cr>
+nnoremap yor :set relativenumber!<cr>:set relativenumber?<cr>
 nnoremap yom :<c-u>call ToggleMakeOnSaveFT()<cr>
 
 function! s:ToggleBG()
@@ -145,26 +145,28 @@ xnoremap <expr> A (mode() =~# '[vV]' ? '<c-v>0o$A' : 'A')
 nnoremap gj i<c-j><esc>k$
 
 " I need some finnish letters occasionally
-let g:fix_keys_enabled = 0
+let s:fin_keys_enabled = 0
 
 function! s:ToggleKeys() abort
-  if g:fix_keys_enabled == 1
+  if s:fin_keys_enabled == 1
     iunmap ;
     iunmap :
     iunmap '
     iunmap "
-    let g:fix_keys_enabled = 0
+    let s:fin_keys_enabled = 0
+    echo '[FinKeys] off'
   else
     inoremap ; ö
     inoremap : Ö
     inoremap ' ä
     inoremap " Ä
-    let g:fix_keys_enabled = 1
+    let s:fin_keys_enabled = 1
+    echo '[FinKeys] on'
   endif
 endfunction
 
 inoremap <silent> <c-l> <c-o>:call <sid>ToggleKeys()<cr>
-nnoremap <silent> <c-l> <c-o>:call <sid>ToggleKeys()<cr>
+nnoremap <silent> <c-l> :call <sid>ToggleKeys()<cr>
 " }}}
 " Section: Settings {{{
 filetype plugin indent on
@@ -198,6 +200,7 @@ set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*,*.pdf
 
 set smartindent
 set hlsearch
+" Clear highlighting on esc
 nnoremap <silent><esc> :let @/ = ""<cr><esc>
 
 " Use undo files
@@ -238,6 +241,7 @@ autocmd vimrc FocusLost,BufLeave * silent! update
 autocmd vimrc BufLeave,InsertEnter * set nocursorline
 autocmd vimrc BufEnter,InsertLeave * set cursorline
 
+" Disable stuff that will accidentally trap you
 nnoremap Q <nop>
 nnoremap q: <nop>
 " }}}
@@ -315,6 +319,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " }}}
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
+" Color schemes
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'cideM/yui'
 
