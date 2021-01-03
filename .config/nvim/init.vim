@@ -1,5 +1,4 @@
 " Section: Setup {{{
-
 let g:vimdir = stdpath('config')
 let g:python3_host_prog = '/usr/bin/python3'
 
@@ -14,7 +13,6 @@ if empty(glob(g:vimdir . '/autoload/plug.vim'))
 endif
 " }}}
 " Section: Key mappings {{{
-
 let mapleader = " "
 
 nnoremap k gk
@@ -148,28 +146,27 @@ nnoremap gj i<c-j><esc>k$
 
 " I need some finnish letters occasionally
 let g:fix_keys_enabled = 0
-function! s:FixKeys() abort
-  inoremap ; ö
-  inoremap : Ö
-  inoremap ' ä
-  inoremap " Ä
-  let g:fix_keys_enabled = 1
-endfunction
 
-function! s:RestoreKeys() abort
+function! s:ToggleKeys() abort
   if g:fix_keys_enabled == 1
     iunmap ;
     iunmap :
     iunmap '
     iunmap "
     let g:fix_keys_enabled = 0
+  else
+    inoremap ; ö
+    inoremap : Ö
+    inoremap ' ä
+    inoremap " Ä
+    let g:fix_keys_enabled = 1
   endif
 endfunction
-inoremap <silent> <c-l> <c-o>:call <sid>FixKeys()<cr>
-autocmd vimrc InsertLeave * call <sid>RestoreKeys()
+
+inoremap <silent> <c-l> <c-o>:call <sid>ToggleKeys()<cr>
+nnoremap <silent> <c-l> <c-o>:call <sid>ToggleKeys()<cr>
 " }}}
 " Section: Settings {{{
-
 filetype plugin indent on
 set hidden
 
@@ -221,9 +218,6 @@ set softtabstop=-1
 set expandtab
 
 set matchpairs+=<:>
-set matchpairs+=":"
-set matchpairs+=':'
-set matchpairs+=`:`
 
 function s:MakeDirsToFile(dir)
   if a:dir =~ '^[a-z]\+:/'
@@ -243,6 +237,9 @@ autocmd vimrc FocusLost,BufLeave * silent! update
 
 autocmd vimrc BufLeave,InsertEnter * set nocursorline
 autocmd vimrc BufEnter,InsertLeave * set cursorline
+
+nnoremap Q <nop>
+nnoremap q: <nop>
 " }}}
 " Section: Commands {{{
 " Syn stack {{{
@@ -306,10 +303,8 @@ nnoremap <silent> gx :call HandleURL()<CR>
 " }}}
 " }}}
 " Section: Appearance {{{
-
 set synmaxcol=200
 set termguicolors
-set t_Co=256
 
 function! PasteForStatusline() abort
   return &paste == 1 ? '[PASTE]' : ""
@@ -321,6 +316,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'cideM/yui'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -392,16 +388,16 @@ nnoremap <silent><leader>b :Buffers<CR>
 nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 
+let g:fzf_preview_window = ['right:hidden', 'ctrl-/']
 let $FZF_DEFAULT_OPTS="--bind 'tab:down' --bind 'btab:up' --exact --reverse"
-let g:fzf_layout = { 'window': 'call CreateCenteredFloatingWindow()' }
 
 let g:fzf_colors = {
       \ 'fg':      ['fg', 'Normal'],
       \ 'bg':      ['bg', 'Normal'],
-      \ 'hl':      ['fg', 'Comment'],
+      \ 'hl':      ['fg', 'Statement'],
       \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
       \ 'bg+':     ['bg', 'Statusline', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Comment'],
+      \ 'hl+':     ['fg', 'Statement'],
       \ 'info':    ['fg', 'PreProc'],
       \ 'border':  ['fg', 'Ignore'],
       \ 'prompt':  ['fg', 'Conditional'],
@@ -409,31 +405,6 @@ let g:fzf_colors = {
       \ 'marker':  ['fg', 'Keyword'],
       \ 'spinner': ['fg', 'Label'],
       \ 'header':  ['fg', 'Comment'] }
-
-" floating fzf window with borders
-function! CreateCenteredFloatingWindow()
-    let width = min([&columns - 4, max([80, &columns - 20])])
-    let height = min([&lines - 4, max([20, &lines - 10])])
-    let top = ((&lines - height) / 2) - 1
-    let left = (&columns - width) / 2
-    let opts = {'relative': 'editor', 'row': top, 'col': left, 'width': width, 'height': height, 'style': 'minimal'}
-
-    let top = "╭" . repeat("─", width - 2) . "╮"
-    let mid = "│" . repeat(" ", width - 2) . "│"
-    let bot = "╰" . repeat("─", width - 2) . "╯"
-
-    let lines = [top] + repeat([mid], height - 2) + [bot]
-    let s:buf = nvim_create_buf(v:false, v:true)
-    call nvim_buf_set_lines(s:buf, 0, -1, v:true, lines)
-    call nvim_open_win(s:buf, v:true, opts)
-    set winhl=Normal:Normal
-    let opts.row += 1
-    let opts.height -= 2
-    let opts.col += 2
-    let opts.width -= 4
-    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
-    au BufWipeout <buffer> exe 'bw '.s:buf
-endfunction
 " }}}
 " Plugin: undotree {{{
 let g:undotree_SplitWidth = 35
@@ -454,7 +425,8 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 runtime macros/sandwich/keymap/surround.vim
 " }}}
 " Plugin: miniSnip {{{
-let g:miniSnip_dirs = [ g:vimdir . '/miniSnip' ]
+let g:miniSnip_dirs = [ '~/.config/nvim/miniSnip' ]
+
 let g:miniSnip_trigger = '<c-j>'
 
 function! s:load_skeleton()
@@ -483,10 +455,10 @@ function! Nvim()
     highlight! LspDiagnosticsSignInformation ctermfg=6 ctermbg=10 guibg=#66cccc guifg=#393939
     highlight! LspDiagnosticsSignHint ctermfg=6 ctermbg=10 guibg=#66ccff guifg=#393939
 
-    highlight! LspDiagnosticsUnderlineError cterm=underline gui=underline
-    highlight! LspDiagnosticsUnderlineWarning cterm=underline gui=underline
-    highlight! LspDiagnosticsUnderlineInformation cterm=underline gui=underline
-    highlight! LspDiagnosticsUnderlineHint cterm=underline gui=underline
+    highlight! link LspDiagnosticsUnderlineError SpellBad
+    highlight! link LspDiagnosticsUnderlineWarning DiffChange
+    highlight! LspDiagnosticsUnderlineInformation cterm=NONE gui=NONE
+    highlight! LspDiagnosticsUnderlineHint cterm=NONE gui=NONE
 endfunction
 autocmd vimrc ColorScheme * call Nvim()
 
@@ -499,7 +471,52 @@ function! PaperColorMod()
 endfunction
 autocmd vimrc ColorScheme PaperColor call PaperColorMod()
 
-colorscheme PaperColor
+" Yui
+let g:yui_folds = 'emphasize'
+let g:yui_line_numbers = 'emphasize'
+let g:yui_comments = 'emphasize'
+
+function! Yui()
+  highlight! link Visual Search
+  highlight! link Visual Search
+  highlight! link SpecialComment Comment
+  highlight! link SpecialComment Comment
+  highlight! link NonText SpecialKey
+  highlight! link MatchParen Search
+
+  highlight! link PmenuSel Search
+  highlight! link PmenuThumb PmenuSel
+
+  highlight! link texStatement Constant
+  highlight! link texTypeStyle Constant
+  highlight! link texBeginEnd Constant
+  highlight! link texBeginEndName NONE
+  highlight! link texSection Constant
+  highlight! link texCmd Constant
+  highlight! link texStyleItal mkdItalic
+
+  highlight! xmlTagName gui=bold
+
+  highlight! link Todo WarningMsg
+
+  let g:fzf_colors = {
+        \ 'fg':      ['fg', 'Normal'],
+        \ 'bg':      ['bg', 'Normal'],
+        \ 'hl':      ['fg', 'Comment'],
+        \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+        \ 'bg+':     ['bg', 'Statusline', 'CursorColumn'],
+        \ 'hl+':     ['fg', 'Comment'],
+        \ 'info':    ['fg', 'PreProc'],
+        \ 'border':  ['fg', 'Ignore'],
+        \ 'prompt':  ['fg', 'Conditional'],
+        \ 'pointer': ['fg', 'Exception'],
+        \ 'marker':  ['fg', 'Keyword'],
+        \ 'spinner': ['fg', 'Label'],
+        \ 'header':  ['fg', 'Comment'] }
+endfunction
+autocmd vimrc ColorScheme yui call Yui()
+
+colorscheme yui
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
