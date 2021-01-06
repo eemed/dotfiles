@@ -3,13 +3,13 @@ let g:vimdir = stdpath('config')
 let g:python3_host_prog = '/usr/bin/python3'
 
 augroup vimrc
-  autocmd!
+    autocmd!
 augroup end
 
 " Install vim-plug
 if empty(glob(g:vimdir . '/autoload/plug.vim'))
-  execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+    execute 'silent !curl -fLo ' . g:vimdir . '/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 " }}}
 " Section: Key mappings {{{
@@ -60,24 +60,24 @@ cabbrev WQa wqa
 cabbrev WQA wqa
 
 function! StripWhitespace() abort
-  let l:save = winsaveview()
-  keeppatterns %s/\s\+$//e
-  call winrestview(l:save)
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
 endfunction
 nnoremap <leader>s :call StripWhitespace()<cr>
 
 for char in [ '$', '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
-  execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
-  execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
-  execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
-  execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+    execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+    execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+    execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+    execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
 endfor
 
 " number text object (integer and float)
 function! VisualNumber() abort
-  call search('\d\([^0-9\.]\|$\)', 'cW')
-  normal v
-  call search('\(^\|[^0-9\.]\d\)', 'becW')
+    call search('\d\([^0-9\.]\|$\)', 'cW')
+    normal v
+    call search('\(^\|[^0-9\.]\d\)', 'becW')
 endfunction
 xnoremap in :<C-u>call VisualNumber()<CR>
 onoremap in :<C-u>normal vin<CR>
@@ -104,7 +104,7 @@ nnoremap <silent> ]t :tabprevious<cr>
 
 " From unimpaired
 function! s:JumpToConflictMarker(reverse) abort
-  call search('^\(@@ .* @@\|[<=>|]\{7}[<=>|]\@!\)', a:reverse ? 'bW' : 'W')
+    call search('^\(@@ .* @@\|[<=>|]\{7}[<=>|]\@!\)', a:reverse ? 'bW' : 'W')
 endfunction
 
 nnoremap <silent> [n :<c-u>call <sid>JumpToConflictMarker(1)<cr>
@@ -148,21 +148,21 @@ nnoremap gj i<c-j><esc>k$
 let s:fin_keys_enabled = 0
 
 function! s:ToggleKeys() abort
-  if s:fin_keys_enabled == 1
-    iunmap ;
-    iunmap :
-    iunmap '
-    iunmap "
-    let s:fin_keys_enabled = 0
-    echo '[FinKeys] off'
-  else
-    inoremap ; ö
-    inoremap : Ö
-    inoremap ' ä
-    inoremap " Ä
-    let s:fin_keys_enabled = 1
-    echo '[FinKeys] on'
-  endif
+    if s:fin_keys_enabled == 1
+        iunmap ;
+        iunmap :
+        iunmap '
+        iunmap "
+        let s:fin_keys_enabled = 0
+        echo '[FinKeys] off'
+    else
+        inoremap ; ö
+        inoremap : Ö
+        inoremap ' ä
+        inoremap " Ä
+        let s:fin_keys_enabled = 1
+        echo '[FinKeys] on'
+    endif
 endfunction
 
 inoremap <silent> <c-l> <c-o>:call <sid>ToggleKeys()<cr>
@@ -223,13 +223,13 @@ set expandtab
 set matchpairs+=<:>
 
 function s:MakeDirsToFile(dir)
-  if a:dir =~ '^[a-z]\+:/'
-    return
-  endif
+    if a:dir =~ '^[a-z]\+:/'
+        return
+    endif
 
-  if !isdirectory(a:dir)
-    call mkdir(a:dir, 'p')
-  endif
+    if !isdirectory(a:dir)
+        call mkdir(a:dir, 'p')
+    endif
 endfunction
 
 " Autocreate dirs
@@ -248,10 +248,10 @@ nnoremap q: <nop>
 " Section: Commands {{{
 " Syn stack {{{
 function! <SID>SynStack()
-  if !exists("*synstack")
-    return
-  endif
-  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+    if !exists("*synstack")
+        return
+    endif
+    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 " nmap <leader>sp :call <SID>SynStack()<CR>
 " }}}
@@ -264,24 +264,24 @@ let g:note_dir = '~/.vim_notes'
 command! -nargs=0 Notes execute ':edit ' . g:note_dir . '/index.md'
 
 command! -nargs=? -complete=filetype EditFileTypePlugin
-      \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
-      \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
+            \ execute 'keepj vsplit ' . g:vimdir . '/after/ftplugin/' .
+            \ (empty(<q-args>) ? &ft : <q-args>) . '.vim'
 " }}}
 " Grep {{{
 let &grepprg='grep -Rin --exclude=' . shellescape(&wildignore)
 
 " https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 if executable('ag')
-  set grepprg=ag\ --vimgrep\ --smart-case
+    set grepprg=ag\ --vimgrep\ --smart-case
 endif
 
 if executable('rg')
-  set grepprg=rg\ --vimgrep\ --smart-case
-  set grepformat^=%f:%l:%c:%m
+    set grepprg=rg\ --vimgrep\ --smart-case
+    set grepformat^=%f:%l:%c:%m
 endif
 
 function! Grep(...) abort
-  return system(join(extend([&grepprg], a:000), ' '))
+    return system(join(extend([&grepprg], a:000), ' '))
 endfunction
 
 command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
@@ -292,7 +292,7 @@ nnoremap <leader>G :Grep<space>
 function! HandleURL()
     let s:uri = matchstr(getline("."), '[a-z]*:\/\/[^ >,;()]*')
     if match(s:uri, 'http') != 0
-      return
+        return
     endif
     let s:uri = shellescape(s:uri, 1)
     echom s:uri
@@ -311,7 +311,7 @@ set synmaxcol=200
 set termguicolors
 
 function! PasteForStatusline() abort
-  return &paste == 1 ? '[PASTE]' : ""
+    return &paste == 1 ? '[PASTE]' : ""
 endfunction
 
 set laststatus=2
@@ -339,7 +339,7 @@ Plug 'Jorengarenar/miniSnip'              " Snippets
 
 " nvim-0.5
 if has('nvim-0.5')
-  Plug 'neovim/nvim-lspconfig'
+    Plug 'neovim/nvim-lspconfig'
 endif
 
 " Syntax
@@ -350,19 +350,19 @@ call plug#end()
 " Section: Plugin configuration {{{
 " Plugin: nvim-lsp {{{
 if has('nvim-0.5')
-  lua require('lsp')
+    lua require('lsp')
 
-  " Save cursor position on format
-  function! LspFormat() abort
-    let view = winsaveview()
-    lua vim.lsp.buf.formatting_sync()
-    call winrestview(view)
-  endfunction
+    " Save cursor position on format
+    function! LspFormat() abort
+        let view = winsaveview()
+        lua vim.lsp.buf.formatting_sync()
+        call winrestview(view)
+    endfunction
 
-  sign define LspDiagnosticsSignError text=! texthl=LspDiagnosticsSignError
-  sign define LspDiagnosticsSignWarning text=! texthl=LspDiagnosticsSignWarning
-  sign define LspDiagnosticsSignInformation text=- texthl=LspDiagnosticsSignInformation
-  sign define LspDiagnosticsSignHint text=- texthl=LspDiagnosticsSignHint
+    sign define LspDiagnosticsSignError text=! texthl=LspDiagnosticsSignError
+    sign define LspDiagnosticsSignWarning text=! texthl=LspDiagnosticsSignWarning
+    sign define LspDiagnosticsSignInformation text=- texthl=LspDiagnosticsSignInformation
+    sign define LspDiagnosticsSignHint text=- texthl=LspDiagnosticsSignHint
 endif
 " }}}
 " Plugin: vim-qf {{{
@@ -381,11 +381,11 @@ nmap yoq <plug>(qf_qf_toggle)
 " }}}
 " Plugin: fzf.vim {{{
 function! Browse() abort
-  if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
-    call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
-  else
-    exe "Files"
-  endif
+    if trim(system('git rev-parse --is-inside-work-tree')) ==# 'true'
+        call fzf#run(fzf#wrap({'source': 'git ls-files --exclude-standard --others --cached'}))
+    else
+        exe "Files"
+    endif
 endfunction
 
 nnoremap <silent><c-p> :call Browse()<CR>
@@ -397,19 +397,19 @@ let g:fzf_preview_window = ['right:hidden', 'ctrl-/']
 let $FZF_DEFAULT_OPTS="--bind 'tab:down' --bind 'btab:up' --exact --reverse"
 
 let g:fzf_colors = {
-      \ 'fg':      ['fg', 'Normal'],
-      \ 'bg':      ['bg', 'Normal'],
-      \ 'hl':      ['fg', 'Statement'],
-      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'Statusline', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Statement'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'border':  ['fg', 'Ignore'],
-      \ 'prompt':  ['fg', 'Conditional'],
-      \ 'pointer': ['fg', 'Exception'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment'] }
+            \ 'fg':      ['fg', 'Normal'],
+            \ 'bg':      ['bg', 'Normal'],
+            \ 'hl':      ['fg', 'Statement'],
+            \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+            \ 'bg+':     ['bg', 'Statusline', 'CursorColumn'],
+            \ 'hl+':     ['fg', 'Statement'],
+            \ 'info':    ['fg', 'PreProc'],
+            \ 'border':  ['fg', 'Ignore'],
+            \ 'prompt':  ['fg', 'Conditional'],
+            \ 'pointer': ['fg', 'Exception'],
+            \ 'marker':  ['fg', 'Keyword'],
+            \ 'spinner': ['fg', 'Label'],
+            \ 'header':  ['fg', 'Comment'] }
 " }}}
 " Plugin: undotree {{{
 let g:undotree_SplitWidth = 35
@@ -435,18 +435,18 @@ let g:miniSnip_dirs = [ '~/.config/nvim/miniSnip' ]
 let g:miniSnip_trigger = '<c-j>'
 
 function! s:load_skeleton()
-  filetype detect
-  if empty(&filetype)
-    return
-  endif
+    filetype detect
+    if empty(&filetype)
+        return
+    endif
 
-  execute "normal! i" . &filetype . "\<c-r>=miniSnip#trigger()\<cr>"
-  call cursor(1, 1)
+    execute "normal! i" . &filetype . "\<c-r>=miniSnip#trigger()\<cr>"
+    call cursor(1, 1)
 
-  " If the snippet didn't expand, remove everything
-  if getline(1) == &filetype
-    normal! gg"_dG
-  endif
+    " If the snippet didn't expand, remove everything
+    if getline(1) == &filetype
+        normal! gg"_dG
+    endif
 endfunction
 autocmd vimrc BufNewFile * call s:load_skeleton()
 " }}}
@@ -482,42 +482,42 @@ let g:yui_line_numbers = 'emphasize'
 let g:yui_comments = 'emphasize'
 
 function! Yui()
-  highlight! link Visual Search
-  highlight! link Visual Search
-  highlight! link SpecialComment Comment
-  highlight! link SpecialComment Comment
-  highlight! link NonText SpecialKey
-  highlight! link MatchParen Search
+    highlight! link Visual Search
+    highlight! link Visual Search
+    highlight! link SpecialComment Comment
+    highlight! link SpecialComment Comment
+    highlight! link NonText SpecialKey
+    highlight! link MatchParen Search
 
-  highlight! link PmenuSel Search
-  highlight! link PmenuThumb PmenuSel
+    highlight! link PmenuSel Search
+    highlight! link PmenuThumb PmenuSel
 
-  highlight! link texStatement Constant
-  highlight! link texTypeStyle Constant
-  highlight! link texBeginEnd Constant
-  highlight! link texBeginEndName NONE
-  highlight! link texSection Constant
-  highlight! link texCmd Constant
-  highlight! link texStyleItal mkdItalic
+    highlight! link texStatement Constant
+    highlight! link texTypeStyle Constant
+    highlight! link texBeginEnd Constant
+    highlight! link texBeginEndName NONE
+    highlight! link texSection Constant
+    highlight! link texCmd Constant
+    highlight! link texStyleItal mkdItalic
 
-  highlight! xmlTagName gui=bold
+    highlight! xmlTagName gui=bold
 
-  highlight! link Todo WarningMsg
+    highlight! link Todo WarningMsg
 
-  let g:fzf_colors = {
-        \ 'fg':      ['fg', 'Normal'],
-        \ 'bg':      ['bg', 'Normal'],
-        \ 'hl':      ['fg', 'Comment'],
-        \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-        \ 'bg+':     ['bg', 'Statusline', 'CursorColumn'],
-        \ 'hl+':     ['fg', 'Comment'],
-        \ 'info':    ['fg', 'PreProc'],
-        \ 'border':  ['fg', 'Ignore'],
-        \ 'prompt':  ['fg', 'Conditional'],
-        \ 'pointer': ['fg', 'Exception'],
-        \ 'marker':  ['fg', 'Keyword'],
-        \ 'spinner': ['fg', 'Label'],
-        \ 'header':  ['fg', 'Comment'] }
+    let g:fzf_colors = {
+                \ 'fg':      ['fg', 'Normal'],
+                \ 'bg':      ['bg', 'Normal'],
+                \ 'hl':      ['fg', 'Comment'],
+                \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+                \ 'bg+':     ['bg', 'Statusline', 'CursorColumn'],
+                \ 'hl+':     ['fg', 'Comment'],
+                \ 'info':    ['fg', 'PreProc'],
+                \ 'border':  ['fg', 'Ignore'],
+                \ 'prompt':  ['fg', 'Conditional'],
+                \ 'pointer': ['fg', 'Exception'],
+                \ 'marker':  ['fg', 'Keyword'],
+                \ 'spinner': ['fg', 'Label'],
+                \ 'header':  ['fg', 'Comment'] }
 endfunction
 autocmd vimrc ColorScheme yui call Yui()
 
