@@ -40,6 +40,9 @@ nnoremap Y y$
 xnoremap < <gv
 xnoremap > >gv
 
+nnoremap c# #``cgN
+nnoremap c* *``cgn
+
 nnoremap <leader>S :source <c-r>%<CR>
 nnoremap <leader>q :q<cr>
 nnoremap <BS> <C-^>
