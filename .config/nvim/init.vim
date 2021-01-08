@@ -397,6 +397,10 @@ nnoremap <silent><leader>l :BLines<CR>
 nnoremap <silent><leader>h :History<CR>
 
 let g:fzf_preview_window = ['right:hidden', 'ctrl-/']
+
+if !exists('$FZF_DEFAULT_OPTS')
+    let $FZF_DEFAULT_OPTS="--bind 'tab:down' --bind 'btab:up' --exact --reverse"
+endif
 " }}}
 " Plugin: undotree {{{
 let g:undotree_SplitWidth = 35
