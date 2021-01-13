@@ -208,13 +208,8 @@ nnoremap <silent><esc> :let @/ = ""<cr><esc>
 
 " Use undo files
 set undofile
-set nobackup
-set nowritebackup
-set noswapfile
-let &undodir = g:vimdir . '/undo'
-let &dir = g:vimdir . '/swap'
 
-set updatetime=300
+set updatetime=1000
 set foldmethod=marker
 
 set scrolloff=5
@@ -474,8 +469,6 @@ let g:yui_comments = 'emphasize'
 
 function! Yui()
     highlight! link Visual Search
-    highlight! link Visual Search
-    highlight! link SpecialComment Comment
     highlight! link SpecialComment Comment
     highlight! link NonText SpecialKey
     highlight! link MatchParen Search
@@ -494,6 +487,7 @@ function! Yui()
     highlight! xmlTagName gui=bold
 
     highlight! link Todo WarningMsg
+    highlight! Keyword gui=bold
 endfunction
 autocmd vimrc ColorScheme yui call Yui()
 

@@ -49,7 +49,7 @@ nvim_no_nest() {
 }
 alias vim="nvim_no_nest"
 
-export FZF_DEFAULT_OPTS="--color=info:0,bg+:-1,fg:-1,fg+:0,hl+:5,hl:5 --bind 'tab:down' --bind 'btab:up' --exact --reverse"
+export FZF_DEFAULT_OPTS="--color=info:0,bg+:-1,fg:-1,fg+:0,hl+:2,hl:2 --bind 'tab:down' --bind 'btab:up' --exact --reverse"
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 [ -d ~/.fzf ] && \
   PATH=$PATH:~/.fzf/bin ;\
