@@ -496,7 +496,7 @@ function! Yui()
 
     " Lsp
     highlight! link LspDiagnosticsSignError ErrorMsg
-    highlight! link LspDiagnosticsSignWarning WarningMsh
+    highlight! link LspDiagnosticsSignWarning WarningMsg
     highlight! link LspDiagnosticsSignInformation Search
     highlight! link LspDiagnosticsSignHint Search
 
