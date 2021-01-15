@@ -320,6 +320,7 @@ call plug#begin(g:vimdir . '/plugged')
 " Color schemes
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'cideM/yui', {'branch': 'v2'}
+Plug 'kkga/vim-envy'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
