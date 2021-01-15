@@ -493,6 +493,22 @@ function! Yui()
 
     " Xml
     highlight! xmlTagName gui=bold
+
+    " Lsp
+    highlight! link LspDiagnosticsSignError ErrorMsg
+    highlight! link LspDiagnosticsSignWarning WarningMsh
+    highlight! link LspDiagnosticsSignInformation Search
+    highlight! link LspDiagnosticsSignHint Search
+
+    highlight! link LspDiagnosticsDefaultError NormalFloat
+    highlight! link LspDiagnosticsDefaultWarning NormalFloat
+    highlight! link LspDiagnosticsDefaultInformation NormalFloat
+    highlight! link LspDiagnosticsDefaultHint NormalFloat
+
+    highlight! link LspDiagnosticsUnderlineError SpellBad
+    highlight! link LspDiagnosticsUnderlineWarning DiffChange
+    highlight! LspDiagnosticsUnderlineInformation cterm=NONE gui=NONE
+    highlight! LspDiagnosticsUnderlineHint cterm=NONE gui=NONE
 endfunction
 autocmd vimrc ColorScheme yui call Yui()
 
