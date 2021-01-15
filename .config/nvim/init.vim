@@ -184,7 +184,7 @@ set nowrap
 set list listchars=tab:→\ ,nbsp:•,trail:•
 set breakindent
 let &showbreak='↳ '
-set path=.
+set path=.,,
 set include=
 set keywordprg=
 set nrformats+=alpha
@@ -206,8 +206,8 @@ set hlsearch
 " Clear highlighting on esc
 nnoremap <silent><esc> :let @/ = ""<cr><esc>
 
-" Use undo files
 set undofile
+set noswapfile
 
 set updatetime=1000
 set foldmethod=marker
@@ -319,7 +319,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 call plug#begin(g:vimdir . '/plugged')
 " Color schemes
 Plug 'NLKNguyen/papercolor-theme'
-Plug 'cideM/yui'
+Plug 'cideM/yui', {'branch': 'v2'}
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -470,12 +470,19 @@ let g:yui_comments = 'emphasize'
 function! Yui()
     highlight! link Visual Search
     highlight! link SpecialComment Comment
-    highlight! link NonText SpecialKey
     highlight! link MatchParen Search
+    highlight! Keyword gui=bold
+    highlight! Comment guibg=NONE guifg=#E44C22
 
-    highlight! link PmenuSel Search
-    highlight! link PmenuThumb PmenuSel
+    highlight! LineNr guibg=#eae0d6
+    highlight! link EndOfBuffer NonText
+    highlight! link SignColumn LineNr
 
+    " Vim
+    highlight! vimCommentTitle guibg=NONE guifg=#E44C22
+    highlight! vimCommentTitleLeader guibg=NONE guifg=#E44C22
+
+    " Tex
     highlight! link texStatement Constant
     highlight! link texTypeStyle Constant
     highlight! link texBeginEnd Constant
@@ -484,10 +491,8 @@ function! Yui()
     highlight! link texCmd Constant
     highlight! link texStyleItal mkdItalic
 
+    " Xml
     highlight! xmlTagName gui=bold
-
-    highlight! link Todo WarningMsg
-    highlight! Keyword gui=bold
 endfunction
 autocmd vimrc ColorScheme yui call Yui()
 

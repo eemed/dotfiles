@@ -70,7 +70,7 @@ augroup SmartCR
 
     autocmd FileType tex let b:smart_cr_chain = [
                 \ {
-                \   'start_regex': '^\s*\\begin{\zs[a-zA-Z0-9]*\ze}',
+                \   'start_regex': '^\s*\\begin{\zs[a-zA-Z0-9\*]*\ze}',
                 \   'end_func': { m -> "\\end{" . m . "}" }
                 \ },
                 \ {
