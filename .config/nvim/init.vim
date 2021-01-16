@@ -251,7 +251,7 @@ function! <SID>SynStack()
     endif
     echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
-" nmap <leader>sp :call <SID>SynStack()<CR>
+nmap <leader>sp :call <SID>SynStack()<CR>
 " }}}
 " Config, notes and filetypeplugin {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -464,10 +464,6 @@ endfunction
 autocmd vimrc ColorScheme PaperColor call PaperColorMod()
 
 " Yui
-let g:yui_folds = 'emphasize'
-let g:yui_line_numbers = 'emphasize'
-let g:yui_comments = 'emphasize'
-
 function! Yui()
     highlight! link Visual Search
     highlight! link SpecialComment Comment
@@ -478,6 +474,8 @@ function! Yui()
     highlight! LineNr guibg=#eae0d6
     highlight! link EndOfBuffer NonText
     highlight! link SignColumn LineNr
+    highlight! Type gui=none
+    highlight! CursorLine guifg=none
 
     " Vim
     highlight! vimCommentTitle guibg=NONE guifg=#E44C22
