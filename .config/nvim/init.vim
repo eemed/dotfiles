@@ -156,6 +156,11 @@ function! s:ToggleKeys() abort
         iunmap :
         iunmap '
         iunmap "
+
+        cunmap ; ö
+        cunmap : Ö
+        cunmap ' ä
+        cunmap " Ä
         let s:fin_keys_enabled = 0
         echo '[FinKeys] off'
     else
@@ -163,6 +168,11 @@ function! s:ToggleKeys() abort
         inoremap : Ö
         inoremap ' ä
         inoremap " Ä
+
+        cnoremap ; ö
+        cnoremap : Ö
+        cnoremap ' ä
+        cnoremap " Ä
         let s:fin_keys_enabled = 1
         echo '[FinKeys] on'
     endif
@@ -199,7 +209,7 @@ set ignorecase smartcase
 
 " Show replacement
 set inccommand=split
-set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*,*.pdf
+set wildignore+=*/node_modules/*,*/__pycache__/,*/venv/*,*.pyc,.git/*
 
 set smartindent
 set hlsearch
