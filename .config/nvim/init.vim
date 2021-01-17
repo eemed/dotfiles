@@ -157,10 +157,10 @@ function! s:ToggleKeys() abort
         iunmap '
         iunmap "
 
-        cunmap ; ö
-        cunmap : Ö
-        cunmap ' ä
-        cunmap " Ä
+        cunmap ;
+        cunmap :
+        cunmap '
+        cunmap "
         let s:fin_keys_enabled = 0
         echo '[FinKeys] off'
     else
