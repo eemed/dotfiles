@@ -243,9 +243,6 @@ endfunction
 " Autocreate dirs
 autocmd vimrc BufWritePre,FileWritePre * call s:MakeDirsToFile(expand('<afile>:p:h'))
 
-" Autosave
-autocmd vimrc FocusLost,BufLeave * silent! update
-
 autocmd vimrc BufLeave,InsertEnter * set nocursorline
 autocmd vimrc BufEnter,InsertLeave * set cursorline
 
