@@ -39,6 +39,8 @@ nnoremap Y y$
 
 xnoremap < <gv
 xnoremap > >gv
+xnoremap K :<c-u>execute "normal gvd" . v:count1 . "kPV']"<cr>
+xnoremap J :<c-u>execute "normal gvd" . v:count1 . "jPV']"<cr>
 
 nnoremap c# #``cgN
 nnoremap c* *``cgn
