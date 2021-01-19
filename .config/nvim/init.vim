@@ -260,7 +260,7 @@ function! <SID>SynStack()
     endif
     echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
-nmap <leader>sp :call <SID>SynStack()<CR>
+" nmap <leader>sp :call <SID>SynStack()<CR>
 " }}}
 " Config, notes and filetypeplugin {{{
 command! -nargs=0 Config execute ':edit ' . $MYVIMRC
@@ -461,7 +461,7 @@ function! Nvim()
     highlight! LspDiagnosticsUnderlineInformation cterm=NONE gui=NONE
     highlight! LspDiagnosticsUnderlineHint cterm=NONE gui=NONE
 endfunction
-autocmd vimrc ColorScheme * call Nvim()
+" autocmd vimrc ColorScheme * call Nvim()
 
 function! PaperColorMod()
     if &background == 'light'
@@ -474,21 +474,9 @@ autocmd vimrc ColorScheme PaperColor call PaperColorMod()
 
 " Yui
 function! Yui()
-    highlight! link Visual Search
     highlight! link SpecialComment Comment
-    highlight! link MatchParen Search
-    highlight! Keyword gui=bold
-    highlight! Comment guibg=NONE guifg=#E44C22
-
-    highlight! LineNr guibg=#eae0d6
-    highlight! link EndOfBuffer NonText
-    highlight! link SignColumn LineNr
-    highlight! Type gui=none
-    highlight! CursorLine guifg=none
-
-    " Vim
-    highlight! vimCommentTitle guibg=NONE guifg=#E44C22
-    highlight! vimCommentTitleLeader guibg=NONE guifg=#E44C22
+    highlight! Statement gui=bold
+    highlight! SignColumn guibg=#EBE2E0
 
     " Tex
     highlight! link texStatement Constant
