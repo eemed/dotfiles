@@ -4,6 +4,12 @@ function! s:TermFinished(job_id, data, event) dict
   let s:runner_bufnr = -1
 endfunction
 
+function! s:TermRun(cmd) abort
+    split
+    execute 'terminal ' . a:cmd
+    startinsert!
+endfunction
+
 function! s:TerminalOpen() abort
   if s:runner_bufnr == -1
     botright 15split
@@ -39,6 +45,7 @@ function! s:TerminalToggle() abort
 endfunction
 
 command! -nargs=0 TermToggle call <sid>TerminalToggle()
+command! -nargs=1 TermRun call <sid>TermRun(<q-args>)
 
 nnoremap <A-=> :TermToggle<cr>
 tnoremap <A-=> <c-\><c-n>:TermToggle<cr>

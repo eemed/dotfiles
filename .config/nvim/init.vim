@@ -330,6 +330,8 @@ call plug#begin(g:vimdir . '/plugged')
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'cideM/yui', {'branch': 'v2'}
 Plug 'kkga/vim-envy'
+Plug 'jsit/toast.vim'
+Plug 'YorickPeterse/vim-paper'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -461,7 +463,7 @@ function! Nvim()
     highlight! LspDiagnosticsUnderlineInformation cterm=NONE gui=NONE
     highlight! LspDiagnosticsUnderlineHint cterm=NONE gui=NONE
 endfunction
-" autocmd vimrc ColorScheme * call Nvim()
+autocmd vimrc ColorScheme * call Nvim()
 
 function! PaperColorMod()
     if &background == 'light'
@@ -508,7 +510,12 @@ function! Yui()
 endfunction
 autocmd vimrc ColorScheme yui call Yui()
 
-colorscheme yui
+function! Paper()
+    highlight! SignColumn guibg=#d8d5c7
+endfunction
+autocmd vimrc ColorScheme paper call Paper()
+
+colorscheme paper
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
