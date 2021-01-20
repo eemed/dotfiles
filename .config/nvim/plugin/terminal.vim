@@ -1,13 +1,7 @@
-let  s:runner_bufnr = -1
+let s:runner_bufnr = -1
 
 function! s:TermFinished(job_id, data, event) dict
   let s:runner_bufnr = -1
-endfunction
-
-function! s:TermRun(cmd) abort
-    split
-    execute 'terminal ' . a:cmd
-    startinsert!
 endfunction
 
 function! s:TerminalOpen() abort
@@ -45,7 +39,42 @@ function! s:TerminalToggle() abort
 endfunction
 
 command! -nargs=0 TermToggle call <sid>TerminalToggle()
-command! -nargs=1 TermRun call <sid>TermRun(<q-args>)
+command! -nargs=? -bang TermRemember call <sid>TermRemember(<bang>0, <q-args>)
 
 nnoremap <A-=> :TermToggle<cr>
 tnoremap <A-=> <c-\><c-n>:TermToggle<cr>
+
+
+" Runnning buffer specific commands
+
+function! s:TermRemember(bang, cmd) abort
+    if a:bang == 1
+        let b:term_last_cmd = ''
+    else
+        let b:term_last_cmd = a:cmd
+    endif
+endfunction
+
+function! s:TermRun(cmd) abort
+    if a:cmd == '' && get(b:, 'term_last_cmd', '') == ''
+        echohl ErrorMsg
+        echo 'No command to run'
+        echohl
+        return
+    endif
+
+    15split
+    if get(b:, 'term_last_cmd', '') != ''
+        execute 'terminal ' . b:term_last_cmd
+    else
+        execute 'terminal ' . a:cmd
+    endif
+    startinsert!
+endfunction
+
+command! -nargs=? TermRun call <sid>TermRun(<q-args>)
+
+nnoremap `<cr> :TermRun<cr>
+nnoremap `<space> :TermRemember<space>
+nnoremap `! :TermRemember!<cr>
+nnoremap `? :echo 'Remember cmd: "' . get(b:, 'term_last_cmd', '') . '"'<cr>

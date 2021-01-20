@@ -426,6 +426,7 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 " }}}
 " Plugin: vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
+call operator#sandwich#set('all', 'all', 'highlight', 1)
 " }}}
 " Plugin: miniSnip {{{
 let g:miniSnip_dirs = [ '~/.config/nvim/miniSnip' ]
