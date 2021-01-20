@@ -341,7 +341,6 @@ Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
 Plug 'romainl/vim-qf'                     " Better quickfix
 Plug 'ajh17/VimCompletesMe'               " Completion
-Plug 'Jorengarenar/miniSnip'              " Snippets
 
 " nvim-0.5
 if has('nvim-0.5')
@@ -424,27 +423,6 @@ nnoremap <silent><leader>g :vertical Gstatus<CR>
 runtime macros/sandwich/keymap/surround.vim
 call operator#sandwich#set('all', 'all', 'highlight', 1)
 " }}}
-" Plugin: miniSnip {{{
-let g:miniSnip_dirs = [ '~/.config/nvim/miniSnip' ]
-
-let g:miniSnip_trigger = '<c-j>'
-
-function! s:load_skeleton()
-    filetype detect
-    if empty(&filetype)
-        return
-    endif
-
-    execute "normal! i" . &filetype . "\<c-r>=miniSnip#trigger()\<cr>"
-    call cursor(1, 1)
-
-    " If the snippet didn't expand, remove everything
-    if getline(1) == &filetype
-        normal! gg"_dG
-    endif
-endfunction
-autocmd vimrc BufNewFile * call s:load_skeleton()
-" }}}
 " }}}
 " Section: Colorscheme {{{
 set background=light
@@ -479,6 +457,14 @@ function! Yui()
 
     " Xml
     highlight! xmlTagName gui=bold
+
+    " highlight! Constant guifg=#5137e1
+    " highlight! dirvishPathTail guifg=#5137e1
+    " highlight! asciidocQuotedMonospaced2 guifg=#5137e1
+
+    highlight! clear CursorLine
+    highlight! CursorLine guibg=#ffffff
+
 
     " Lsp
     highlight! link LspDiagnosticsSignError ErrorMsg
