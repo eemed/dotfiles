@@ -513,6 +513,7 @@ autocmd vimrc ColorScheme yui call Yui()
 
 function! Paper()
     highlight! SignColumn guibg=#d8d5c7
+    highlight! link xmlTagName Directory
 endfunction
 autocmd vimrc ColorScheme paper call Paper()
 
