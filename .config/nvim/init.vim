@@ -344,6 +344,7 @@ Plug 'ajh17/VimCompletesMe'               " Completion
 
 " nvim-0.5
 if has('nvim-0.5')
+    Plug 'norcalli/snippets.nvim'
     Plug 'neovim/nvim-lspconfig'
 endif
 
@@ -353,8 +354,12 @@ Plug 'MaxMEllon/vim-jsx-pretty'
 call plug#end()
 " }}}
 " Section: Plugin configuration {{{
-" Plugin: nvim-lsp {{{
+" Plugin: nvim-lsp + snippets {{{
 if has('nvim-0.5')
+    lua require('snips')
+    inoremap <c-j> <cmd>lua return require'snippets'.expand_or_advance(1)<CR>
+    inoremap <c-k> <cmd>lua return require'snippets'.advance_snippet(-1)<CR>
+
     lua require('lsp')
 
     " Save cursor position on format
