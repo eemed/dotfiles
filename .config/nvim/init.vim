@@ -327,11 +327,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 " Color schemes
-Plug 'NLKNguyen/papercolor-theme'
 Plug 'cideM/yui', {'branch': 'v2'}
-Plug 'kkga/vim-envy'
-Plug 'jsit/toast.vim'
-Plug 'YorickPeterse/vim-paper'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -466,15 +462,6 @@ function! Nvim()
 endfunction
 autocmd vimrc ColorScheme * call Nvim()
 
-function! PaperColorMod()
-    if &background == 'light'
-        highlight! LineNr guibg=lightgray guifg=gray
-        highlight! CursorLineNr guibg=#e1e1e1
-        highlight! link SignColumn LineNr
-    endif
-endfunction
-autocmd vimrc ColorScheme PaperColor call PaperColorMod()
-
 " Yui
 function! Yui()
     highlight! link SpecialComment Comment
@@ -511,13 +498,7 @@ function! Yui()
 endfunction
 autocmd vimrc ColorScheme yui call Yui()
 
-function! Paper()
-    highlight! SignColumn guibg=#d8d5c7
-    highlight! link xmlTagName Directory
-endfunction
-autocmd vimrc ColorScheme paper call Paper()
-
-colorscheme paper
+colorscheme yui
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
