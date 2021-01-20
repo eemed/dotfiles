@@ -328,6 +328,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 call plug#begin(g:vimdir . '/plugged')
 " Color schemes
 Plug 'cideM/yui', {'branch': 'v2'}
+Plug 'YorickPeterse/vim-paper'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -489,7 +490,13 @@ function! Yui()
 endfunction
 autocmd vimrc ColorScheme yui call Yui()
 
-colorscheme yui
+function! Paper() abort
+    hi! SignColumn guibg=#d8d5c7
+    hi! NonText guifg=#888888
+endfunction
+autocmd vimrc ColorScheme paper call Paper()
+
+colorscheme paper
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
