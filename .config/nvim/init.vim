@@ -327,8 +327,8 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 " Color schemes
+Plug 'NLKNguyen/papercolor-theme' 
 Plug 'cideM/yui', {'branch': 'v2'}
-Plug 'YorickPeterse/vim-paper'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -389,6 +389,7 @@ nnoremap <silent> ]Q :clast<cr>
 
 nmap yol <plug>(qf_loc_toggle)
 nmap yoq <plug>(qf_qf_toggle)
+nmap <A-q> <plug>(qf_qf_toggle)
 " }}}
 " Plugin: fzf.vim {{{
 function! Browse() abort
@@ -446,6 +447,30 @@ function! Nvim()
 endfunction
 autocmd vimrc ColorScheme * call Nvim()
 
+function! PaperColorMod()
+    let g:fzf_colors = {
+                \ 'fg':      ['fg', 'Normal'],
+                \ 'bg':      ['bg', 'Normal'],
+                \ 'hl':      ['fg', 'Comment'],
+                \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+                \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+                \ 'hl+':     ['fg', 'Statement'],
+                \ 'info':    ['fg', 'PreProc'],
+                \ 'border':  ['fg', 'Ignore'],
+                \ 'prompt':  ['fg', 'Conditional'],
+                \ 'pointer': ['fg', 'Exception'],
+                \ 'marker':  ['fg', 'Keyword'],
+                \ 'spinner': ['fg', 'Label'],
+                \ 'header':  ['fg', 'Comment'] }
+
+    if &background == 'light'
+        highlight! SignColumn guibg=#e1e1e1 guifg=gray
+        " highlight! CursorLineNr guibg=#e1e1e1
+        " highlight! link SignColumn LineNr
+    endif
+endfunction
+autocmd vimrc ColorScheme PaperColor call PaperColorMod()
+
 " Yui
 function! Yui()
     highlight! link SpecialComment Comment
@@ -496,7 +521,7 @@ function! Paper() abort
 endfunction
 autocmd vimrc ColorScheme paper call Paper()
 
-colorscheme paper
+colorscheme PaperColor
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
