@@ -356,10 +356,6 @@ call plug#end()
 " Section: Plugin configuration {{{
 " Plugin: nvim-lsp + snippets {{{
 if has('nvim-0.5')
-    lua require('snips')
-    inoremap <c-j> <cmd>lua return require'snippets'.expand_or_advance(1)<CR>
-    inoremap <c-k> <cmd>lua return require'snippets'.advance_snippet(-1)<CR>
-
     lua require('lsp')
 
     " Save cursor position on format
@@ -450,7 +446,6 @@ endfunction
 autocmd vimrc ColorScheme * call Nvim()
 
 function! PaperColorMod()
-
     let g:fzf_colors = {
                 \ 'fg':      ['fg', 'Normal'],
                 \ 'bg':      ['bg', 'Normal'],
