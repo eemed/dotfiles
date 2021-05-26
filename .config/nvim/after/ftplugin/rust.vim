@@ -13,3 +13,5 @@ augroup rust
   autocmd!
   autocmd! BufRead Cargo.toml :normal! mD
 augroup end
+
+set textwidth=80

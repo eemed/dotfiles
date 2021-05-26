@@ -200,6 +200,7 @@ set path=.,,
 set include=
 set keywordprg=
 set nrformats+=alpha
+set formatoptions+=r
 
 set clipboard=unnamed,unnamedplus
 
@@ -327,8 +328,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 " Color schemes
-Plug 'cideM/yui', {'branch': 'v2'}
-Plug 'YorickPeterse/vim-paper'
+Plug 'NLKNguyen/papercolor-theme'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -345,7 +345,6 @@ Plug 'ajh17/VimCompletesMe'               " Completion
 
 " nvim-0.5
 if has('nvim-0.5')
-    Plug 'norcalli/snippets.nvim'
     Plug 'neovim/nvim-lspconfig'
 endif
 
@@ -389,6 +388,7 @@ nnoremap <silent> ]Q :clast<cr>
 
 nmap yol <plug>(qf_loc_toggle)
 nmap yoq <plug>(qf_qf_toggle)
+nmap <A-q> <plug>(qf_qf_toggle)
 " }}}
 " Plugin: fzf.vim {{{
 function! Browse() abort
@@ -430,6 +430,9 @@ runtime macros/sandwich/keymap/surround.vim
 call operator#sandwich#set('all', 'all', 'highlight', 1)
 " }}}
 " }}}
+" Section: Filetypes {{{
+autocmd vimrc BufNewFile,BufRead *.yang set ft=yang
+" }}}
 " Section: Colorscheme {{{
 set background=light
 
@@ -446,11 +449,36 @@ function! Nvim()
 endfunction
 autocmd vimrc ColorScheme * call Nvim()
 
+function! PaperColorMod()
+
+    let g:fzf_colors = {
+                \ 'fg':      ['fg', 'Normal'],
+                \ 'bg':      ['bg', 'Normal'],
+                \ 'hl':      ['fg', 'Comment'],
+                \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+                \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+                \ 'hl+':     ['fg', 'Statement'],
+                \ 'info':    ['fg', 'PreProc'],
+                \ 'border':  ['fg', 'Ignore'],
+                \ 'prompt':  ['fg', 'Conditional'],
+                \ 'pointer': ['fg', 'Exception'],
+                \ 'marker':  ['fg', 'Keyword'],
+                \ 'spinner': ['fg', 'Label'],
+                \ 'header':  ['fg', 'Comment'] }
+
+    if &background == 'light'
+        highlight! SignColumn guibg=#e1e1e1
+    endif
+endfunction
+autocmd vimrc ColorScheme PaperColor call PaperColorMod()
+
 " Yui
 function! Yui()
+    highlight! Comment guibg=none guifg=#E44C22
     highlight! link SpecialComment Comment
     highlight! Statement gui=bold
     highlight! SignColumn guibg=#EBE2E0
+    highlight! QuickFixLine guibg=#DCD7F9
 
     " Tex
     highlight! link texStatement Constant
@@ -460,6 +488,7 @@ function! Yui()
     highlight! link texSection Constant
     highlight! link texCmd Constant
     highlight! link texStyleItal mkdItalic
+    highlight! texBeginEndName gui=italic
 
     " Xml
     highlight! xmlTagName gui=bold
@@ -496,7 +525,7 @@ function! Paper() abort
 endfunction
 autocmd vimrc ColorScheme paper call Paper()
 
-colorscheme paper
+colorscheme PaperColor
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
