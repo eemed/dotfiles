@@ -200,6 +200,7 @@ set path=.,,
 set include=
 set keywordprg=
 set nrformats+=alpha
+set formatoptions+=r
 
 set clipboard=unnamed,unnamedplus
 
@@ -327,8 +328,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 " Color schemes
-Plug 'NLKNguyen/papercolor-theme' 
-Plug 'cideM/yui', {'branch': 'v2'}
+Plug 'NLKNguyen/papercolor-theme'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -345,7 +345,6 @@ Plug 'ajh17/VimCompletesMe'               " Completion
 
 " nvim-0.5
 if has('nvim-0.5')
-    Plug 'norcalli/snippets.nvim'
     Plug 'neovim/nvim-lspconfig'
 endif
 
@@ -357,10 +356,6 @@ call plug#end()
 " Section: Plugin configuration {{{
 " Plugin: nvim-lsp + snippets {{{
 if has('nvim-0.5')
-    lua require('snips')
-    inoremap <c-j> <cmd>lua return require'snippets'.expand_or_advance(1)<CR>
-    inoremap <c-k> <cmd>lua return require'snippets'.advance_snippet(-1)<CR>
-
     lua require('lsp')
 
     " Save cursor position on format
@@ -431,6 +426,9 @@ runtime macros/sandwich/keymap/surround.vim
 call operator#sandwich#set('all', 'all', 'highlight', 1)
 " }}}
 " }}}
+" Section: Filetypes {{{
+autocmd vimrc BufNewFile,BufRead *.yang set ft=yang
+" }}}
 " Section: Colorscheme {{{
 set background=light
 
@@ -464,18 +462,18 @@ function! PaperColorMod()
                 \ 'header':  ['fg', 'Comment'] }
 
     if &background == 'light'
-        highlight! SignColumn guibg=#e1e1e1 guifg=gray
-        " highlight! CursorLineNr guibg=#e1e1e1
-        " highlight! link SignColumn LineNr
+        highlight! SignColumn guibg=#e1e1e1
     endif
 endfunction
 autocmd vimrc ColorScheme PaperColor call PaperColorMod()
 
 " Yui
 function! Yui()
+    highlight! Comment guibg=none guifg=#E44C22
     highlight! link SpecialComment Comment
     highlight! Statement gui=bold
     highlight! SignColumn guibg=#EBE2E0
+    highlight! QuickFixLine guibg=#DCD7F9
 
     " Tex
     highlight! link texStatement Constant
@@ -485,6 +483,7 @@ function! Yui()
     highlight! link texSection Constant
     highlight! link texCmd Constant
     highlight! link texStyleItal mkdItalic
+    highlight! texBeginEndName gui=italic
 
     " Xml
     highlight! xmlTagName gui=bold
