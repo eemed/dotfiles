@@ -1,6 +1,6 @@
 [user]
 	email = eemed@protonmail.com
-	name = eemed
+	name = Eemeli Lottonen
 	signingkey = EB856804
 [alias]
 	branch-name = "!git rev-parse --abbrev-ref HEAD"
