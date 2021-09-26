@@ -451,6 +451,12 @@ function! PaperColorMod()
 endfunction
 autocmd vimrc ColorScheme PaperColor call PaperColorMod()
 
+function! SonokaiColorMod()
+    highlight! SignColumn guibg=#33353f
+    highlight! LineNr guibg=#33353f
+endfunction
+autocmd vimrc ColorScheme sonokai call SonokaiColorMod()
+
 let g:fzf_colors =
             \ { 'fg':      ['fg', 'Normal'],
             \ 'bg':      ['bg', 'Normal'],
