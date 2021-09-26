@@ -454,6 +454,7 @@ autocmd vimrc ColorScheme PaperColor call PaperColorMod()
 function! SonokaiColorMod()
     highlight! SignColumn guibg=#33353f
     highlight! LineNr guibg=#33353f
+    highlight! VertSplit guifg=#555560
 endfunction
 autocmd vimrc ColorScheme sonokai call SonokaiColorMod()
 
