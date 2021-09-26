@@ -42,7 +42,7 @@ function on_attach(client, bufnr)
     vim.api.nvim_buf_set_keymap(bufnr , 'n' , ']l'        , '<cmd>lua vim.lsp.diagnostic.goto_next({ wrap=false })<cr>'  , opts)
 end
 
-local servers = {'bashls', 'tsserver', 'pyls', 'rust_analyzer', 'sumneko_lua'}
+local servers = {'bashls', 'tsserver', 'rust_analyzer', 'sumneko_lua'}
 for _, lsp in ipairs(servers) do
     lspconfig[lsp].setup {
         on_attach = on_attach,

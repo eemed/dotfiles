@@ -328,6 +328,7 @@ set statusline=\ %f\ %*\ %r\ %m%{PasteForStatusline()}%=\ %{&ft}\ \|\ %l/%L\ :\ 
 " Section: Plugins {{{
 call plug#begin(g:vimdir . '/plugged')
 " Color schemes
+Plug 'sainnhe/sonokai'
 Plug 'NLKNguyen/papercolor-theme'
 
 " Fuzzy find
@@ -419,7 +420,7 @@ command! -nargs=? -complete=dir Sexplore belowright split | silent Dirvish <args
 command! -nargs=? -complete=dir Vexplore leftabove vsplit | silent Dirvish <args>
 " }}}
 " Plugin: vim-fugitive {{{
-nnoremap <silent><leader>g :vertical Gstatus<CR>
+nnoremap <silent><leader>g :vertical Git<CR>
 " }}}
 " Plugin: vim-sandwich {{{
 runtime macros/sandwich/keymap/surround.vim
@@ -430,9 +431,7 @@ call operator#sandwich#set('all', 'all', 'highlight', 1)
 autocmd vimrc BufNewFile,BufRead *.yang set ft=yang
 " }}}
 " Section: Colorscheme {{{
-set background=light
-
-function! Nvim()
+function! NvimLspHL()
     highlight! LspDiagnosticsSignError ctermbg=1 ctermfg=10 guibg=#ff3399 guifg=#393939
     highlight! LspDiagnosticsSignWarning ctermfg=10 ctermbg=3 guifg=#393939 guibg=#ffcc66
     highlight! LspDiagnosticsSignInformation ctermfg=6 ctermbg=10 guibg=#66cccc guifg=#393939
@@ -443,84 +442,31 @@ function! Nvim()
     highlight! LspDiagnosticsUnderlineInformation cterm=NONE gui=NONE
     highlight! LspDiagnosticsUnderlineHint cterm=NONE gui=NONE
 endfunction
-autocmd vimrc ColorScheme * call Nvim()
+autocmd vimrc ColorScheme * call NvimLspHL()
 
 function! PaperColorMod()
-    let g:fzf_colors = {
-                \ 'fg':      ['fg', 'Normal'],
-                \ 'bg':      ['bg', 'Normal'],
-                \ 'hl':      ['fg', 'Comment'],
-                \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-                \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-                \ 'hl+':     ['fg', 'Statement'],
-                \ 'info':    ['fg', 'PreProc'],
-                \ 'border':  ['fg', 'Ignore'],
-                \ 'prompt':  ['fg', 'Conditional'],
-                \ 'pointer': ['fg', 'Exception'],
-                \ 'marker':  ['fg', 'Keyword'],
-                \ 'spinner': ['fg', 'Label'],
-                \ 'header':  ['fg', 'Comment'] }
-
     if &background == 'light'
         highlight! SignColumn guibg=#e1e1e1
     endif
 endfunction
 autocmd vimrc ColorScheme PaperColor call PaperColorMod()
 
-" Yui
-function! Yui()
-    highlight! Comment guibg=none guifg=#E44C22
-    highlight! link SpecialComment Comment
-    highlight! Statement gui=bold
-    highlight! SignColumn guibg=#EBE2E0
-    highlight! QuickFixLine guibg=#DCD7F9
+let g:fzf_colors =
+            \ { 'fg':      ['fg', 'Normal'],
+            \ 'bg':      ['bg', 'Normal'],
+            \ 'hl':      ['fg', 'Comment'],
+            \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+            \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+            \ 'hl+':     ['fg', 'Statement'],
+            \ 'info':    ['fg', 'PreProc'],
+            \ 'border':  ['fg', 'Ignore'],
+            \ 'prompt':  ['fg', 'Conditional'],
+            \ 'pointer': ['fg', 'Exception'],
+            \ 'marker':  ['fg', 'Keyword'],
+            \ 'spinner': ['fg', 'Label'],
+            \ 'header':  ['fg', 'Comment'] }
 
-    " Tex
-    highlight! link texStatement Constant
-    highlight! link texTypeStyle Constant
-    highlight! link texBeginEnd Constant
-    highlight! link texBeginEndName NONE
-    highlight! link texSection Constant
-    highlight! link texCmd Constant
-    highlight! link texStyleItal mkdItalic
-    highlight! texBeginEndName gui=italic
-
-    " Xml
-    highlight! xmlTagName gui=bold
-
-    " highlight! Constant guifg=#5137e1
-    " highlight! dirvishPathTail guifg=#5137e1
-    " highlight! asciidocQuotedMonospaced2 guifg=#5137e1
-
-    highlight! clear CursorLine
-    highlight! CursorLine guibg=#ffffff
-
-
-    " Lsp
-    highlight! link LspDiagnosticsSignError ErrorMsg
-    highlight! link LspDiagnosticsSignWarning WarningMsg
-    highlight! link LspDiagnosticsSignInformation Search
-    highlight! link LspDiagnosticsSignHint Search
-
-    highlight! link LspDiagnosticsDefaultError NormalFloat
-    highlight! link LspDiagnosticsDefaultWarning NormalFloat
-    highlight! link LspDiagnosticsDefaultInformation NormalFloat
-    highlight! link LspDiagnosticsDefaultHint NormalFloat
-
-    highlight! link LspDiagnosticsUnderlineError SpellBad
-    highlight! link LspDiagnosticsUnderlineWarning DiffChange
-    highlight! LspDiagnosticsUnderlineInformation cterm=NONE gui=NONE
-    highlight! LspDiagnosticsUnderlineHint cterm=NONE gui=NONE
-endfunction
-autocmd vimrc ColorScheme yui call Yui()
-
-function! Paper() abort
-    hi! SignColumn guibg=#d8d5c7
-    hi! NonText guifg=#888888
-endfunction
-autocmd vimrc ColorScheme paper call Paper()
-
-colorscheme PaperColor
+colorscheme sonokai
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'
