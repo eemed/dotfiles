@@ -1,3 +1,3 @@
 setlocal signcolumn=no
-nmap <silent><buffer> <tab> <c-n>
-nmap <silent><buffer> <s-tab> <c-p>
+nmap <silent><buffer> <tab> )
+nmap <silent><buffer> <s-tab> (
