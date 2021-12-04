@@ -37,6 +37,7 @@ nnoremap <silent>]F mm]s1z=`m
 
 nnoremap Y y$
 
+nnoremap ` V
 xnoremap < <gv
 xnoremap > >gv
 xnoremap K :<c-u>execute "normal gvd" . v:count1 . "kPV']"<cr>
@@ -330,6 +331,11 @@ call plug#begin(g:vimdir . '/plugged')
 " Color schemes
 Plug 'sainnhe/sonokai'
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'cideM/yui'
+Plug 'n00bmind/retro-minimal'
+Plug 'seesleestak/duo-mini'
+Plug 'junegunn/seoul256.vim'
+Plug 'AlessandroYorba/Alduin'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -347,6 +353,11 @@ Plug 'ajh17/VimCompletesMe'               " Completion
 " nvim-0.5
 if has('nvim-0.5')
     Plug 'neovim/nvim-lspconfig'
+endif
+
+if has('nvim-0.6')
+    Plug 'nvim-treesitter/nvim-treesitter'
+    Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 endif
 
 " Syntax
@@ -370,6 +381,17 @@ if has('nvim-0.5')
     sign define LspDiagnosticsSignWarning text=! texthl=LspDiagnosticsSignWarning
     sign define LspDiagnosticsSignInformation text=- texthl=LspDiagnosticsSignInformation
     sign define LspDiagnosticsSignHint text=- texthl=LspDiagnosticsSignHint
+
+    " nvim 0.6
+    sign define DiagnosticSignError text=! texthl=DiagnosticSignError
+    sign define DiagnosticSignWarn text=! texthl=DiagnosticSignWarn
+    sign define DiagnosticSignInfo text=- texthl=DiagnosticSignInfo
+    sign define DiagnosticSignHint text=- texthl=LspDiagnosticSignHint
+endif
+" }}}
+" Plugin: nvim-treesitter {{{
+if has('nvim-0.6')
+    lua require('treesitter')
 endif
 " }}}
 " Plugin: vim-qf {{{
@@ -437,6 +459,12 @@ function! NvimLspHL()
     highlight! LspDiagnosticsSignInformation ctermfg=6 ctermbg=10 guibg=#66cccc guifg=#393939
     highlight! LspDiagnosticsSignHint ctermfg=6 ctermbg=10 guibg=#66ccff guifg=#393939
 
+    " nvim 0.6
+    highlight! DiagnosticSignError ctermbg=1 ctermfg=10 guibg=#ff3399 guifg=#393939
+    highlight! DiagnosticSignWarn ctermfg=10 ctermbg=3 guifg=#393939 guibg=#ffcc66
+    highlight! DiagnosticSignInfo ctermfg=6 ctermbg=10 guibg=#66cccc guifg=#393939
+    highlight! DiagnosticSignHint ctermfg=6 ctermbg=10 guibg=#66ccff guifg=#393939
+
     highlight! link LspDiagnosticsUnderlineError SpellBad
     highlight! link LspDiagnosticsUnderlineWarning DiffChange
     highlight! LspDiagnosticsUnderlineInformation cterm=NONE gui=NONE
@@ -472,8 +500,7 @@ let g:fzf_colors =
             \ 'marker':  ['fg', 'Keyword'],
             \ 'spinner': ['fg', 'Label'],
             \ 'header':  ['fg', 'Comment'] }
-
-colorscheme sonokai
+colorscheme alduin
 " }}}
 " Section: Local settings {{{
 execute 'silent! source' . g:vimdir . '/init.vim.local'

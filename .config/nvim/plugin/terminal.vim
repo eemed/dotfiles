@@ -75,7 +75,7 @@ endfunction
 
 command! -nargs=? TermRun call <sid>TermRun(<q-args>)
 
-nnoremap `<cr> :TermRun<cr>
-nnoremap `<space> :TermRemember<space>
-nnoremap `! :TermRemember!<cr>
-nnoremap `? :echo 'Remember cmd: "' . get(b:, 'term_last_cmd', '') . '"'<cr>
+" nnoremap `<cr> :TermRun<cr>
+" nnoremap `<space> :TermRemember<space>
+" nnoremap `! :TermRemember!<cr>
+" nnoremap `? :echo 'Remember cmd: "' . get(b:, 'term_last_cmd', '') . '"'<cr>

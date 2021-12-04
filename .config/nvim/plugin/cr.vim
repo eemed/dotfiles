@@ -28,7 +28,7 @@ function! s:CloseBracket(line) abort
 endfunction
 
 let s:smart_tags =  {
-            \   'start_regex': '^\s*<\zs.*\ze>$',
+            \   'start_regex': '^\s*<\zs\S\+\ze.*>$',
             \   'end_func': { m -> "</" . m . ">" }
             \ }
 
