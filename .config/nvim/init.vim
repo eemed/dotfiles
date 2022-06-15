@@ -15,6 +15,11 @@ endif
 " Section: Key mappings {{{
 let mapleader = " "
 
+nnoremap § <esc>
+inoremap § <esc>
+xnoremap § <esc>
+cnoremap § <c-u><bs>
+
 nnoremap k gk
 nnoremap j gj
 
@@ -142,6 +147,7 @@ function! s:ToggleBG()
 endfunction
 nnoremap <silent> yob :call <sid>ToggleBG()<cr>
 
+tnoremap § <c-\><c-n>
 tnoremap <esc> <c-\><c-n>
 tnoremap <c-v> <c-\><c-n>pi
 
@@ -219,6 +225,7 @@ set smartindent
 set hlsearch
 " Clear highlighting on esc
 nnoremap <silent><esc> :let @/ = ""<cr><esc>
+nnoremap <silent>§ :let @/ = ""<cr><esc>
 
 set undofile
 set noswapfile
