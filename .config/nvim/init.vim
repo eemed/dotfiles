@@ -147,7 +147,7 @@ function! s:ToggleBG()
 endfunction
 nnoremap <silent> yob :call <sid>ToggleBG()<cr>
 
-tnoremap § <c-\><c-n>
+tnoremap § <esc>
 tnoremap <esc> <c-\><c-n>
 tnoremap <c-v> <c-\><c-n>pi
 
