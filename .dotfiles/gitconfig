@@ -16,6 +16,7 @@
 	track = "!git branch -r | fzf --header Track | xargs git checkout --track"
 	publish = "!git push -u origin $(git branch-name)"
 	rmb  = "!f(){ git branch -d ${1}; git push origin --delete ${1}; }; br=$(git branch | fzf --header 'Remove local and remote') && f $br"
+	clear-branches = "!git branch | grep -v \"^\\s*\\(\\* .*\\|master\\|main\\)$\" | xargs git branch -D"
 [pull]
 	rebase = false
 [fetch]
