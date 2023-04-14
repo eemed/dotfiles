@@ -343,6 +343,7 @@ Plug 'n00bmind/retro-minimal'
 Plug 'seesleestak/duo-mini'
 Plug 'junegunn/seoul256.vim'
 Plug 'AlessandroYorba/Alduin'
+Plug 'kaarmu/typst.vim'
 
 " Fuzzy find
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': { -> fzf#install() } }
@@ -355,7 +356,7 @@ Plug 'machakann/vim-sandwich'             " Surround objects
 Plug 'mbbill/undotree'                    " Undo tree (undolist is too hard)
 Plug 'godlygeek/tabular'                  " Align stuff
 Plug 'romainl/vim-qf'                     " Better quickfix
-Plug 'ajh17/VimCompletesMe'               " Completion
+Plug 'vim-scripts/VimCompletesMe'               " Completion
 
 " nvim-0.5
 if has('nvim-0.5')
@@ -376,13 +377,6 @@ call plug#end()
 " Plugin: nvim-lsp + snippets {{{
 if has('nvim-0.5')
     lua require('lsp')
-
-    " Save cursor position on format
-    function! LspFormat() abort
-        let view = winsaveview()
-        lua vim.lsp.buf.formatting_sync()
-        call winrestview(view)
-    endfunction
 
     sign define LspDiagnosticsSignError text=! texthl=LspDiagnosticsSignError
     sign define LspDiagnosticsSignWarning text=! texthl=LspDiagnosticsSignWarning
@@ -458,6 +452,7 @@ call operator#sandwich#set('all', 'all', 'highlight', 1)
 " }}}
 " Section: Filetypes {{{
 autocmd vimrc BufNewFile,BufRead *.yang set ft=yang
+autocmd vimrc BufNewFile,BufRead *.typ set ft=typ
 " }}}
 " Section: Colorscheme {{{
 function! NvimLspHL()

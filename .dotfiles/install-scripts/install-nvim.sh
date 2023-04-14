@@ -16,7 +16,7 @@ exists tar   || exit 1
 if [ ! -x "$(command -v nvim)" ] || [ "$1" = "-f" ]; then
     mkdir ~/.packages
     if ! test -f nvim.tar.gz ; then
-      wget https://github.com/neovim/neovim/releases/download/v0.6.0/nvim-linux64.tar.gz -O nvim.tar.gz
+      wget https://github.com/neovim/neovim/releases/download/v0.8.0/nvim-linux64.tar.gz -O nvim.tar.gz
     fi
     tar xfv nvim.tar.gz
     mkdir ~/.local
