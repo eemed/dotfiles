@@ -1,5 +1,5 @@
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "rust", "bash", "lua", "vim", "help", "javascript", "typescript", "java" },
+  ensure_installed = { "rust", "bash", "lua", "vim", "vimdoc", "javascript", "typescript", "java" },
   sync_install = true,
   highlight = {
     enable = true,              -- false will disable the whole extension

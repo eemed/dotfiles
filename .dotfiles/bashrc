@@ -39,22 +39,10 @@ alias hgrep="history | grep --color=auto"
 alias headphones="sudo rmmod btusb ; sudo modprobe btusb"
 alias open="gio open"
 function cdl(){ cd $1; ls -l;}
+alias vim="nvim"
 
-nvim_no_nest() {
-    if [ -z ${NVIM_LISTEN_ADDRESS+x} ]; then
-        nvim $@
-    else
-        nvr $@
-    fi
-}
-alias vim="nvim_no_nest"
-
-export FZF_DEFAULT_OPTS="--color=info:0,bg+:-1,fg:-1,fg+:0,hl+:2,hl:2 --bind 'tab:down' --bind 'btab:up' --exact --reverse"
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-[ -d ~/.fzf ] && \
-  PATH=$PATH:~/.fzf/bin ;\
-  source ~/.fzf/shell/completion.bash ;\
-  source ~/.fzf/shell/key-bindings.bash
+export FZF_DEFAULT_OPTS="--bind 'tab:down' --bind 'btab:up' --exact --reverse"
+test -f /usr/share/doc/fzf/examples/key-bindings.bash && source /usr/share/doc/fzf/examples/key-bindings.bash
 
 # Setup gpg-agent
 unset SSH_AGENT_PID
