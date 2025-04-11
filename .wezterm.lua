@@ -5,6 +5,27 @@ local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
 config.color_scheme = 'seoulbones_light'
+config.colors = {
+    scrollbar_thumb = '#b8b8b8',
+    tab_bar = {
+        background = '#b8b8b8',
+
+        active_tab = {
+            bg_color = '#d8d8d8',
+            fg_color = '#222222',
+        },
+
+        inactive_tab = {
+            bg_color = '#b8b8b8',
+            fg_color = '#222222',
+        },
+
+        new_tab = {
+            bg_color = '#b8b8b8',
+            fg_color = '#222222',
+        },
+    }
+}
 
 config.initial_cols = 140
 config.initial_rows = 40
@@ -12,10 +33,13 @@ config.initial_rows = 40
 config.font = wezterm.font 'JetBrains Mono'
 config.font_size = 13.5
 
+config.use_fancy_tab_bar = false
 config.window_close_confirmation = 'AlwaysPrompt'
 config.skip_close_confirmation_for_processes_named = {}
 
+config.enable_scroll_bar = true
 config.leader = { key = 'Space', mods = 'CTRL' }
+
 config.keys = {
     { key = "\"", mods = "LEADER|SHIFT",      action=wezterm.action{SplitVertical={domain="CurrentPaneDomain"}}},
     { key = "%", mods = "LEADER|SHIFT",       action=wezterm.action{SplitHorizontal={domain="CurrentPaneDomain"}}},
@@ -42,6 +66,22 @@ config.keys = {
     { key = "&", mods = "LEADER|SHIFT", action=wezterm.action{CloseCurrentTab={confirm=true}}},
     { key = "d", mods = "LEADER",       action=wezterm.action{CloseCurrentPane={confirm=true}}},
     { key = "x", mods = "LEADER",       action=wezterm.action{CloseCurrentPane={confirm=true}}},
+    { key = "o", mods = "LEADER|CTRL",  action=wezterm.action{RotatePanes="Clockwise"}},
+    {
+      key = ',',
+      mods = 'LEADER',
+      action = wezterm.action.PromptInputLine {
+        description = 'Tab name',
+        action = wezterm.action_callback(function(window, pane, line)
+          -- line will be `nil` if they hit escape without entering anything
+          -- An empty string if they just hit enter
+          -- Or the actual line of text they wrote
+          if line then
+            window:active_tab():set_title(line)
+          end
+        end),
+      },
+    },
 }
 
 -- and finally, return the configuration to wezterm
