@@ -26,14 +26,16 @@ config.colors = {
         },
     }
 }
-
+config.enable_wayland = false
 config.initial_cols = 140
 config.initial_rows = 40
 
 config.font = wezterm.font 'JetBrains Mono'
-config.font_size = 13.5
+config.font_size = 11.0
+config.harfbuzz_features = {"calt=0", "clig=0", "liga=0"}
 
 config.use_fancy_tab_bar = false
+config.audible_bell = 'Disabled'
 config.window_close_confirmation = 'AlwaysPrompt'
 config.skip_close_confirmation_for_processes_named = {}
 
@@ -83,6 +85,15 @@ config.keys = {
       },
     },
 }
+
+for i = 1, 8 do
+  -- CTRL+ALT + number to move to that position
+  table.insert(config.keys, {
+    key = tostring(i),
+    mods = 'LEADER|ALT',
+    action = wezterm.action.MoveTab(i - 1),
+  })
+end
 
 -- and finally, return the configuration to wezterm
 return config

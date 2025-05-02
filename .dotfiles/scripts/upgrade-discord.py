@@ -43,8 +43,8 @@ def remote_version():
 local = local_version()
 remote = remote_version()
 
-if local < remote:
+if local != remote:
     res = requests.get(DISCORD_URL, allow_redirects=True)
     with tempfile.NamedTemporaryFile(suffix=".deb") as fp:
         fp.write(res.content)
-        subprocess.run(['apt-get', 'install', fp.name])
+        subprocess.run(['apt-get', 'install', '--allow-downgrades', '-y', fp.name])
