@@ -22,17 +22,10 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.local/lib
 PROMPT_COMMAND=__prompt_command    # Function to generate PS1 after CMDs
 
 __prompt_command() {
-    local EXIT="$?"                # This needs to be first
-    PS1=""
-
-    local Red='\[\e[0;31m\]'
-
-    if [ $EXIT != 0 ]; then
-        PS1+="${Red}(exited with code ${EXIT})\n"
-    fi
-
-    PS1+="\[\033[01;32m\]\u@\h\[\033[00m\]: \[\033[01;34m\]\w\[\033[00m\]\n$ "
+    PS1="\[\033[01;32m\]\u@\h\[\033[00m\]: \[\033[01;34m\]\w\[\033[00m\]\n$ "
 }
+EC() { echo -e "\e[1;31m(exited with code $?)\e[m"; }
+trap EC ERR
 
 # Default editor and pager
 VISUAL=nvim; export VISUAL EDITOR=nvim; export EDITOR
