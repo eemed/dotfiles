@@ -37,7 +37,7 @@ def local_version():
 def remote_version():
     res = requests.head(DISCORD_URL, allow_redirects=False)
     loc = res.headers["location"]
-    match = re.search("discord-(.*)\.deb", loc)
+    match = re.search("discord-(.*)\\.deb", loc)
     return parse_version(match.group(1))
 
 local = local_version()

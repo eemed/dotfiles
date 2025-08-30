@@ -1,31 +1,33 @@
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
+local act = wezterm.action
 
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
-config.color_scheme = 'seoulbones_light'
-config.colors = {
-    scrollbar_thumb = '#b8b8b8',
-    tab_bar = {
-        background = '#b8b8b8',
-
-        active_tab = {
-            bg_color = '#d8d8d8',
-            fg_color = '#222222',
-        },
-
-        inactive_tab = {
-            bg_color = '#b8b8b8',
-            fg_color = '#222222',
-        },
-
-        new_tab = {
-            bg_color = '#b8b8b8',
-            fg_color = '#222222',
-        },
-    }
-}
+-- config.color_scheme = 'seoulbones_light'
+config.color_scheme = 'Tomorrow Night'
+-- config.colors = {
+--     scrollbar_thumb = '#b8b8b8',
+--     tab_bar = {
+--         background = '#b8b8b8',
+-- 
+--         active_tab = {
+--             bg_color = '#d8d8d8',
+--             fg_color = '#222222',
+--         },
+-- 
+--         inactive_tab = {
+--             bg_color = '#b8b8b8',
+--             fg_color = '#222222',
+--         },
+-- 
+--         new_tab = {
+--             bg_color = '#b8b8b8',
+--             fg_color = '#222222',
+--         },
+--     }
+-- }
 config.enable_wayland = false
 config.initial_cols = 140
 config.initial_rows = 40
@@ -34,6 +36,7 @@ config.font = wezterm.font 'JetBrains Mono'
 config.font_size = 11.0
 config.harfbuzz_features = {"calt=0", "clig=0", "liga=0"}
 
+config.warn_about_missing_glyphs = false
 config.use_fancy_tab_bar = false
 config.audible_bell = 'Disabled'
 config.window_close_confirmation = 'AlwaysPrompt'
@@ -69,6 +72,7 @@ config.keys = {
     { key = "d", mods = "LEADER",       action=wezterm.action{CloseCurrentPane={confirm=true}}},
     { key = "x", mods = "LEADER",       action=wezterm.action{CloseCurrentPane={confirm=true}}},
     { key = "o", mods = "LEADER|CTRL",  action=wezterm.action{RotatePanes="Clockwise"}},
+    { key = "?", mods = "LEADER|SHIFT",  action=wezterm.action{Search={CaseSensitiveString=""}}},
     {
       key = ',',
       mods = 'LEADER',
@@ -86,6 +90,7 @@ config.keys = {
     },
 }
 
+
 for i = 1, 8 do
   -- CTRL+ALT + number to move to that position
   table.insert(config.keys, {
@@ -94,6 +99,50 @@ for i = 1, 8 do
     action = wezterm.action.MoveTab(i - 1),
   })
 end
+
+-- -- things
+-- function query_appearance_gnome()
+--   local success, stdout = wezterm.run_child_process {
+--     'gsettings',
+--     'get',
+--     'org.gnome.desktop.interface',
+--     'gtk-theme',
+--   }
+--   -- lowercase and remove whitespace
+--   stdout = stdout:lower():gsub('%s+', '')
+--   local mapping = {
+--     highcontrast = 'LightHighContrast',
+--     highcontrastinverse = 'DarkHighContrast',
+--     adwaita = 'Light',
+--     ['adwaita-dark'] = 'Dark',
+--   }
+--   local appearance = mapping[stdout]
+--   if appearance then
+--     return appearance
+--   end
+--   if stdout:find 'dark' then
+--     return 'Dark'
+--   end
+--   return 'Light'
+-- end
+
+-- function scheme_for_appearance(appearance)
+--   if appearance:find 'Dark' then
+--     return 'Afterglow'
+--   else
+--     return 'seoulbones_light'
+--   end
+-- end
+
+-- wezterm.on('update-right-status', function(window, pane)
+--   local overrides = window:get_config_overrides() or {}
+--   local appearance = query_appearance_gnome()
+--   local scheme = scheme_for_appearance(appearance)
+--   if overrides.color_scheme ~= scheme then
+--     overrides.color_scheme = scheme
+--     window:set_config_overrides(overrides)
+--   end
+-- end)
 
 -- and finally, return the configuration to wezterm
 return config
